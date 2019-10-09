@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.ECS;
-using Morro.ECS.Scenes;
 using Morro.Graphics;
 using Morro.Utilities;
 using System;
@@ -16,7 +15,6 @@ namespace Morro.Core
         Menu,
         Platformer,      
         Flocking,
-        SAT
     }
 
     static class SceneManager
@@ -42,7 +40,6 @@ namespace Morro.Core
                 new Menu(),
                 new Platformer(),
                 new Flocking(),
-                new SAT()
             };
         }
 

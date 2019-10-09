@@ -2,14 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Core;
-using Morro.ECS.Entities;
 using Morro.Graphics;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.ECS.Scenes
+namespace Morro.ECS
 {
     class Platformer : Scene
     {

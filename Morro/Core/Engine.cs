@@ -49,11 +49,11 @@ namespace Morro.Core
                 supportWideScreen: false
             );
 
+            RandomManager.Initialize();
             SketchManager.Initialize();
             DebugManager.Initialize();
             CameraManager.Initialize();
-            SoundManager.Initialize();
-            RandomHelper.Initialize();
+            SoundManager.Initialize();            
             SceneManager.Initialize();
 
             base.Initialize();

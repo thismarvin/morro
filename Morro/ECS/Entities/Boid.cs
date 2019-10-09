@@ -2,11 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.Graphics;
+using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.ECS.Entities
+namespace Morro.ECS
 {
     class Boid : Kinetic
     {

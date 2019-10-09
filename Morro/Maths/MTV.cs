@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Core
+namespace Morro.Maths
 {
     struct MTV
     {

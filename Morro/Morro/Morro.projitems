@@ -10,8 +10,79 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Math\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AssetManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Bin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CameraManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CollisionHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DebugManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\EffectManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Engine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\GraphicsManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\IntersectionInformation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\LineSegment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Matrix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\MonoObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\MTV.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Quadtree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RandomHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Rectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SketchManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SoundManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\VectorHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\WindowManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Actor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Entities\Boid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Entities\Player.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Kinetic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scenes\Flocking.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scenes\Menu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scenes\Platformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scenes\SAT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\AABB.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\AnimatedSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Batcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Blur.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\ChromaticAberration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Circle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Dither.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\DropShadow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\FX.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Grayscale.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\HSV.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\IConvex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Invert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Line.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Outline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Palette.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PICO8.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Polygon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Quad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Quantize.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\RegularPolygon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Retro.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\RightTriangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Sketch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SketchHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Sprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Star.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\GamePad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Mouse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\BitmapFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Fade.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Pinhole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Timer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transition.cs" />
   </ItemGroup>
 </Project>

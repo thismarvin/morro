@@ -1,2 +1,6 @@
 ﻿/.vs
 .vscode/tasks.json
+/Morro.OpenGL/bin
+/Morro.OpenGL/obj
+/Morro.DirectX/bin
+/Morro.DirectX/obj

@@ -67,8 +67,7 @@ C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morro
 C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\bin\Windows\x86\Debug\SharpDX.Direct3D11.xml
 C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\bin\Windows\x86\Debug\SharpDX.Direct2D1.xml
 C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\bin\Windows\x86\Debug\SharpDX.XInput.xml
-C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\obj\x86\Debug\Morro.DirectX.csprojAssemblyReference.cache
-C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\obj\x86\Debug\Morro.DirectX.csproj.CoreCompileInputs.cache
-C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\obj\x86\Debug\Morro.DirectX.csproj.CopyComplete
 C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\obj\x86\Debug\Morro.DirectX.exe
 C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\obj\x86\Debug\Morro.DirectX.pdb
+C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\obj\x86\Debug\Morro.DirectX.csprojAssemblyReference.cache
+C:\Users\Marvin\Desktop\Master\Programming\MonoGame\Workspace\Git Projects\morroEngine\Morro.DirectX\obj\x86\Debug\Morro.DirectX.csproj.CopyComplete

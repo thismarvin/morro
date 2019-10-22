@@ -49,6 +49,7 @@ namespace Morro.Core
         private static Quad bottomLetterBox;
         private static Quad leftPillarBox;
         private static Quad rightPillarBox;
+        private static bool togglingFullscreen;
 
         public static EventHandler<EventArgs> WindowChanged { get; set; }
         private static void RaiseWindowChangedEvent()
@@ -243,15 +244,20 @@ namespace Morro.Core
 
         private static void HandleWindowResize(object sender, EventArgs e)
         {
-            Engine.Graphics.PreferredBackBufferWidth = Math.Max(defaultPixelWidth, WindowWidth);
-            Engine.Graphics.PreferredBackBufferHeight = Math.Max(defaultPixelHeight, WindowHeight);
+            if (togglingFullscreen)
+                return;
+
+            Engine.Graphics.PreferredBackBufferWidth = Math.Max(defaultPixelWidth, Engine.Instance.Window.ClientBounds.Width);
+            Engine.Graphics.PreferredBackBufferHeight = Math.Max(defaultPixelHeight, Engine.Instance.Window.ClientBounds.Height);
             Engine.Graphics.ApplyChanges();
 
-            ResetScale();            
+            ResetScale();
         }
 
         private static void ToggleFullScreen()
         {
+            togglingFullscreen = true;
+
             if (Fullscreen)
                 DeactivateFullScreen();
             else
@@ -259,8 +265,9 @@ namespace Morro.Core
 
             Engine.Graphics.ToggleFullScreen();
             Engine.Graphics.ApplyChanges();
-
+            
             Fullscreen = !Fullscreen;
+            togglingFullscreen = false;
 
             ResetScale();
         }

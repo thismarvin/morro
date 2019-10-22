@@ -27,6 +27,18 @@ namespace Morro.ECS
             AABB.SetLocation(X, Y);
         }
 
+        public override void SetBounds(float x, float y, int width, int height)
+        {
+            base.SetBounds(x, y, width, height);
+            AABB.SetBounds(X, Y, Width, Height);
+        }
+
+        public override void SetDimensions(int width, int height)
+        {
+            base.SetDimensions(width, height);
+            AABB.SetDimensions(Width, Height);
+        }
+
         public virtual void DrawBoundingBox(SpriteBatch spriteBatch)
         {
             if (DebugManager.ShowBoundingBoxes)

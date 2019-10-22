@@ -66,63 +66,49 @@ namespace Morro.ECS
                 SetLocation(SceneManager.CurrentScene.SceneBounds.Width - Width, Y);
                 Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
             }
-                
 
+            List<CollisionType> collisionTypes;
             foreach (Polygon polygon in ((Platformer)SceneManager.CurrentScene).BoundingBoxes)
             {
-                if (polygon is AABB)
+                collisionTypes = ResolveCollisionAgainst(polygon);
+                foreach (CollisionType collisionType in collisionTypes)
                 {
-                    ResolveCollisionAgainst((AABB)polygon);
-                    foreach (CollisionType collisionType in collisionTypes)
+                    switch (collisionType)
                     {
-                        switch (collisionType)
-                        {
-                            case CollisionType.QuadRight:
-                                Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
-                                break;
+                        case CollisionType.Right:
+                            Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
+                            break;
 
-                            case CollisionType.QuadLeft:
-                                Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
-                                break;
+                        case CollisionType.Left:
+                            Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
+                            break;
 
-                            case CollisionType.QuadTop:
+                        case CollisionType.Top:
+                            Velocity = new Vector2(Velocity.X, 0);
+                            grounded = true;
+                            jumping = false;
+                            break;
+
+                        case CollisionType.Bottom:
+                            if (Bounds.Right - polygon.Bounds.Left <= 4)
+                            {
+                                SetLocation(polygon.Bounds.Left - Width, Y);
+                            }
+                            else if (polygon.Bounds.Right - Bounds.Left <= 4)
+                            {
+                                SetLocation(polygon.Bounds.Right, Y);
+                            }
+                            else
+                            {
                                 Velocity = new Vector2(Velocity.X, 0);
-                                grounded = true;
-                                jumping = false;
-                                break;
+                            }
+                            break;
 
-                            case CollisionType.QuadBottom:
-                                if (Bounds.Right - polygon.Bounds.Left <= 4)
-                                {
-                                    SetLocation(polygon.Bounds.Left - Width, Y);
-                                }
-                                else if (polygon.Bounds.Right - Bounds.Left <= 4)
-                                {
-                                    SetLocation(polygon.Bounds.Right, Y);
-                                }
-                                else
-                                {
-                                    Velocity = new Vector2(Velocity.X, 0);
-                                }
-                                break;
-                        }
-                    }
-                }
-
-                if (polygon is RightTriangle)
-                {
-                    ResolveCollisionAgainst((RightTriangle)polygon);
-
-                    foreach (CollisionType collisionType in collisionTypes)
-                    {
-                        switch (collisionType)
-                        {
-                            case CollisionType.RightTriangleSlopeTop:
-                                Velocity = new Vector2(Velocity.X, 0);
-                                grounded = true;
-                                jumping = false;
-                                break;
-                        }
+                        case CollisionType.Slope:
+                            Velocity = new Vector2(Velocity.X, 0);
+                            grounded = true;
+                            jumping = false;
+                            break;
                     }
                 }
             }               

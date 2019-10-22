@@ -6,273 +6,370 @@ using System.Text;
 
 namespace Morro.Maths
 {
+    /// <summary>
+    /// An identifier for tailored collision data.
+    /// </summary>
     public enum CollisionType
     {
-        QuadTop,
-        QuadBottom,
-        QuadLeft,
-        QuadRight,
-
-        RightTriangleSlopeTop,
-        RightTriangleSlopeBottom,
+        Top,
+        Bottom,
+        Left,
+        Right,
+        Slope,
     }
 
     static class CollisionHelper
     {
-        public static HashSet<CollisionType> GetCollisionTypes(this Quad q, Quad quad, Vector2 velocity)
+        /// <summary>
+        /// Prevents two AABBs from overlapping.
+        /// <para>This method was tailored specifically for AABBs,
+        /// therefore the collision resolution is better than just calling <see cref="NaivelyResolveCollisionBetween(Polygon, Polygon, Vector2)"/>.</para>
+        /// </summary>
+        /// <param name="a">the AABB that should be affected by the collision resolution</param>
+        /// <param name="b">the AABB that the collision should be tested against</param>
+        /// <param name="aVelocity">the velocity of AABB a</param>
+        /// <returns>Returns a list of all the CollisionTypes that needed to be resolved.</returns>
+        public static List<CollisionType> ResolveCollisionBetween(AABB a, AABB b, Vector2 aVelocity)
         {
-            if (!q.Intersects(quad))
-                return new HashSet<CollisionType>();
-
-            quad.SetupForCollisionTesting();
-
-            HashSet<CollisionType> result = new HashSet<CollisionType>();
-            LineSegment a;
-            LineSegment b;
-            LineSegment c;
-            LineSegment d;
-            float offset = 2;
-            float buffer;
-
-            buffer = velocity.Y + 1;
-            // Object is moving left; resolve collision with the right of the quad.
-            if (velocity.X < 0)
+            List<CollisionType> collisionTypes = GetCollisionTypesBetween(a, b, aVelocity);
+            foreach (CollisionType collisionType in collisionTypes)
             {
-                a = new LineSegment(q.Bounds.Left + offset, q.Bounds.Top + buffer, q.Bounds.Left - velocity.X, q.Bounds.Top + buffer);
-                b = new LineSegment(q.Bounds.Left + offset, q.Bounds.Bottom - buffer, q.Bounds.Left - velocity.X, q.Bounds.Bottom - buffer);
-                c = new LineSegment(quad.Bounds.Right - offset, quad.Bounds.Top + buffer, quad.Bounds.Right + velocity.X, quad.Bounds.Top + buffer);
-                d = new LineSegment(quad.Bounds.Right - offset, quad.Bounds.Bottom - buffer, quad.Bounds.Right + velocity.X, quad.Bounds.Bottom - buffer);
-
-                if (a.Intersects(quad.LineSegments[1]) || b.Intersects(quad.LineSegments[1]) || c.Intersects(q.LineSegments[3]) || d.Intersects(q.LineSegments[3]))
+                switch (collisionType)
                 {
-                    result.Add(CollisionType.QuadRight);
+                    case CollisionType.Left:
+                        a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                        break;
+                    case CollisionType.Right:
+                        a.SetLocation(b.Bounds.Right, a.Y);
+                        break;
+                    case CollisionType.Top:
+                        a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                        break;
+                    case CollisionType.Bottom:
+                        a.SetLocation(a.X, b.Bounds.Bottom);
+                        break;
                 }
             }
-            // Object is moving right; resolve collision with the left of the quad.
-            else if (velocity.X > 0)
-            {
-                a = new LineSegment(q.Bounds.Right - offset, q.Bounds.Top + buffer, q.Bounds.Right + velocity.X, q.Bounds.Top + buffer);
-                b = new LineSegment(q.Bounds.Right - offset, q.Bounds.Bottom - buffer, q.Bounds.Right + velocity.X, q.Bounds.Bottom - buffer);
-                c = new LineSegment(quad.Bounds.Left + offset, quad.Bounds.Top + buffer, quad.Bounds.Left - velocity.X, quad.Bounds.Top + buffer);
-                d = new LineSegment(quad.Bounds.Left + offset, quad.Bounds.Bottom - buffer, quad.Bounds.Left - velocity.X, quad.Bounds.Bottom - buffer);
+            return collisionTypes;
+        }
 
-                if (a.Intersects(quad.LineSegments[3]) || b.Intersects(quad.LineSegments[3]) || c.Intersects(q.LineSegments[1]) || d.Intersects(q.LineSegments[1]))
+        // Not sure if this really works!
+        public static List<CollisionType> ResolveCollisionBetween(AABB a, AABB b, Vector2 aVelocity, float leeway)
+        {
+            List<CollisionType> collisionTypes = GetCollisionTypesBetween(a, b, aVelocity);
+            foreach (CollisionType collisionType in collisionTypes)
+            {
+                switch (collisionType)
                 {
-                    result.Add(CollisionType.QuadLeft);
+                    case CollisionType.Left:
+                        if (a.Bounds.Bottom - b.Bounds.Top <= leeway)
+                        {
+                            a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                        }
+                        else if (b.Bounds.Bottom - a.Bounds.Top <= leeway)
+                        {
+                            a.SetLocation(a.X, b.Bounds.Bottom);
+                        }
+                        else
+                        {
+                            a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                        }
+                        break;
+                    case CollisionType.Right:
+                        if (a.Bounds.Bottom - b.Bounds.Top <= leeway)
+                        {
+                            a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                        }
+                        else if (b.Bounds.Bottom - a.Bounds.Top <= leeway)
+                        {
+                            a.SetLocation(a.X, b.Bounds.Bottom);
+                        }
+                        else
+                        {
+                            a.SetLocation(b.Bounds.Right, a.Y);
+                        }
+                        break;
+                    case CollisionType.Top:
+                        if (a.Bounds.Right - b.Bounds.Left <= leeway)
+                        {
+                            a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                        }
+                        else if (b.Bounds.Right - a.Bounds.Left <= leeway)
+                        {
+                            a.SetLocation(b.Bounds.Right, a.Y);
+                        }
+                        else
+                        {
+                            a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                        }
+                        break;
+                    case CollisionType.Bottom:
+                        if (a.Bounds.Right - b.Bounds.Left <= leeway)
+                        {
+                            a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                        }
+                        else if (b.Bounds.Right - a.Bounds.Left <= leeway)
+                        {
+                            a.SetLocation(b.Bounds.Right, a.Y);
+                        }
+                        else
+                        {
+                            a.SetLocation(a.X, b.Bounds.Bottom);
+                        }
+                        break;
                 }
             }
+            return collisionTypes;
+        }
 
-            buffer = velocity.X + 1;
-            // Object is moving up; resolve collision with the bottom of the quad.
-            if (velocity.Y < 0)
+        /// <summary>
+        /// DOESNT REALLY WORK
+        /// </summary>
+        public static List<CollisionType> ResolveCollisionBetween(AABB a, RightTriangle b, Vector2 aVelocity)
+        {
+            List<CollisionType> collisionTypes = GetCollisionTypesBetween(a, b, aVelocity);
+            foreach (CollisionType collisionType in collisionTypes)
             {
-                a = new LineSegment(q.Bounds.Left + buffer, q.Bounds.Top + offset, q.Bounds.Left + buffer, q.Bounds.Top - velocity.Y);
-                b = new LineSegment(q.Bounds.Right - buffer, q.Bounds.Top + offset, q.Bounds.Right - buffer, q.Bounds.Top - velocity.Y);
-                c = new LineSegment(quad.Bounds.Left + buffer, quad.Bounds.Bottom - offset, quad.Bounds.Left + buffer, quad.Bounds.Bottom + velocity.Y);
-                d = new LineSegment(quad.Bounds.Right - buffer, quad.Bounds.Bottom - offset, quad.Bounds.Right - buffer, quad.Bounds.Bottom + velocity.Y);
-
-                if (a.Intersects(quad.LineSegments[0]) || b.Intersects(quad.LineSegments[0]) || c.Intersects(q.LineSegments[2]) || d.Intersects(q.LineSegments[2]))
+                switch (collisionType)
                 {
-                    result.Add(CollisionType.QuadBottom);
+                    case CollisionType.Slope:
+                        LineSegment lineSegment = new LineSegment(a.Center.X, a.Bounds.Top, a.Center.X, a.Bounds.Bottom);
+                        IntersectionInformation intersectionInformation = lineSegment.GetIntersectionInformation(b.LineSegments[2]);
+                        a.SetLocation(a.X, a.Y - ((1 - intersectionInformation.T) * (lineSegment.Y2 - lineSegment.Y1)));
+                        break;
                 }
             }
-            // Object is moving down; resolve collision with the top of the quad.
-            else if (velocity.Y > 0)
-            {
-                a = new LineSegment(q.Bounds.Left + buffer, q.Bounds.Bottom - offset, q.Bounds.Left + buffer, q.Bounds.Bottom + velocity.Y);
-                b = new LineSegment(q.Bounds.Right - buffer, q.Bounds.Bottom - offset, q.Bounds.Right - buffer, q.Bounds.Bottom + velocity.Y);
-                c = new LineSegment(quad.Bounds.Left + buffer, quad.Bounds.Top + offset, quad.Bounds.Left + buffer, quad.Bounds.Top - velocity.Y);
-                d = new LineSegment(quad.Bounds.Right - buffer, quad.Bounds.Top + offset, quad.Bounds.Right - buffer, quad.Bounds.Top - velocity.Y);
+            return collisionTypes;
+        }
 
-                if (a.Intersects(quad.LineSegments[2]) || b.Intersects(quad.LineSegments[2]) || c.Intersects(q.LineSegments[0]) || d.Intersects(q.LineSegments[0]))
+        /// <summary>
+        /// Prevent two polygons from colliding with eachother.
+        /// Non-overlap is guaranteed, but the displacement of the resolution is not necessarily perfect.
+        /// </summary>
+        /// <param name="a">the polygon that should be affected by the collision resolution</param>
+        /// <param name="b">the polygon that the collision should be tested against</param>
+        /// <param name="aVelocity">the velocity of polygon a</param>
+        /// <returns>Returns a list of all the CollisionTypes that needed to be resolved.</returns>
+        public static List<CollisionType> NaivelyResolveCollisionBetween(Polygon a, Polygon b, Vector2 aVelocity)
+        {
+            List<CollisionType> collisionTypes = new List<CollisionType>();
+
+            a.SetupForCollisionTesting();
+            b.SetupForCollisionTesting();
+
+            MTV pass1 = SATResolve(a, b);
+            MTV pass2 = SATResolve(b, a);
+
+            if (pass1.Overlap == -1 || pass2.Overlap == -1)
+                return collisionTypes;
+
+            if (pass1.Overlap < pass2.Overlap)
+            {
+                Vector2 axis = new Vector2(-(pass1.Edge.Y2 - pass1.Edge.Y1), pass1.Edge.X2 - pass1.Edge.X1);
+                float edgeLength = axis.Length();
+                float angle = (float)Math.Acos(Vector2.Dot(axis, Vector2.UnitX) / (edgeLength));
+                int angleAsDegrees = (int)(angle * 180 / Math.PI);
+
+                if (angleAsDegrees == 90)
                 {
-                    result.Add(CollisionType.QuadTop);
+                    collisionTypes.Add(aVelocity.Y > 0 ? CollisionType.Top : CollisionType.Bottom);
+                }
+                else if (angleAsDegrees == 180)
+                {
+                    collisionTypes.Add(aVelocity.X > 0 ? CollisionType.Left : CollisionType.Right);
+                }
+                else
+                {
+                    collisionTypes.Add(CollisionType.Slope);
+                }
+
+                float xFactor = (float)Math.Round(edgeLength * Math.Cos(angle));
+                float yFactor = (float)Math.Round(edgeLength * Math.Sin(angle));
+
+                float xOffset = xFactor == 0 ? 0 : pass1.Overlap / xFactor;
+                float yOffset = yFactor == 0 ? 0 : pass1.Overlap / yFactor;
+
+                if (aVelocity.X < 0)
+                    xOffset *= -1;
+                if (aVelocity.Y > 0)
+                    yOffset *= -1;
+
+                a.SetLocation(a.X + xOffset, a.Y + yOffset);
+            }
+            else
+            {
+                Vector2 axis = new Vector2(-(pass2.Edge.Y2 - pass2.Edge.Y1), pass2.Edge.X2 - pass2.Edge.X1);
+                float edgeLength = axis.Length();
+                float angle = (float)Math.Acos(Vector2.Dot(axis, Vector2.UnitX) / (edgeLength * Vector2.UnitX.Length()));
+                int angleAsDegrees = (int)(angle * 180 / Math.PI);
+
+                if (angleAsDegrees == 90)
+                {
+                    collisionTypes.Add(aVelocity.Y > 0 ? CollisionType.Top : CollisionType.Bottom);
+                }                    
+                else if (angleAsDegrees == 180)
+                {
+                    collisionTypes.Add(aVelocity.X > 0 ? CollisionType.Left : CollisionType.Right);
+                }
+                else
+                {
+                    collisionTypes.Add(CollisionType.Slope);
+                }
+                    
+                float xFactor = (float)Math.Round(edgeLength * Math.Cos(angle));
+                float yFactor = (float)Math.Round(edgeLength * Math.Sin(angle));
+
+                float xOffset = xFactor == 0 ? 0 : pass2.Overlap / xFactor;
+                float yOffset = yFactor == 0 ? 0 : pass2.Overlap / yFactor;
+
+                if (aVelocity.X < 0)
+                    xOffset *= -1;
+                if (aVelocity.Y > 0)
+                    yOffset *= -1;
+
+                a.SetLocation(a.X + xOffset, a.Y + yOffset);
+            }
+
+            return collisionTypes;
+        }
+
+        /// <summary>
+        /// Get the types of collisions between two AABBs.
+        /// <para>This is useful for special cases where more than just collision resolution is needed (eg. manipulate velocity).</para>
+        /// </summary>
+        /// <param name="a">the AABB that should be affected by the collision resolution</param>
+        /// <param name="b">the AABB that the collision should be tested against</param>
+        /// <param name="aVelocity">the velocity of AABB a</param>
+        /// <returns>Returns a list of all the CollisionTypes that need to be resolved.</returns>
+        private static List<CollisionType> GetCollisionTypesBetween(AABB a, AABB b, Vector2 aVelocity)
+        {
+            if (!a.Bounds.Intersects(b.Bounds))
+                return new List<CollisionType>();
+
+            List<CollisionType> result = new List<CollisionType>();
+
+            a.SetupForCollisionTesting();
+            b.SetupForCollisionTesting();
+
+            MTV pass1 = SATResolve(a, b);
+            MTV pass2 = SATResolve(b, a);
+
+            if (pass1.Overlap == -1 || pass2.Overlap == -1)
+                return result;
+
+            if (pass1.Overlap < pass2.Overlap)
+            {
+                if (pass1.EdgeIndex % 2 == 0)
+                {
+                    if (aVelocity.X < 0 && a.Bounds.Left > b.Bounds.Left)
+                        result.Add(CollisionType.Right);
+                    if (aVelocity.X > 0 && a.Bounds.Right < b.Bounds.Right)
+                        result.Add(CollisionType.Left);
+                }
+                else
+                {
+                    if (aVelocity.Y < 0 && a.Bounds.Top > b.Bounds.Top)
+                        result.Add(CollisionType.Bottom);
+                    if (aVelocity.Y > 0 && a.Bounds.Bottom < b.Bounds.Bottom)
+                        result.Add(CollisionType.Top);
+                }
+            }
+            else
+            {
+                if (pass2.EdgeIndex % 2 == 0)
+                {
+                    if (aVelocity.X < 0 && a.Bounds.Left > b.Bounds.Left)
+                        result.Add(CollisionType.Right);
+                    if (aVelocity.X > 0 && a.Bounds.Right < b.Bounds.Right)
+                        result.Add(CollisionType.Left);
+                }
+                else
+                {
+                    if (aVelocity.Y < 0 && a.Bounds.Top > b.Bounds.Top)
+                        result.Add(CollisionType.Bottom);
+                    if (aVelocity.Y > 0 && a.Bounds.Bottom < b.Bounds.Bottom)
+                        result.Add(CollisionType.Top);
                 }
             }
 
             return result;
         }
 
-        public static HashSet<CollisionType> GetCollisionTypes(this Quad q, RightTriangle rightTriangle, Vector2 velocity)
+        /// <summary>
+        /// DOESNT REALLY WORK
+        /// </summary>
+        private static List<CollisionType> GetCollisionTypesBetween(AABB a, RightTriangle b, Vector2 aVelocity)
         {
-            if (!q.Intersects(rightTriangle))
-                return new HashSet<CollisionType>();
+            if (!a.Intersects(b))
+                return new List<CollisionType>();
 
-            HashSet<CollisionType> result = new HashSet<CollisionType>();
-            IntersectionInformation intersectionInformation;
-            LineSegment lineSegment = new LineSegment(q.Center.X, q.Center.Y, q.Center.X, q.Center.Y);
-            float leeway = 2;
+            List<CollisionType> result = new List<CollisionType>();
+            LineSegment lineSegment = new LineSegment(a.Center.X , a.Bounds.Top, a.Center.X , a.Bounds.Bottom + aVelocity.Y * 0.5f);
 
-            switch (rightTriangle.RightAnglePosition)
+            if (lineSegment.Intersects(b.LineSegments[2]))
             {
-                case RightAnglePositionType.TopLeft:
-                    lineSegment = new LineSegment(q.Bounds.Left, q.Bounds.Top + leeway, q.Bounds.Left, q.Bounds.Top - leeway);
-                    break;
-                case RightAnglePositionType.TopRight:
-                    lineSegment = new LineSegment(q.Bounds.Right, q.Bounds.Top + leeway, q.Bounds.Right, q.Bounds.Top - leeway);
-                    break;
-                case RightAnglePositionType.BottomRight:
-                    lineSegment = new LineSegment(q.Bounds.Right, q.Bounds.Bottom - leeway, q.Bounds.Right, q.Bounds.Bottom + leeway);
-                    break;
-                case RightAnglePositionType.BottomLeft:
-                    lineSegment = new LineSegment(q.Bounds.Left, q.Bounds.Bottom - leeway, q.Bounds.Left, q.Bounds.Bottom + leeway);
-                    break;
-            }
-
-            foreach (LineSegment segment in rightTriangle.LineSegments)
-            {
-                intersectionInformation = lineSegment.GetIntersectionInformation(segment);
-                if (intersectionInformation.Intersected)
-                {
-                    if (rightTriangle.RightAnglePosition == RightAnglePositionType.BottomLeft || rightTriangle.RightAnglePosition == RightAnglePositionType.BottomRight)
-                        result.Add(CollisionType.RightTriangleSlopeTop);
-                    if (rightTriangle.RightAnglePosition == RightAnglePositionType.TopLeft || rightTriangle.RightAnglePosition == RightAnglePositionType.TopRight)
-                        result.Add(CollisionType.RightTriangleSlopeBottom);
-                }
+                result.Add(CollisionType.Slope);
             }
 
             return result;
         }
 
-        public static void ResolveCollision(this Quad q, RightTriangle rightTriangle)
+        private static MTV SATResolve(Polygon a, Polygon b)
         {
-            if (!q.Intersects(rightTriangle))
-                return;
+            LineSegment edge = new LineSegment();
+            float minOverlap = float.MaxValue;
+            int edgeIndex = -1;
+            float overlap;
 
-            IntersectionInformation intersectionInformation;
-            LineSegment lineSegment = new LineSegment(q.Center.X, q.Center.Y, q.Center.X, q.Center.Y);
+            Vector2 normal;
+            float projection;
+            float minProjectionA;
+            float maxProjectionA;
+            float minProjectionB;
+            float maxProjectionB;
 
-            float offsetY = 0;
-            float leeway = 2;
-            float extra = 0;// 0.1f;
+            // Optimize iteration length if we are dealing with an AABB.
+            int iterationLength = a is AABB ? 2 : a.LineSegments.Length;
 
-            switch (rightTriangle.RightAnglePosition)
+            for (int i = 0; i < iterationLength; i++)
             {
-                case RightAnglePositionType.TopLeft:
-                    lineSegment = new LineSegment(q.Bounds.Left, q.Bounds.Top + leeway, q.Bounds.Left, q.Bounds.Top - extra);
-                    break;
-                case RightAnglePositionType.TopRight:
-                    lineSegment = new LineSegment(q.Bounds.Right, q.Bounds.Top + leeway, q.Bounds.Right, q.Bounds.Top - extra);
-                    break;
-                case RightAnglePositionType.BottomRight:
-                    lineSegment = new LineSegment(q.Bounds.Right, q.Bounds.Bottom - leeway, q.Bounds.Right, q.Bounds.Bottom + extra);
-                    break;
-                case RightAnglePositionType.BottomLeft:
-                    lineSegment = new LineSegment(q.Bounds.Left, q.Bounds.Bottom - leeway, q.Bounds.Left, q.Bounds.Bottom + extra);
-                    break;
-            }
+                normal = new Vector2(
+                    -(a.LineSegments[i].Y2 - a.LineSegments[i].Y1),
+                      a.LineSegments[i].X2 - a.LineSegments[i].X1
+                    );
 
-            //foreach (LineSegment segment in rightTriangle.LineSegments)
-            //{
-            //    intersectionInformation = lineSegment.GetIntersectionInformation(segment);
-            //    if (intersectionInformation.Intersected)
-            //    {
-            //        offsetX += (1 - intersectionInformation.T) * (lineSegment.X2 - lineSegment.X1);
-            //        offsetY += (1 - intersectionInformation.T) * (lineSegment.Y2 - lineSegment.Y1);
-            //    }
-            //}
-
-            intersectionInformation = lineSegment.GetIntersectionInformation(rightTriangle.LineSegments[2]);
-            if (intersectionInformation.Intersected)
-            {
-                offsetY += (1 - intersectionInformation.T) * (lineSegment.Y2 - lineSegment.Y1);
-            }
-
-            q.SetLocation(q.X, q.Y - offsetY);
-        }
-
-        public static void ResolveCollision(this Quad q, Quad quad, HashSet<CollisionType> collisionTypes)
-        {
-            if (collisionTypes.Count == 0)
-                return;
-
-            foreach (CollisionType collisionType in collisionTypes)
-            {
-                switch (collisionType)
+                minProjectionA = Vector2.Dot(a.TransformedVertices[0], normal);
+                maxProjectionA = minProjectionA;
+                for (int j = 0; j < a.TransformedVertices.Length; j++)
                 {
-                    case CollisionType.QuadLeft:
-                        q.SetLocation(quad.Bounds.Left - q.Width, q.Y);
-                        break;
-                    case CollisionType.QuadRight:
-                        q.SetLocation(quad.Bounds.Right, q.Y);
-                        break;
-                    case CollisionType.QuadTop:
-                        q.SetLocation(q.X, quad.Bounds.Top - q.Height);
-                        break;
-                    case CollisionType.QuadBottom:
-                        q.SetLocation(q.X, quad.Bounds.Bottom);
-                        break;
+                    projection = Vector2.Dot(a.TransformedVertices[j], normal);
+                    minProjectionA = Math.Min(minProjectionA, projection);
+                    maxProjectionA = Math.Max(maxProjectionA, projection);
                 }
-            }
-        }
 
-        public static void ResolveCollision(this Quad q, Quad quad, HashSet<CollisionType> collisionTypes, float leeway)
-        {
-            if (collisionTypes.Count == 0)
-                return;
-
-            foreach (CollisionType collisionType in collisionTypes)
-            {
-                switch (collisionType)
+                minProjectionB = Vector2.Dot(b.TransformedVertices[0], normal);
+                maxProjectionB = minProjectionB;
+                for (int j = 0; j < b.TransformedVertices.Length; j++)
                 {
-                    case CollisionType.QuadLeft:
-                        if (q.Bounds.Bottom - quad.Bounds.Top <= leeway)
-                        {
-                            q.SetLocation(q.X, quad.Bounds.Top - q.Height);
-                        }
-                        else if (quad.Bounds.Bottom - q.Bounds.Top <= leeway)
-                        {
-                            q.SetLocation(q.X, quad.Bounds.Bottom);
-                        }
-                        else
-                        {
-                            q.SetLocation(quad.Bounds.Left - q.Width, q.Y);
-                        }
-                        break;
-                    case CollisionType.QuadRight:
-                        if (q.Bounds.Bottom - quad.Bounds.Top <= leeway)
-                        {
-                            q.SetLocation(q.X, quad.Bounds.Top - q.Height);
-                        }
-                        else if (quad.Bounds.Bottom - q.Bounds.Top <= leeway)
-                        {
-                            q.SetLocation(q.X, quad.Bounds.Bottom);
-                        }
-                        else
-                        {
-                            q.SetLocation(quad.Bounds.Right, q.Y);
-                        }
-                        break;
-                    case CollisionType.QuadTop:
-                        if (q.Bounds.Right - quad.Bounds.Left <= leeway)
-                        {
-                            q.SetLocation(quad.Bounds.Left - q.Width, q.Y);
-                        }
-                        else if (quad.Bounds.Right - q.Bounds.Left <= leeway)
-                        {
-                            q.SetLocation(quad.Bounds.Right, q.Y);
-                        }
-                        else
-                        {
-                            q.SetLocation(q.X, quad.Bounds.Top - q.Height);
-                        }
-                        break;
-                    case CollisionType.QuadBottom:
-                        if (q.Bounds.Right - quad.Bounds.Left <= leeway)
-                        {
-                            q.SetLocation(quad.Bounds.Left - q.Width, q.Y);
-                        }
-                        else if (quad.Bounds.Right - q.Bounds.Left <= leeway)
-                        {
-                            q.SetLocation(quad.Bounds.Right, q.Y);
-                        }
-                        else
-                        {
-                            q.SetLocation(q.X, quad.Bounds.Bottom);
-                        }
-                        break;
+                    projection = Vector2.Dot(b.TransformedVertices[j], normal);
+                    minProjectionB = Math.Min(minProjectionB, projection);
+                    maxProjectionB = Math.Max(maxProjectionB, projection);
                 }
+
+                overlap = Math.Min(maxProjectionA, maxProjectionB) - Math.Max(minProjectionA, minProjectionB);
+
+                if (overlap < minOverlap)
+                {
+                    minOverlap = overlap;
+                    edge = a.LineSegments[i];
+                    edgeIndex = i;
+                }
+
+                if (!(maxProjectionB >= minProjectionA && maxProjectionA >= minProjectionB))
+                    return new MTV(new LineSegment(), -1, -1);
             }
+
+            return new MTV(edge, minOverlap, edgeIndex);
         }
     }
 }

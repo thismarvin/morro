@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Morro.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,16 +41,36 @@ namespace Morro.Input
             return currentGamePadState.IsConnected;
         }
 
-        public bool PressedButton(Buttons button)
+        public void Vibrate(float leftMotor, float rightMotor)
         {
-            VerifyUpdateIsCalled();
-            return !previousGamePadState.IsButtonDown(button) && currentGamePadState.IsButtonDown(button);
+            if (InputManager.InputMode == InputMode.Controller)
+                Microsoft.Xna.Framework.Input.GamePad.SetVibration(PlayerIndex, leftMotor, rightMotor);
+            else
+                Microsoft.Xna.Framework.Input.GamePad.SetVibration(PlayerIndex, 0, 0);
         }
 
-        public bool PressingButton(Buttons button)
+        public bool Pressed(Buttons button)
         {
             VerifyUpdateIsCalled();
-            return currentGamePadState.IsButtonDown(button);
+
+            if (!previousGamePadState.IsButtonDown(button) && currentGamePadState.IsButtonDown(button))
+            {
+                InputManager.SetInputMode(InputMode.Controller);
+                return true;
+            }
+            return false;
+        }
+
+        public bool Pressing(Buttons button)
+        {
+            VerifyUpdateIsCalled();
+
+            if (currentGamePadState.IsButtonDown(button))
+            {
+                InputManager.SetInputMode(InputMode.Controller);
+                return true;
+            }
+            return false;
         }
     }
 }

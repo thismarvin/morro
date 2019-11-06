@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Morro.Core;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
@@ -31,13 +32,27 @@ namespace Morro.Input
         public static bool Pressed(Keys key)
         {
             VerifyUpdateIsCalled();
-            return !previousKeyState.IsKeyDown(key) && currentKeyState.IsKeyDown(key);
+            
+            if (!previousKeyState.IsKeyDown(key) && currentKeyState.IsKeyDown(key))
+            {
+                InputManager.SetInputMode(InputMode.Keyboard);
+                return true;
+            }
+
+            return false;
         }
 
         public static bool Pressing(Keys key)
-        {
+        {            
             VerifyUpdateIsCalled();
-            return currentKeyState.IsKeyDown(key);
+
+            if (currentKeyState.IsKeyDown(key))
+            {
+                InputManager.SetInputMode(InputMode.Keyboard);
+                return true;
+            }
+
+            return false;
         }
     }
 }

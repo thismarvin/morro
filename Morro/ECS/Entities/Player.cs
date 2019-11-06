@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Core;
 using Morro.Graphics;
+using Morro.Input;
 using Morro.Maths;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace Morro.ECS
     {
         private bool grounded;
         private bool jumping;
-                
+
         private readonly float jumpHeight;
         private readonly float jumpDuration;
         private readonly float initialJumpVelocity;
@@ -26,6 +27,8 @@ namespace Morro.ECS
 
         private readonly AnimatedSprite animatedSprite;
 
+        private readonly InputHandler inputHandler;
+
         public Player(float x, float y, PlayerIndex playerIndex) : base(x, y, 10, 28, 75, playerIndex)
         {
             animatedSprite = new AnimatedSprite(X - 3, Y - 2, SpriteType.Block, AnimationType.Loop, 6, 6, 100, false);
@@ -34,7 +37,7 @@ namespace Morro.ECS
             jumpDuration = 0.5f;
 
             gravity = 2 * jumpHeight / (jumpDuration * jumpDuration);
-            
+
             initialJumpVelocity = gravity * jumpDuration;
             Acceleration = new Vector2(0, gravity);
 
@@ -43,6 +46,27 @@ namespace Morro.ECS
             drag = 50;
 
             Acceleration = new Vector2(0, gravity);
+
+            InputProfile inputProfile = new InputProfile("Player");
+            inputProfile.CreateMapping(
+                "Left",
+                new Keys[] { Keys.A, Keys.Left },
+                new Buttons[] { Buttons.DPadLeft, Buttons.LeftThumbstickLeft, Buttons.RightThumbstickLeft }
+            );
+            inputProfile.CreateMapping(
+                "Right",
+                new Keys[] { Keys.D, Keys.Right },
+                new Buttons[] { Buttons.DPadRight, Buttons.LeftThumbstickRight, Buttons.RightThumbstickRight }
+            );
+            inputProfile.CreateMapping(
+                "Jump",
+                new Keys[] { Keys.W, Keys.Up, Keys.Space },
+                new Buttons[] { Buttons.A }
+            );
+
+            InputManager.RegisterProfile(inputProfile);
+
+            inputHandler = new InputHandler("Player", PlayerIndex.One);
         }
 
         public override void SetLocation(float x, float y)
@@ -60,7 +84,7 @@ namespace Morro.ECS
                 SetLocation(0, Y);
                 Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
             }
-                
+
             if (Bounds.Right > SceneManager.CurrentScene.SceneBounds.Width)
             {
                 SetLocation(SceneManager.CurrentScene.SceneBounds.Width - Width, Y);
@@ -111,12 +135,13 @@ namespace Morro.ECS
                             break;
                     }
                 }
-            }               
+            }
         }
 
         protected override void UpdateInput()
         {
-            if (Input.Keyboard.Pressing(Keys.A))
+            inputHandler.Update();
+            if (inputHandler.Pressing("Left"))
             {
                 Acceleration = new Vector2(-lateralAcceleration, Acceleration.Y);
                 if (Velocity.X < -MoveSpeed)
@@ -125,7 +150,7 @@ namespace Morro.ECS
                 animatedSprite.PlayAnimation();
                 animatedSprite.SpriteEffect = SpriteEffects.FlipHorizontally;
             }
-            if (Input.Keyboard.Pressing(Keys.D))
+            if (inputHandler.Pressing("Right"))
             {
                 Acceleration = new Vector2(lateralAcceleration, Acceleration.Y);
                 if (Velocity.X > MoveSpeed)
@@ -134,7 +159,7 @@ namespace Morro.ECS
                 animatedSprite.PlayAnimation();
                 animatedSprite.SpriteEffect = SpriteEffects.None;
             }
-            if (!Input.Keyboard.Pressing(Keys.A) && !Input.Keyboard.Pressing(Keys.D))
+            if (!(inputHandler.Pressing("Left")) && !(inputHandler.Pressing("Right")))
             {
                 if (Velocity.X != 0)
                 {
@@ -150,17 +175,17 @@ namespace Morro.ECS
                         Acceleration = new Vector2(0, Acceleration.Y);
                     }
                 }
-                   
+
                 animatedSprite.PauseAnimation();
                 animatedSprite.ResetAnimation();
             }
 
-            if (grounded && !jumping && Input.Keyboard.Pressing(Keys.Space))
+            if (grounded && !jumping && inputHandler.Pressing("Jump"))
             {
                 Velocity = new Vector2(Velocity.X, -initialJumpVelocity);
                 jumping = true;
             }
-            if (jumping && Velocity.Y < -initialJumpVelocity / 2 && !Input.Keyboard.Pressing(Keys.Space))
+            if (jumping && Velocity.Y < -initialJumpVelocity / 2 && !inputHandler.Pressing("Jump"))
             {
                 Velocity = new Vector2(Velocity.X, -initialJumpVelocity / 2);
                 jumping = false;
@@ -171,7 +196,7 @@ namespace Morro.ECS
         {
             UpdateInput();
             ApplyForce(Integrator.VelocityVerlet);
-            Collision();            
+            Collision();
 
             animatedSprite.Update(gameTime);
         }

@@ -51,6 +51,7 @@ namespace Morro.Core
 
             RandomManager.Initialize();
             SketchManager.Initialize();
+            InputManager.Initialize();
             DebugManager.Initialize();
             CameraManager.Initialize();
             SoundManager.Initialize();            

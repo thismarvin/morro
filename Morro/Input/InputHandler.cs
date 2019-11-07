@@ -9,26 +9,39 @@ namespace Morro.Input
     class InputHandler
     {
         public PlayerIndex PlayerIndex { get; private set; }
+        public string Profile { get; private set; }        
 
-        private readonly InputProfile inputProfile;
+        private InputProfile inputProfile;
         private readonly GamePad gamePad;
 
-        public InputHandler(string profile, PlayerIndex playerIndex)
+        public InputHandler(PlayerIndex playerIndex)
         {
             PlayerIndex = playerIndex;
-            inputProfile = InputManager.Profiles[profile];
+            inputProfile = InputManager.GetInputProfile("Basic");
             gamePad = new GamePad(PlayerIndex);
+        }
+
+        public void LoadProfile(string profile)
+        {
+            if (Profile == profile.ToUpper())
+                return;
+
+            Profile = profile.ToUpper();
+            inputProfile = InputManager.GetInputProfile(Profile);
         }
 
         public bool Pressing(string name)
         {
-            InputMapping inputMapping = inputProfile.InputMappings[name.ToUpper()];
+            InputMapping inputMapping = inputProfile.GetInputMapping(name);
 
-            for (int i = 0; i < inputMapping.Keys.Length; i++)
+            if (PlayerIndex == PlayerIndex.One)
             {
-                if (Keyboard.Pressing(inputMapping.Keys[i]))
+                for (int i = 0; i < inputMapping.Keys.Length; i++)
                 {
-                    return true;
+                    if (Keyboard.Pressing(inputMapping.Keys[i]))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -48,13 +61,16 @@ namespace Morro.Input
 
         public bool Pressed(string name)
         {
-            InputMapping inputMapping = inputProfile.InputMappings[name.ToUpper()];
+            InputMapping inputMapping = inputProfile.GetInputMapping(name);
 
-            for (int i = 0; i < inputMapping.Keys.Length; i++)
+            if (PlayerIndex == PlayerIndex.One)
             {
-                if (Keyboard.Pressed(inputMapping.Keys[i]))
+                for (int i = 0; i < inputMapping.Keys.Length; i++)
                 {
-                    return true;
+                    if (Keyboard.Pressed(inputMapping.Keys[i]))
+                    {
+                        return true;
+                    }
                 }
             }
 

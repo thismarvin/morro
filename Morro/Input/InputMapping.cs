@@ -22,5 +22,11 @@ namespace Morro.Input
             Keys = keys;
             Buttons = buttons;
         }
+
+        public void Remap(Keys[] keys, Buttons[] buttons)
+        {
+            Keys = keys;
+            Buttons = buttons;
+        }
     }
 }

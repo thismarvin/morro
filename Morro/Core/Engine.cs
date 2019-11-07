@@ -93,7 +93,6 @@ namespace Morro.Core
         {
             SceneManager.Draw(spriteBatch);
             //SketchManager.AttachEffect(new Dither(RenderTarget));
-            //SketchManager.AttachEffect(new Quantize(4));
             //SketchManager.AttachEffect(new Palette());
             SketchManager.Draw(spriteBatch);
 

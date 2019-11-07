@@ -10,22 +10,47 @@ namespace Morro.Input
     class InputProfile
     {
         public string Name { get; private set; }
-        public Dictionary<string, InputMapping> InputMappings { get; private set; }
+
+        private readonly Dictionary<string, InputMapping> inputMappings;
 
         public InputProfile(string name)
         {
-            Name = name;            
-            InputMappings = new Dictionary<string, InputMapping>();
+            Name = name.ToUpper();
+            inputMappings = new Dictionary<string, InputMapping>();
+        }
+
+        public InputMapping GetInputMapping(string name)
+        {
+            if (!inputMappings.ContainsKey(name.ToUpper()))
+                throw new Exception("An InputMapping with that name does not exist.");
+
+            return inputMappings[name.ToUpper()];
         }
 
         public void CreateMapping(string name, Keys[] keys)
         {
-            InputMappings.Add(name.ToUpper(), new InputMapping(name, keys));
+            CreateMapping(name, keys, new Buttons[0]);
         }
 
         public void CreateMapping(string name, Keys[] keys, Buttons[] buttons)
         {
-            InputMappings.Add(name.ToUpper(), new InputMapping(name, keys, buttons));
+            if (inputMappings.ContainsKey(name))
+                throw new Exception("An InputMapping with that name already exists; try a different name.\nIf you are trying to remap a pre-exsiting InputMapping then use the Remap() method.");
+
+            inputMappings.Add(name.ToUpper(), new InputMapping(name, keys, buttons));
+        }
+
+        public void Remap(string name, Keys[] keys)
+        {
+            Remap(name, keys, new Buttons[0]);
+        }
+
+        public void Remap(string name, Keys[] keys, Buttons[] buttons)
+        {
+            if (!inputMappings.ContainsKey(name))
+                throw new Exception("An InputMapping with that name does not exist. If you are trying to create a new InputMapping then use the CreateMapping() method.");
+
+            GetInputMapping(name).Remap(keys, buttons);
         }
     }
 }

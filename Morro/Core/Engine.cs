@@ -75,11 +75,24 @@ namespace Morro.Core
             GraphicsManager.UnloadContent();
         }
 
+        private void UpdateInput()
+        {
+            Input.Keyboard.Update();
+            Input.Mouse.Update();
+
+#if !__IOS__ && !__TVOS__
+            if (Input.Keyboard.Pressed(Keys.Escape))
+            {
+                Exit();
+            }
+#endif
+        }
+
         protected override void Update(GameTime gameTime)
         {
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            UpdateInput();
 
-            InputManager.Update();
             GraphicsManager.Update();
             WindowManager.Update(gameTime);
             CameraManager.Update();

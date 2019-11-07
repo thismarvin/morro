@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Core;
 using Morro.Graphics;
-using Morro.Input;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
@@ -33,25 +32,6 @@ namespace Morro.ECS
 
             notice = new BitmapFont(0, 32, "Collision is still a work in progress!", FontType.Probity);
             notice.SetLocation((SceneBounds.Width - notice.Width) / 2, notice.Y);
-
-            InputProfile inputProfile = new InputProfile("Player");
-            inputProfile.CreateMapping(
-                "Left",
-                new Keys[] { Keys.A, Keys.Left },
-                new Buttons[] { Buttons.DPadLeft, Buttons.LeftThumbstickLeft, Buttons.RightThumbstickLeft }
-            );
-            inputProfile.CreateMapping(
-                "Right",
-                new Keys[] { Keys.D, Keys.Right },
-                new Buttons[] { Buttons.DPadRight, Buttons.LeftThumbstickRight, Buttons.RightThumbstickRight }
-            );
-            inputProfile.CreateMapping(
-                "Jump",
-                new Keys[] { Keys.W, Keys.Up, Keys.Space },
-                new Buttons[] { Buttons.A }
-            );
-
-            InputManager.RegisterProfile(inputProfile);
         }
 
         public override void LoadScene()

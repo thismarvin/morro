@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Morro.Core;
 using Morro.Graphics;
+using Morro.Input;
 using Morro.Maths;
 using System;
 using System.Collections.Generic;
@@ -25,6 +27,8 @@ namespace Morro.ECS
 
         private readonly AnimatedSprite animatedSprite;
 
+        private readonly InputHandler inputHandler;
+
         public Player(float x, float y, PlayerIndex playerIndex) : base(x, y, 10, 28, 75, playerIndex)
         {
             animatedSprite = new AnimatedSprite(X - 3, Y - 2, SpriteType.Block, AnimationType.Loop, 6, 6, 100, false);
@@ -43,7 +47,26 @@ namespace Morro.ECS
 
             Acceleration = new Vector2(0, gravity);
 
-            inputHandler.LoadProfile("Player");
+            InputProfile inputProfile = new InputProfile("Player");
+            inputProfile.CreateMapping(
+                "Left",
+                new Keys[] { Keys.A, Keys.Left },
+                new Buttons[] { Buttons.DPadLeft, Buttons.LeftThumbstickLeft, Buttons.RightThumbstickLeft }
+            );
+            inputProfile.CreateMapping(
+                "Right",
+                new Keys[] { Keys.D, Keys.Right },
+                new Buttons[] { Buttons.DPadRight, Buttons.LeftThumbstickRight, Buttons.RightThumbstickRight }
+            );
+            inputProfile.CreateMapping(
+                "Jump",
+                new Keys[] { Keys.W, Keys.Up, Keys.Space },
+                new Buttons[] { Buttons.A }
+            );
+
+            InputManager.RegisterProfile(inputProfile);
+
+            inputHandler = new InputHandler("Player", PlayerIndex.One);
         }
 
         public override void SetLocation(float x, float y)
@@ -117,8 +140,7 @@ namespace Morro.ECS
 
         protected override void UpdateInput()
         {
-            base.UpdateInput();
-
+            inputHandler.Update();
             if (inputHandler.Pressing("Left"))
             {
                 Acceleration = new Vector2(-lateralAcceleration, Acceleration.Y);

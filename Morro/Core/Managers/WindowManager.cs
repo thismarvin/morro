@@ -292,13 +292,6 @@ namespace Morro.Core
             {
                 ToggleFullScreen();
             }
-
-#if !__IOS__ && !__TVOS__
-            if (Input.Keyboard.Pressed(Keys.Escape))
-            {
-                Engine.Instance.Exit();
-            }
-#endif
         }
 
         public static void Update(GameTime gameTime)

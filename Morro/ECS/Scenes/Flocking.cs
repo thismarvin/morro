@@ -23,6 +23,7 @@ namespace Morro.ECS
 
         protected override void Initialize()
         {
+            PreferBinPartitioner(8);
             totalBoids = 750;
         }
 

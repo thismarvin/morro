@@ -185,7 +185,7 @@ namespace Morro.ECS
                     (int)viewRadius * 2 + Height
                 );
 
-            List<MonoObject> queryResult = SceneManager.CurrentScene.EntityBin.Query(queryBounds);
+            List<MonoObject> queryResult = SceneManager.CurrentScene.Partitioner.Query(queryBounds);
 
             Vector2 separation = Seperation(queryResult);
             Vector2 alignment = Alignment(queryResult);

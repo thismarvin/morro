@@ -14,8 +14,8 @@ namespace Morro.ECS
     {
         public List<Entity> Entities { get; private set; }
         public List<Entity> EntityBuffer { get; private set; }
-        public Quadtree EntityQuadtree { get; protected set; }
-        public Bin EntityBin { get; protected set; }
+        public PartitionerType PartitionerPreference { get; private set; }
+        public Partitioner Partitioner { get; private set; }
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
         public SceneType SceneType { get; private set; }
@@ -29,8 +29,8 @@ namespace Morro.ECS
             SceneType = type;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
-            EntityQuadtree = new Quadtree(SceneBounds, 4);
-            EntityBin = new Bin(SceneBounds, 3);
+            PartitionerPreference = PartitionerType.Quadtree;
+            Partitioner = new Quadtree(SceneBounds, 4);
 
             EnterTransition = new Pinhole(TransitionType.Enter);
             ExitTransition = new Fade(TransitionType.Exit);
@@ -38,15 +38,33 @@ namespace Morro.ECS
             Initialize();
         }
 
+        /// <summary>
+        /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Quadtree"/>, and initialize a new <see cref="Quadtree"/>.
+        /// </summary>
+        /// <param name="capacity">the amount of <see cref="MonoObject"/>'s allowed in each <see cref="Quadtree"/>.</param>
+        protected void PreferQuadtreePartitioner(int capacity)
+        {
+            PartitionerPreference = PartitionerType.Quadtree;
+            Partitioner = new Quadtree(SceneBounds, capacity);
+        }
+
+        /// <summary>
+        /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Bin"/>, and initialize a new <see cref="Bin"/>.
+        /// </summary>
+        /// <param name="maximumDimension">the maximum dimension of the <see cref="MonoObject.Bounds"/> expected.</param>
+        protected void PreferBinPartitioner(int maximumDimension)
+        {
+            PartitionerPreference = PartitionerType.Bin;
+            int optimalBinSize = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
+            Partitioner = new Bin(SceneBounds, optimalBinSize);
+        }
+
         protected void SpatialPartitioning()
         {
-            EntityQuadtree.Clear();
-            EntityBin.Clear();
-
+            Partitioner.Clear();
             for (int i = 0; i < Entities.Count; i++)
             {
-                EntityQuadtree.Insert(Entities[i]);
-                EntityBin.Insert(Entities[i]);
+                Partitioner.Insert(Entities[i]);
             }
         }
 
@@ -117,7 +135,7 @@ namespace Morro.ECS
 
         protected virtual void DrawEntities(SpriteBatch spriteBatch)
         {
-            List<MonoObject> queryResult = EntityQuadtree.Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
+            List<MonoObject> queryResult = Partitioner.Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
             for (int i = 0; i < queryResult.Count; i++)
             {
                 if (queryResult[i] is Entity)

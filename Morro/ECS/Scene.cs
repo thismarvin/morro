@@ -25,7 +25,7 @@ namespace Morro.ECS
         {
             Entities = new List<Entity>();
             EntityBuffer = new List<Entity>();
-            
+
             SceneType = type;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
@@ -50,17 +50,6 @@ namespace Morro.ECS
             }
         }
 
-        protected void UpdateSections(GameTime gameTime, int start, int end)
-        {
-            for (int i = end - 1; i >= start; i--)
-            {
-                Entities[i].Update(gameTime);
-
-                if (Entities[i].Remove)
-                    Entities.RemoveAt(i);
-            }
-        }
-
         protected virtual void UpdateEntities(GameTime gameTime)
         {
             SpatialPartitioning();
@@ -80,8 +69,17 @@ namespace Morro.ECS
 
                 EntityBuffer.Clear();
             }
+        }
 
-            Entities.Sort();
+        protected void UpdateSections(GameTime gameTime, int start, int end)
+        {
+            for (int i = end - 1; i >= start; i--)
+            {
+                Entities[i].Update(gameTime);
+
+                if (Entities[i].Remove)
+                    Entities.RemoveAt(i);
+            }
         }
 
         private Task UpdateSection(GameTime gameTime, int start, int end)
@@ -119,10 +117,13 @@ namespace Morro.ECS
 
         protected virtual void DrawEntities(SpriteBatch spriteBatch)
         {
-            for (int i = 0; i < Entities.Count; i++)
+            List<MonoObject> queryResult = EntityQuadtree.Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
+            for (int i = 0; i < queryResult.Count; i++)
             {
-                Entities[i].Draw(spriteBatch);
-                Entities[i].DrawBoundingBox(spriteBatch);
+                if (queryResult[i] is Entity)
+                {
+                    ((Entity)queryResult[i]).Draw(spriteBatch);
+                }
             }
         }
 

@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\AssetManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\RandomManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputProfile.cs" />

@@ -90,6 +90,11 @@ namespace Morro.Core
             return result;
         }
 
+        public List<MonoObject> Query(MonoObject monoObject)
+        {
+            return Query(monoObject.Bounds);
+        }
+
         public void Clear()
         {
             if (divided)

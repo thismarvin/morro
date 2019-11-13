@@ -1,11 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Morro.Core
 {
-    class Bin
+    class Bin : Partitioner
     {
         private readonly HashSet<MonoObject>[] buckets;
         private readonly Rectangle boundary;
@@ -29,29 +28,11 @@ namespace Morro.Core
             }
         }
 
-        public bool Insert(MonoObject monoObject)
+        public override List<MonoObject> Query(Rectangle bounds)
         {
-            if (!monoObject.Bounds.Intersects(boundary))
-                return false;
-
-            HashSet<int> ids = HashIDs(monoObject.Bounds);
-
-            foreach (int i in ids)
-            {
-                buckets[i].Add(monoObject);
-            }
-
-            return ids.Count > 0;
-        }
-
-        public List<MonoObject> Query(Rectangle area)
-        {           
-            //if (!area.Intersects(boundary))
-            //    return new List<MonoObject>();
-
             List<MonoObject> result = new List<MonoObject>();
             HashSet<MonoObject> objects = new HashSet<MonoObject>();
-            HashSet<int> ids = HashIDs(area);
+            HashSet<int> ids = HashIDs(bounds);
 
             foreach (int id in ids)
             {
@@ -72,12 +53,22 @@ namespace Morro.Core
             return result;
         }
 
-        public List<MonoObject> Query(MonoObject monoObject)
+        public override bool Insert(MonoObject monoObject)
         {
-            return Query(monoObject.Bounds);
+            if (!monoObject.Bounds.Intersects(boundary))
+                return false;
+
+            HashSet<int> ids = HashIDs(monoObject.Bounds);
+
+            foreach (int i in ids)
+            {
+                buckets[i].Add(monoObject);
+            }
+
+            return ids.Count > 0;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             for (int i = 0; i < buckets.Length; i++)
             {

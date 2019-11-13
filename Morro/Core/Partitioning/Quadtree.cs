@@ -1,13 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Morro.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Morro.Core
 {
-    class Quadtree
+    class Quadtree : Partitioner
     {
         private readonly int capacity;
         private bool divided;
@@ -26,7 +23,46 @@ namespace Morro.Core
             objects = new MonoObject[this.capacity];
         }
 
-        public bool Insert(MonoObject monoObject)
+        public override List<MonoObject> Query(Rectangle bounds)
+        {
+            List<MonoObject> result = new List<MonoObject>();
+
+            if (boundary.EntirelyWithin(bounds))
+            {
+                for (int i = 0; i < objects.Length; i++)
+                {
+                    if (objects[i] == null)
+                        continue;
+
+                    result.Add(objects[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < objects.Length; i++)
+                {
+                    if (objects[i] == null)
+                        continue;
+
+                    if (bounds.Intersects(objects[i].Bounds))
+                    {
+                        result.Add(objects[i]);
+                    }
+                }
+            }
+
+            if (!divided)
+                return result;
+
+            result.AddRange(topLeft.Query(bounds));
+            result.AddRange(topRight.Query(bounds));
+            result.AddRange(bottomRight.Query(bounds));
+            result.AddRange(bottomLeft.Query(bounds));
+
+            return result;
+        }
+
+        public override bool Insert(MonoObject monoObject)
         {
             if (!monoObject.Bounds.Intersects(boundary))
                 return false;
@@ -48,54 +84,7 @@ namespace Morro.Core
             return false;
         }
 
-        public List<MonoObject> Query(Rectangle area)
-        {
-            List<MonoObject> result = new List<MonoObject>();
-
-            //if (!area.Intersects(boundary))
-            //    return result;
-
-            if (boundary.EntirelyWithin(area))
-            {
-                for (int i = 0; i < objects.Length; i++)
-                {
-                    if (objects[i] == null)
-                        continue;
-
-                    result.Add(objects[i]);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < objects.Length; i++)
-                {
-                    if (objects[i] == null)
-                        continue;
-
-                    if (area.Intersects(objects[i].Bounds))
-                    {
-                        result.Add(objects[i]);
-                    }
-                }
-            }
-
-            if (!divided)
-                return result;
-
-            result.AddRange(topLeft.Query(area));
-            result.AddRange(topRight.Query(area));
-            result.AddRange(bottomRight.Query(area));
-            result.AddRange(bottomLeft.Query(area));
-
-            return result;
-        }
-
-        public List<MonoObject> Query(MonoObject monoObject)
-        {
-            return Query(monoObject.Bounds);
-        }
-
-        public void Clear()
+        public override void Clear()
         {
             if (divided)
             {

@@ -75,44 +75,42 @@ namespace Morro.Core
             if (postProcessing != null)
             {
                 // Initialize a RenderTarget2D to accumulate all RenderTargets.
-                using (var accumulation = new RenderTarget2D(spriteBatch.GraphicsDevice, WindowManager.WindowWidth, WindowManager.WindowHeight))
+                using var accumulation = new RenderTarget2D(spriteBatch.GraphicsDevice, WindowManager.WindowWidth, WindowManager.WindowHeight);
+                // Setup the GraphicsDevice with the new accumulation RenderTarget2D.
+                spriteBatch.GraphicsDevice.SetRenderTarget(accumulation);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+
+                // Draw all the saved RenderTargets onto the accumulation RenderTarget2D.
+                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, null);
                 {
-                    // Setup the GraphicsDevice with the new accumulation RenderTarget2D.
-                    spriteBatch.GraphicsDevice.SetRenderTarget(accumulation);
-                    spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-
-                    // Draw all the saved RenderTargets onto the accumulation RenderTarget2D.
-                    spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, null);
-                    {
-                        for (int i = 0; i < renderTargets.Count; i++)
-                        {
-                            spriteBatch.Draw(renderTargets[i], Vector2.Zero, Color.White);
-                        }
-                    }
-                    spriteBatch.End();
-
-                    // Reset the GraphicsDevice's RenderTarget.
-                    spriteBatch.GraphicsDevice.SetRenderTarget(null);
-                    spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-
-                    // Apply the shader.
-                    spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, postProcessing.Effect, null);
-                    {
-                        spriteBatch.Draw(accumulation, Vector2.Zero, Color.White);
-                    }
-                    spriteBatch.End();
-
-                    // Dispose of all RenderTargets.
                     for (int i = 0; i < renderTargets.Count; i++)
                     {
-                        renderTargets[i].Dispose();
+                        spriteBatch.Draw(renderTargets[i], Vector2.Zero, Color.White);
                     }
-                    renderTargets.Clear();
-
-                    // Dispose of shader.
-                    postProcessing.Dispose();
-                    postProcessing = null;
                 }
+                spriteBatch.End();
+
+                // Reset the GraphicsDevice's RenderTarget.
+                spriteBatch.GraphicsDevice.SetRenderTarget(null);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+
+                // Apply the shader.
+                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, postProcessing.Effect, null);
+                {
+                    spriteBatch.Draw(accumulation, Vector2.Zero, Color.White);
+                }
+                spriteBatch.End();
+
+                // Dispose of all RenderTargets.
+                for (int i = 0; i < renderTargets.Count; i++)
+                {
+                    renderTargets[i].Dispose();
+                }
+                renderTargets.Clear();
+
+                // Dispose of shader.
+                postProcessing.Dispose();
+                postProcessing = null;
             }
             else
             {

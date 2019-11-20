@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using Morro.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Input
@@ -15,16 +16,16 @@ namespace Morro.Input
 
         public InputProfile(string name)
         {
-            Name = name.ToUpper();
+            Name = name.ToUpper(CultureInfo.InvariantCulture);
             inputMappings = new Dictionary<string, InputMapping>();
         }
 
         public InputMapping GetInputMapping(string name)
         {
-            if (!inputMappings.ContainsKey(name.ToUpper()))
+            if (!inputMappings.ContainsKey(name.ToUpper(CultureInfo.InvariantCulture)))
                 throw new Exception("An InputMapping with that name does not exist.");
 
-            return inputMappings[name.ToUpper()];
+            return inputMappings[name.ToUpper(CultureInfo.InvariantCulture)];
         }
 
         public void CreateMapping(string name, Keys[] keys)
@@ -37,7 +38,7 @@ namespace Morro.Input
             if (inputMappings.ContainsKey(name))
                 throw new Exception("An InputMapping with that name already exists; try a different name.\nIf you are trying to remap a pre-exsiting InputMapping then use the Remap() method.");
 
-            inputMappings.Add(name.ToUpper(), new InputMapping(name, keys, buttons));
+            inputMappings.Add(name.ToUpper(CultureInfo.InvariantCulture), new InputMapping(name, keys, buttons));
         }
 
         public void Remap(string name, Keys[] keys)

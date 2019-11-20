@@ -2,6 +2,7 @@
 using Morro.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Input
@@ -23,10 +24,10 @@ namespace Morro.Input
 
         public void LoadProfile(string profile)
         {
-            if (Profile == profile.ToUpper())
+            if (Profile == profile.ToUpper(CultureInfo.InvariantCulture))
                 return;
 
-            Profile = profile.ToUpper();
+            Profile = profile.ToUpper(CultureInfo.InvariantCulture);
             inputProfile = InputManager.GetInputProfile(Profile);
         }
 

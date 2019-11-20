@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Graphics
@@ -47,13 +48,13 @@ namespace Morro.Graphics
         {
             if (LineWidth == 0)
             {
-                vertexKey = string.Format("RightTrianlge: {0}V, {1}RAP, C{2}", initialTotalVertices, (int)RightAnglePosition, Color);
-                indexKey = string.Format("RightTrianlge: {0}V", initialTotalVertices);
+                vertexKey = string.Format(CultureInfo.InvariantCulture, "RightTrianlge: {0}V, {1}RAP, C{2}", initialTotalVertices, (int)RightAnglePosition, Color);
+                indexKey = string.Format(CultureInfo.InvariantCulture, "RightTrianlge: {0}V", initialTotalVertices);
             }
             else
             {
-                vertexKey = string.Format("RightTrianlge: {0}V, {1}LW, {2}W, {3}H, {4}RAP, C{5}", initialTotalVertices, LineWidth, Width, Height, (int)RightAnglePosition, Color);
-                indexKey = string.Format("RightTrianlge: {0}V, Hollow", initialTotalVertices, LineWidth);
+                vertexKey = string.Format(CultureInfo.InvariantCulture, "RightTrianlge: {0}V, {1}LW, {2}W, {3}H, {4}RAP, C{5}", initialTotalVertices, LineWidth, Width, Height, (int)RightAnglePosition, Color);
+                indexKey = string.Format(CultureInfo.InvariantCulture, "RightTrianlge: {0}V, Hollow", initialTotalVertices);
             }
         }
 

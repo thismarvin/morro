@@ -22,13 +22,13 @@ namespace Morro.Utilities
         public Vector2 Scale { get; private set; }
         public string Text { get; private set; }
 
-        private List<Sprite> sprites;
-        private List<string> words;
+        private readonly List<Sprite> sprites;
+        private readonly List<string> words;
         private string[] splitWords;
-        private Timer timer;
-        private Quad debugBounds;
+        private readonly Timer timer;
+        private readonly Quad debugBounds;
         private SpriteType spriteTypeFont;
-        private int maximumCharacterCount;
+        private readonly int maximumCharacterCount;
         private float textWidth;
         private float textHeight;
         private float extraHorizontalWidth;

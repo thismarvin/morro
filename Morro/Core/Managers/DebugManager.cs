@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Morro.ECS;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Core
@@ -52,9 +54,9 @@ namespace Morro.Core
             if (!Debugging)
                 return;
 
-            FPS.SetText(string.Format("{0} FPS", Math.Round(WindowManager.FPS).ToString()));
-            currentScene.SetText(string.Format("CURRENT SCENE: {0}", SceneManager.CurrentScene.SceneType.ToString()));
-            totalEntities.SetText(string.Format("TOTAL ENTITIES: {0}", SceneManager.CurrentScene.Entities.Count.ToString()));
+            FPS.SetText(string.Format(CultureInfo.InvariantCulture, "{0} FPS", Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture)));
+            currentScene.SetText(string.Format(CultureInfo.InvariantCulture, "CURRENT SCENE: {0}", SceneManager.CurrentScene.SceneType.ToString()));
+            totalEntities.SetText(string.Format(CultureInfo.InvariantCulture, "TOTAL ENTITIES: {0}", SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture)));
         }
 
         public static void Update()
@@ -67,6 +69,15 @@ namespace Morro.Core
         {
             if (Debugging)
             {
+                List<MonoObject> queryResult = SceneManager.CurrentScene.Partitioner.Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
+                for (int i = 0; i < queryResult.Count; i++)
+                {
+                    if (queryResult[i] is Entity)
+                    {
+                        ((Entity)queryResult[i]).DrawBoundingBox(spriteBatch);
+                    }
+                }
+
                 FPS.Draw(spriteBatch, CameraType.LeftJustified);
                 currentScene.Draw(spriteBatch, CameraType.LeftJustified);
                 totalEntities.Draw(spriteBatch, CameraType.LeftJustified);

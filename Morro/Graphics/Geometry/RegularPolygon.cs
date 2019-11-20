@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Graphics
@@ -27,13 +28,13 @@ namespace Morro.Graphics
         {
             if (LineWidth == 0)
             {
-                vertexKey = string.Format("RegularPolygon: {0}V, C{1}", initialTotalVertices, Color);
-                indexKey = string.Format("RegularPolygon: {0}V", initialTotalVertices);
+                vertexKey = string.Format(CultureInfo.InvariantCulture, "RegularPolygon: {0}V, C{1}", initialTotalVertices, Color);
+                indexKey = string.Format(CultureInfo.InvariantCulture, "RegularPolygon: {0}V", initialTotalVertices);
             }
             else
             {
-                vertexKey = string.Format("RegularPolygon: {0}V, {1}LW, {2}W, C{3}", initialTotalVertices, LineWidth, Width, Color);
-                indexKey = string.Format("RegularPolygon: {0}V, Hollow", initialTotalVertices);
+                vertexKey = string.Format(CultureInfo.InvariantCulture, "RegularPolygon: {0}V, {1}LW, {2}W, C{3}", initialTotalVertices, LineWidth, Width, Color);
+                indexKey = string.Format(CultureInfo.InvariantCulture, "RegularPolygon: {0}V, Hollow", initialTotalVertices);
             }
         }
 

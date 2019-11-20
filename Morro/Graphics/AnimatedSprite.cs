@@ -21,10 +21,10 @@ namespace Morro.Graphics
         public float FrameDuration { get; private set; }
         public bool Finished { get; private set; }
         public bool AnimationPlaying { get; private set; }
-        public AnimationType AnimationType { get; set; }       
+        public AnimationType AnimationType { get; set; }
+        public SpriteType[] Sprites { get; set; }
 
-        private SpriteType[] sprites;
-        private Timer timer;        
+        private readonly Timer timer;
 
         public AnimatedSprite(float x, float y, SpriteType sprite, AnimationType animationType, int totalFrames, int columns, float frameDuration) : this(x, y, sprite, animationType, totalFrames, columns, frameDuration, true)
         {
@@ -44,7 +44,7 @@ namespace Morro.Graphics
 
         public AnimatedSprite(float x, float y, SpriteType[] sprites, float frameDuration) : base(x, y, sprites[0])
         {
-            this.sprites = sprites;
+            this.Sprites = sprites;
             TotalFrames = sprites.Length;
             Columns = TotalFrames;
             FrameDuration = frameDuration;
@@ -70,7 +70,7 @@ namespace Morro.Graphics
 
         public SpriteType CurrentSprite()
         {
-            return sprites[CurrentFrame];
+            return Sprites[CurrentFrame];
         }
 
         public void SetCurrentFrame(int frame)
@@ -104,7 +104,7 @@ namespace Morro.Graphics
             Finished = AnimationType == AnimationType.NoLoop && CurrentFrame == TotalFrames;
             AnimationPlaying = !Finished && timer.Active;
 
-            if (sprites == null)
+            if (Sprites == null)
                 SetFrame(CurrentFrame, Columns);
             else
                 SetSprite(CurrentSprite());

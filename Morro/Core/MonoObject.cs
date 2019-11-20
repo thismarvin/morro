@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Core
@@ -86,7 +87,7 @@ namespace Morro.Core
 
         public override string ToString()
         {
-            return base.ToString() + " " + string.Format("- [ {0}, {1} ], {2}x{3}", X, Y, Width, Height);
+            return base.ToString() + " " + string.Format(CultureInfo.InvariantCulture, "- [ {0}, {1} ], {2}x{3}", X, Y, Width, Height);
         }
     }
 }

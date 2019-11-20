@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Graphics
@@ -74,8 +75,8 @@ namespace Morro.Graphics
 
         protected override void CreateKey()
         {
-            vertexKey = string.Format("L-{0}V-{1}LW-C{2}", initialTotalVertices, LineWidth, Color);
-            indexKey = string.Format("L-{0}V", initialTotalVertices, LineWidth);
+            vertexKey = string.Format(CultureInfo.InvariantCulture, "L-{0}V-{1}LW-C{2}", initialTotalVertices, LineWidth, Color);
+            indexKey = string.Format(CultureInfo.InvariantCulture, "L-{0}V", initialTotalVertices);
         }
 
         protected override void CreateIndices()

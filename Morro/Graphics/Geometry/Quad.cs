@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Graphics
@@ -31,13 +32,13 @@ namespace Morro.Graphics
         {
             if (LineWidth == 0)
             {
-                vertexKey = string.Format("Quad: {0}V, C{1}", initialTotalVertices, Color);
-                indexKey = string.Format("Quad: {0}V", initialTotalVertices);
+                vertexKey = string.Format(CultureInfo.InvariantCulture, "Quad: {0}V, C{1}", initialTotalVertices, Color);
+                indexKey = string.Format(CultureInfo.InvariantCulture, "Quad: {0}V", initialTotalVertices);
             }
             else
             {
-                vertexKey = string.Format("Quad: {0}V, {1}LW, {2}W, {3}H, C{4}", initialTotalVertices, LineWidth, Width, Height, Color);
-                indexKey = string.Format("Quad: {0}V, Hollow", initialTotalVertices);
+                vertexKey = string.Format(CultureInfo.InvariantCulture, "Quad: {0}V, {1}LW, {2}W, {3}H, C{4}", initialTotalVertices, LineWidth, Width, Height, Color);
+                indexKey = string.Format(CultureInfo.InvariantCulture, "Quad: {0}V, Hollow", initialTotalVertices);
             }
         }
 

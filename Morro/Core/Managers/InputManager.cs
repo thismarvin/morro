@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using Morro.Input;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Core
@@ -42,10 +43,10 @@ namespace Morro.Core
 
         public static InputProfile GetInputProfile(string name)
         {
-            if (!profiles.ContainsKey(name.ToUpper()))
+            if (!profiles.ContainsKey(name.ToUpper(CultureInfo.InvariantCulture)))
                 throw new Exception("An InputProfile with that name does not exist.");
 
-            return profiles[name.ToUpper()];
+            return profiles[name.ToUpper(CultureInfo.InvariantCulture)];
         }
 
         private static void LoadProfiles()

@@ -10,8 +10,8 @@ namespace Morro.Utilities
 {
     class Pinhole : Transition
     {
-        private Circle pinhole;
-        private int size;
+        private readonly Circle pinhole;
+        private readonly int size;
 
         public Pinhole(TransitionType type) : this(type, 100, 500)
         {

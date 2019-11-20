@@ -77,7 +77,7 @@ namespace Morro.Core
 
         protected override void Update(GameTime gameTime)
         {
-            DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            DeltaTime = (float)gameTime?.ElapsedGameTime.TotalSeconds;
 
             InputManager.Update();
             GraphicsManager.Update();

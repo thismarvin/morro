@@ -41,8 +41,6 @@ namespace Morro.ECS
             friction = 100;
             drag = 50;
 
-            Acceleration = new Vector2(0, gravity);
-
             inputHandler.LoadProfile("Player");
         }
 

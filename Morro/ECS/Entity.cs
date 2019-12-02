@@ -39,6 +39,16 @@ namespace Morro.ECS
             AABB.SetDimensions(Width, Height);
         }
 
+        public Core.Rectangle GetQueryingBounds(int buffer)
+        {
+            return new Core.Rectangle(
+                X - buffer,
+                Y - buffer,
+                Width + buffer * 2,
+                Height + buffer * 2
+            );
+        }
+
         public virtual void DrawBoundingBox(SpriteBatch spriteBatch)
         {
             if (DebugManager.ShowBoundingBoxes)

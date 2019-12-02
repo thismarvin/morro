@@ -17,6 +17,7 @@ namespace Morro.Core
     static class InputManager
     {
         public static InputMode InputMode { get; private set; }
+        public static InputHandler BasicInputHandler { get; private set; }
 
         private static Dictionary<string, InputProfile> profiles;
 
@@ -26,6 +27,9 @@ namespace Morro.Core
             profiles = new Dictionary<string, InputProfile>();           
 
             LoadProfiles();
+
+            BasicInputHandler = new InputHandler(PlayerIndex.One);
+            BasicInputHandler.LoadProfile("Basic");            
         }
 
         public static void SetInputMode(InputMode inputMode)
@@ -79,7 +83,7 @@ namespace Morro.Core
                 new Buttons[] { Buttons.DPadRight, Buttons.LeftThumbstickRight, Buttons.RightThumbstickRight }
             );
             basic.CreateMapping(
-                "Select",
+                "Start",
                 new Keys[] { Keys.Enter },
                 new Buttons[] { Buttons.Start }
             );
@@ -91,6 +95,7 @@ namespace Morro.Core
         {
             Input.Keyboard.Update();
             Input.Mouse.Update();
+            BasicInputHandler.Update();
         }
     }
 }

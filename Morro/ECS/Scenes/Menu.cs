@@ -87,7 +87,7 @@ namespace Morro.ECS
             RotatePolygons();
             AnimateTitle();
             
-            if (Input.Keyboard.Pressed(Keys.Enter))
+            if (InputManager.BasicInputHandler.Pressed("Start"))
             {
                 SceneManager.QueueScene(SceneType.Platformer);
             }

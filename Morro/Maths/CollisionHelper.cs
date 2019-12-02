@@ -31,22 +31,23 @@ namespace Morro.Maths
         /// <returns>Returns a list of all the CollisionTypes that needed to be resolved.</returns>
         public static List<CollisionType> ResolveCollisionBetween(AABB a, AABB b, Vector2 aVelocity)
         {
+            float leeway = 0.1f;
             List<CollisionType> collisionTypes = GetCollisionTypesBetween(a, b, aVelocity);
             foreach (CollisionType collisionType in collisionTypes)
             {
                 switch (collisionType)
                 {
                     case CollisionType.Left:
-                        a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                        a.SetLocation(b.Bounds.Left - a.Width - leeway, a.Y);
                         break;
                     case CollisionType.Right:
-                        a.SetLocation(b.Bounds.Right, a.Y);
+                        a.SetLocation(b.Bounds.Right + leeway, a.Y);
                         break;
                     case CollisionType.Top:
-                        a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                        a.SetLocation(a.X, b.Bounds.Top - a.Height - leeway);
                         break;
                     case CollisionType.Bottom:
-                        a.SetLocation(a.X, b.Bounds.Bottom);
+                        a.SetLocation(a.X, b.Bounds.Bottom + leeway);
                         break;
                 }
             }
@@ -328,10 +329,7 @@ namespace Morro.Maths
             float minProjectionB;
             float maxProjectionB;
 
-            // Optimize iteration length if we are dealing with an AABB.
-            int iterationLength = a is AABB ? 2 : a.LineSegments.Length;
-
-            for (int i = 0; i < iterationLength; i++)
+            for (int i = 0; i < a.LineSegments.Length; i++)
             {
                 normal = new Vector2(
                     -(a.LineSegments[i].Y2 - a.LineSegments[i].Y1),

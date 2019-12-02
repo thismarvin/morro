@@ -111,7 +111,7 @@ namespace Morro.Graphics
 
         public void SetSprite(SpriteType spriteType)
         {
-            if (SpriteType == SpriteType)
+            if (SpriteType == spriteType)
                 return;
 
             SpriteType = spriteType;

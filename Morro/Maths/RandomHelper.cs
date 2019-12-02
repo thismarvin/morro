@@ -17,6 +17,11 @@ namespace Morro.Maths
             return lowerBound + RandomManager.RNG.NextDouble() * (upperBound - lowerBound);
         }
 
+        public static bool Roll(float probability)
+        {
+            return RandomManager.RNG.NextDouble() <= probability;
+        }
+
         public static double Gaussian(double mean, double standardDeviation)
         {
             double u1 = 1.0 - RandomManager.RNG.NextDouble();

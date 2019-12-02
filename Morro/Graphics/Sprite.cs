@@ -10,14 +10,12 @@ namespace Morro.Graphics
 {
     public enum SpriteType
     {
+        None,
+
         FontProbity,
         FontSparge,
 
-        MaskTriangles,
-
-        Block,
-
-        None
+        Player,
     }
 
     class Sprite : MonoObject
@@ -25,9 +23,9 @@ namespace Morro.Graphics
         public float Rotation { get; set; }
         public bool Show { get; set; }
         public SpriteType SpriteType { get; private set; }
-        public SpriteEffects SpriteEffect { get; set; }        
+        public SpriteEffects SpriteEffect { get; set; }
         public Vector2 RotationOffset { get; set; }
-        public Vector2 Scale { get; set; }        
+        public Vector2 Scale { get; set; }
         public Effect Effect { get; set; }
         public SamplerState SamplerState { get; set; }
         public Texture2D SpriteSheet { get; private set; }
@@ -54,7 +52,7 @@ namespace Morro.Graphics
             Scale = new Vector2(1, 1);
             SamplerState = SamplerState.PointClamp;
 
-            InitializeSprite();            
+            InitializeSprite();
         }
 
         private void InitializeSprite()
@@ -70,18 +68,14 @@ namespace Morro.Graphics
                     break;
                 #endregion
 
-                //case SpriteType.MaskTriangles:
-                //    SpriteSetup(0, 0, 512, 512, AssetManager.MaskTriangles);
-                //    break;
-
-                case SpriteType.Block:
+                case SpriteType.Player:
                     SpriteSetup(0, 0, 16, 32, AssetManager.Sprites);
                     break;
 
                 case SpriteType.None:
                     SpriteSetup(0, 0, 0, 0, AssetManager.Sprites);
                     break;
-            }            
+            }
         }
 
         private void SpriteSetup(int frameX, int frameY, int width, int height, Texture2D spriteSheet)
@@ -91,7 +85,7 @@ namespace Morro.Graphics
             this.frameY = frameY;
             originalFrameX = frameX;
             originalFrameY = frameY;
-            
+
             SetBounds(X, Y, width, height);
             sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
         }

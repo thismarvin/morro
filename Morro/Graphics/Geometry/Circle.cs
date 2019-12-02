@@ -30,7 +30,8 @@ namespace Morro.Graphics
 
         public bool Intersects(Circle circle)
         {
-            return Vector2.Distance(Center, circle.Center) < Radius;
+            float distance = Vector2.Distance(Center, circle.Center);
+            return distance < Radius || distance < circle.Radius;
         }
 
         protected override void CreateKey()

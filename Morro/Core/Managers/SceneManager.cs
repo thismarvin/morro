@@ -13,7 +13,7 @@ namespace Morro.Core
     public enum SceneType
     {
         Menu,
-        Platformer,      
+        Platformer,
         Flocking,
     }
 
@@ -26,6 +26,7 @@ namespace Morro.Core
         private static Transition enterTransition;
         private static Transition exitTransition;
         private static bool transitionInProgress;
+        private static bool exitCompleted;
 
         public static void Initialize()
         {
@@ -36,7 +37,7 @@ namespace Morro.Core
         private static void PreLoadScenes()
         {
             scenes = new List<Scene>()
-            {       
+            {
                 new Menu(),
                 new Platformer(),
                 new Flocking(),
@@ -77,6 +78,9 @@ namespace Morro.Core
 
         public static void QueueScene(SceneType scene)
         {
+            if (transitionInProgress)
+                return;
+
             NextScene = ParseSceneType(scene);
             SetupTransitions();
         }
@@ -101,32 +105,75 @@ namespace Morro.Core
             if (!transitionInProgress)
                 return;
 
-            if (exitTransition != null && exitTransition.InProgress)
+            if (!exitCompleted)
             {
-                exitTransition.Update();
+                if (exitTransition == null)
+                {
+                    LoadNextScene();
+                    enterTransition.Start();
+
+                    exitCompleted = true;
+                }
+                else
+                {
+                    exitTransition.Update();
+
+                    if (exitTransition.Done)
+                    {
+                        UnloadCurrentScene();
+                        exitTransition.Reset();
+                        exitTransition = null;
+
+                        LoadNextScene();
+                        enterTransition.Start();
+
+                        exitCompleted = true;
+                    }
+                }
             }
-            else if (((exitTransition != null && exitTransition.Done) || (exitTransition == null)) && !enterTransition.Started)
+            else
             {
-                UnloadCurrentScene();
-                LoadNextScene();
-                enterTransition.Start();
-            }
-            else if (enterTransition.InProgress)
-            {
-                enterTransition.Update();
-            }
-            else if (enterTransition.Done)
-            {
-                transitionInProgress = false;
+                if (enterTransition != null)
+                {
+                    enterTransition.Update();
+
+                    if (enterTransition.Done)
+                    {
+                        enterTransition.Reset();
+                        enterTransition = null;
+
+                        transitionInProgress = false;
+                        exitCompleted = false;
+                    }
+                }
             }
         }
 
         private static void UpdateCurrentScene(GameTime gameTime)
         {
-            if (transitionInProgress)
-                return;
+            //if (transitionInProgress)
+            //     return;
 
             CurrentScene.Update(gameTime);
+        }
+
+        private static void DrawTransitions(SpriteBatch spriteBatch)
+        {
+            if (!transitionInProgress)
+                return;
+
+            Sketch.Begin(spriteBatch);
+            {
+                if (!exitCompleted)
+                {
+                    exitTransition?.Draw(spriteBatch);
+                }
+                else
+                {
+                    enterTransition?.Draw(spriteBatch);
+                }
+            }
+            Sketch.End(spriteBatch);
         }
 
         public static void Update(GameTime gameTime)
@@ -143,15 +190,7 @@ namespace Morro.Core
         public static void Draw(SpriteBatch spriteBatch)
         {
             CurrentScene.Draw(spriteBatch);
-
-            Sketch.Begin(spriteBatch);
-            {
-                if (exitTransition != null)
-                    exitTransition.Draw(spriteBatch);
-                if (enterTransition != null)
-                    enterTransition.Draw(spriteBatch);
-            }
-            Sketch.End(spriteBatch);
+            DrawTransitions(spriteBatch);
         }
     }
 }

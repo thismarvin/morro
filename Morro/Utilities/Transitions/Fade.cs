@@ -13,14 +13,14 @@ namespace Morro.Utilities
         private float alpha;
         private Color defaultColor;
         private Color fadeColor;
-        private Quad fade;
+        private readonly Quad fade;
 
-        public Fade(TransitionType type) : this(type, Color.Black, 1, 2)
+        public Fade(TransitionType type) : this(type, Color.Black, 0, 0.2f)
         {
 
         }
 
-        public Fade(TransitionType type, Color color) : this(type, color, 1, 2)
+        public Fade(TransitionType type, Color color) : this(type, color, 0, 0.2f)
         {
 
         }
@@ -31,6 +31,10 @@ namespace Morro.Utilities
             this.speed = speed;
             this.jerk = jerk;
 
+            alpha = Type == TransitionType.Enter ? 1 : 0;
+            fadeColor = new Color(defaultColor, alpha);
+            fade = new Quad(X, Y, Width, Height, fadeColor, VertexInformation.Dynamic);
+
             Reset();
         }
 
@@ -38,14 +42,14 @@ namespace Morro.Utilities
         {
             base.Reset();
 
-            alpha = Type == TransitionType.Enter ? (byte)255 : (byte)0;
+            alpha = Type == TransitionType.Enter ? 1 : 0;
             fadeColor = new Color(defaultColor, alpha);
-            fade = new Quad(X, Y, Width, Height, fadeColor, VertexInformation.Dynamic);
+            fade.SetColor(fadeColor);
         }
 
         public override void Update()
         {
-            if (!InProgress)
+            if (Done)
                 return;
 
             CalculateForce();
@@ -78,13 +82,12 @@ namespace Morro.Utilities
             }
 
             fadeColor = new Color(defaultColor, alpha);
-
             fade.SetColor(fadeColor);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (!InProgress)
+            if (Done)
                 return;
 
             fade.Draw(spriteBatch, CameraType.Static);

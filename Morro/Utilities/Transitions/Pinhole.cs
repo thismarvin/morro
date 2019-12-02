@@ -13,7 +13,7 @@ namespace Morro.Utilities
         private readonly Circle pinhole;
         private readonly int size;
 
-        public Pinhole(TransitionType type) : this(type, 100, 500)
+        public Pinhole(TransitionType type) : this(type, 0.5f, 10)
         {
 
         }
@@ -63,7 +63,7 @@ namespace Morro.Utilities
 
         public override void Update()
         {
-            if (!InProgress)
+            if (Done)
                 return;
 
             CalculateForce();
@@ -92,7 +92,7 @@ namespace Morro.Utilities
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (!InProgress)
+            if (Done)
                 return;
 
             pinhole.Draw(spriteBatch, CameraType.Static);

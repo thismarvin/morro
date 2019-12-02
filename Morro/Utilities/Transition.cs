@@ -9,22 +9,26 @@ namespace Morro.Utilities
 {
     public enum TransitionType
     {
-        Enter, Exit
+        Enter,
+        Exit
     }
 
     abstract class Transition : MonoObject
     {
         protected const int BUFFER = 100;
-        public bool Started { get; private set; }        
-        public bool InProgress { get { return Started && !Done; } }
+        public bool Started { get; private set; }
         public bool Done { get; protected set; }
         protected TransitionType Type { get; private set; }
 
         protected bool lastDraw;
-        protected float velocity;
-        protected float speed;
+
+        protected float speed; // more like initial speed
         protected float jerk;
+
+        protected float velocity;
         protected float acceleration;
+
+        private bool initialSpeedSet;
 
         public Transition(TransitionType type) : this(WindowManager.PixelWidth / 2, WindowManager.PixelHeight / 2, type)
         {
@@ -40,6 +44,11 @@ namespace Morro.Utilities
         {
             Started = false;
             Done = false;
+            lastDraw = false;
+            initialSpeedSet = false;
+
+            velocity = 0;
+            acceleration = 0;
         }
 
         public void Start()
@@ -49,7 +58,13 @@ namespace Morro.Utilities
 
         protected void CalculateForce()
         {
-            velocity = (acceleration + speed) * Engine.DeltaTime;
+            if (!initialSpeedSet)
+            {
+                velocity = speed;
+                initialSpeedSet = true;
+            }
+
+            velocity += 0.5f * jerk * Engine.DeltaTime * Engine.DeltaTime + acceleration * Engine.DeltaTime;
             acceleration += jerk * Engine.DeltaTime;
         }
 

@@ -38,6 +38,21 @@ namespace Morro.ECS
             Initialize();
         }
 
+        public List<Entity> Query(Core.Rectangle bounds)
+        {
+            List<Entity> result = new List<Entity>();
+            List<MonoObject> queryResult = Partitioner.Query(bounds);
+            queryResult.Sort();
+            for (int i = 0; i < queryResult.Count; i++)
+            {
+                if (queryResult[i] is Entity)
+                {
+                    result.Add((Entity)queryResult[i]);
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Quadtree"/>, and initialize a new <see cref="Quadtree"/>.
         /// </summary>
@@ -95,7 +110,7 @@ namespace Morro.ECS
             }
         }
 
-        protected void UpdateSections(GameTime gameTime, int start, int end)
+        private void UpdateSections(GameTime gameTime, int start, int end)
         {
             for (int i = end - 1; i >= start; i--)
             {
@@ -141,13 +156,10 @@ namespace Morro.ECS
 
         protected virtual void DrawEntities(SpriteBatch spriteBatch)
         {
-            List<MonoObject> queryResult = Partitioner.Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
+            List<Entity> queryResult = Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
             for (int i = 0; i < queryResult.Count; i++)
             {
-                if (queryResult[i] is Entity)
-                {
-                    ((Entity)queryResult[i]).Draw(spriteBatch);
-                }
+                queryResult[i].Draw(spriteBatch);
             }
         }
 

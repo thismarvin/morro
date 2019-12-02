@@ -108,16 +108,24 @@ namespace Morro.Utilities
                 return;
 
             if (TopLeft.X < minX)
-                TopLeft = new Vector3(minX, TopLeft.Y, 0);
+            {
+                SetTopLeft(minX, TopLeft.Y);
+            }
 
             if (TopLeft.X + Bounds.Width > maxX)
-                TopLeft = new Vector3(maxX - Bounds.Width, TopLeft.Y, 0);
+            {
+                SetTopLeft(maxX - Bounds.Width, TopLeft.Y);
+            }
 
             if (TopLeft.Y < minY)
-                TopLeft = new Vector3(TopLeft.X, minY, 0);
+            {
+                SetTopLeft(TopLeft.X, minY);
+            }
 
             if (TopLeft.Y + Bounds.Height > maxY)
-                TopLeft = new Vector3(TopLeft.X, maxY - Bounds.Height, 0);
+            {
+                SetTopLeft(TopLeft.X, maxY - Bounds.Height);
+            }
         }
 
         private void UpdateMatrices()

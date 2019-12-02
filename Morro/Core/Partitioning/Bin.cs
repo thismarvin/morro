@@ -6,19 +6,22 @@ namespace Morro.Core
 {
     class Bin : Partitioner
     {
-        private readonly HashSet<MonoObject>[] buckets;
-        private readonly Rectangle boundary;
+        private HashSet<MonoObject>[] buckets;
         private readonly int powerOfTwo;
-        private readonly int columns;
-        private readonly int rows;
+        private int columns;
+        private int rows;
 
-        public Bin(Rectangle boundary, int powerOfTwo)
+        public Bin(Rectangle boundary, int powerOfTwo) : base(boundary)
         {
-            this.boundary = boundary;
             this.powerOfTwo = powerOfTwo;
 
-            columns = (int)Math.Ceiling((float)boundary.Width / powerOfTwo);
-            rows = (int)Math.Ceiling((float)boundary.Height / powerOfTwo);
+            Initialize();
+        }
+
+        protected override void Initialize()
+        {
+            columns = (int)Math.Ceiling((float)Boundary.Width / powerOfTwo);
+            rows = (int)Math.Ceiling((float)Boundary.Height / powerOfTwo);
 
             buckets = new HashSet<MonoObject>[rows * columns];
 
@@ -55,7 +58,7 @@ namespace Morro.Core
 
         public override bool Insert(MonoObject monoObject)
         {
-            if (!monoObject.Bounds.Intersects(boundary))
+            if (!monoObject.Bounds.Intersects(Boundary))
                 return false;
 
             HashSet<int> ids = HashIDs(monoObject.Bounds);
@@ -70,6 +73,9 @@ namespace Morro.Core
 
         public override void Clear()
         {
+            if (buckets == null)
+                return;
+
             for (int i = 0; i < buckets.Length; i++)
             {
                 buckets[i].Clear();

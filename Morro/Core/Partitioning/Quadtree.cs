@@ -9,25 +9,29 @@ namespace Morro.Core
         private readonly int capacity;
         private bool divided;
         private int insertionIndex;
-        private Rectangle boundary;
-        private readonly MonoObject[] objects;
+        private MonoObject[] objects;
         private Quadtree topLeft;
         private Quadtree topRight;
         private Quadtree bottomRight;
         private Quadtree bottomLeft;
 
-        public Quadtree(Rectangle boundary, int capacity)
+        public Quadtree(Rectangle boundary, int capacity) : base(boundary)
         {
-            this.boundary = boundary;
             this.capacity = capacity;
-            objects = new MonoObject[this.capacity];
+
+            Initialize();
+        }
+
+        protected override void Initialize()
+        {
+            objects = new MonoObject[capacity];
         }
 
         public override List<MonoObject> Query(Rectangle bounds)
         {
             List<MonoObject> result = new List<MonoObject>();
 
-            if (boundary.EntirelyWithin(bounds))
+            if (Boundary.EntirelyWithin(bounds))
             {
                 for (int i = 0; i < objects.Length; i++)
                 {
@@ -64,7 +68,7 @@ namespace Morro.Core
 
         public override bool Insert(MonoObject monoObject)
         {
-            if (!monoObject.Bounds.Intersects(boundary))
+            if (!monoObject.Bounds.Intersects(Boundary))
                 return false;
 
             if (insertionIndex < capacity)
@@ -86,6 +90,9 @@ namespace Morro.Core
 
         public override void Clear()
         {
+            if (objects == null)
+                return;
+
             if (divided)
             {
                 topLeft.Clear();
@@ -107,10 +114,10 @@ namespace Morro.Core
 
         private void Subdivide()
         {
-            topLeft = new Quadtree(new Rectangle(boundary.X, boundary.Y, boundary.Width / 2, boundary.Height / 2), capacity);
-            topRight = new Quadtree(new Rectangle(boundary.X + boundary.Width / 2, boundary.Y, boundary.Width / 2, boundary.Height / 2), capacity);
-            bottomRight = new Quadtree(new Rectangle(boundary.X + boundary.Width / 2, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), capacity);
-            bottomLeft = new Quadtree(new Rectangle(boundary.X, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), capacity);
+            topLeft = new Quadtree(new Rectangle(Boundary.X, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            topRight = new Quadtree(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            bottomRight = new Quadtree(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            bottomLeft = new Quadtree(new Rectangle(Boundary.X, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
             divided = true;
         }
     }

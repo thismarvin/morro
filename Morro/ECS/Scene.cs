@@ -19,7 +19,7 @@ namespace Morro.ECS
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
         public SceneType SceneType { get; private set; }
-        public Core.Rectangle SceneBounds { get; protected set; }
+        public Core.Rectangle SceneBounds { get; private set; }
 
         public Scene(SceneType type)
         {
@@ -57,6 +57,12 @@ namespace Morro.ECS
             PartitionerPreference = PartitionerType.Bin;
             int optimalBinSize = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
             Partitioner = new Bin(SceneBounds, optimalBinSize);
+        }
+
+        protected void SetSceneBounds(int width, int height)
+        {
+            SceneBounds = new Core.Rectangle(0, 0, width, height);
+            Partitioner.SetBoundary(SceneBounds);
         }
 
         protected void SpatialPartitioning()

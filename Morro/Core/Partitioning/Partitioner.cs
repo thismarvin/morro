@@ -12,15 +12,32 @@ namespace Morro.Core
 
     abstract class Partitioner
     {
-        public abstract List<MonoObject> Query(Rectangle bounds);
+        public Rectangle Boundary { get; private set; }
 
-        public abstract bool Insert(MonoObject monoObject);
+        public Partitioner(Rectangle boundary)
+        {
+            Boundary = boundary;
+        }
 
-        public abstract void Clear();
+        public void SetBoundary(Rectangle boundary)
+        {
+            Boundary = boundary;
+
+            Clear();
+            Initialize();
+        }
 
         public List<MonoObject> Query(MonoObject monoObject)
         {
             return Query(monoObject.Bounds);
         }
+
+        protected abstract void Initialize();
+
+        public abstract List<MonoObject> Query(Rectangle bounds);
+
+        public abstract bool Insert(MonoObject monoObject);
+
+        public abstract void Clear();
     }
 }

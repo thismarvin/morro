@@ -82,7 +82,7 @@ namespace Morro.Graphics
             timer.Reset();
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update()
         {
             if (Finished)
                 return;           

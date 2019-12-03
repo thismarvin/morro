@@ -63,7 +63,7 @@ namespace Morro.Core
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);            
+            spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
         protected override void UnloadContent()
@@ -84,7 +84,7 @@ namespace Morro.Core
             GraphicsManager.Update();
             WindowManager.Update();
             CameraManager.Update();
-            SceneManager.Update(gameTime);
+            SceneManager.Update();
             DebugManager.Update();
 
             base.Update(gameTime);

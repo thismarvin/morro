@@ -170,13 +170,13 @@ namespace Example.Entities
             }
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update()
         {
             UpdateInput();
             ApplyForce(Integrator.VelocityVerlet);
             Collision();
 
-            animatedSprite.Update(gameTime);
+            animatedSprite.Update();
         }
 
         public override void Draw(SpriteBatch spriteBatch)

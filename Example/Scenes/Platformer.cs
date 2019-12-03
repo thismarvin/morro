@@ -69,9 +69,9 @@ namespace Example.Scenes
             Entities.Clear();
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update()
         {
-            UpdateEntities(gameTime);
+            UpdateEntities();
         }
 
         public override void Draw(SpriteBatch spriteBatch)

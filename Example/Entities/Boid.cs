@@ -202,7 +202,7 @@ namespace Example.Entities
             body.SetRotation(angle + MathHelper.Pi);
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update()
         {
             ApplyForce(Integrator.VelocityVerlet);
             Collision();

@@ -43,9 +43,9 @@ namespace Example.Scenes
 
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update()
         {
-            UpdateEntities(gameTime, 4);
+            UpdateEntities(4);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

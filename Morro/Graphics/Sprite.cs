@@ -97,7 +97,7 @@ namespace Morro.Graphics
             customScissorRectangle = true;
         }
 
-        public virtual void Update(GameTime gameTime)
+        public virtual void Update()
         {
 
         }

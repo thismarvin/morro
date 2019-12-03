@@ -55,7 +55,7 @@ namespace Morro.ECS
                 AABB.Draw(spriteBatch, CameraType.Dynamic);
         }
 
-        public abstract void Update(GameTime gameTime);
+        public abstract void Update();
         public abstract void Draw(SpriteBatch spriteBatch);
     }
 }

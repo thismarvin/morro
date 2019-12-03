@@ -125,12 +125,9 @@ namespace Morro.Core
             }
         }
 
-        private static void UpdateCurrentScene(GameTime gameTime)
+        private static void UpdateCurrentScene()
         {
-            //if (transitionInProgress)
-            //     return;
-
-            CurrentScene.Update(gameTime);
+            CurrentScene.Update();
         }
 
         private static void DrawTransitions(SpriteBatch spriteBatch)
@@ -152,10 +149,10 @@ namespace Morro.Core
             Sketch.End(spriteBatch);
         }
 
-        public static void Update(GameTime gameTime)
+        public static void Update()
         {
             UpdateTransitions();
-            UpdateCurrentScene(gameTime);
+            UpdateCurrentScene();
 
             if (Input.Keyboard.Pressed(Keys.R))
             {

@@ -87,13 +87,13 @@ namespace Morro.ECS
             }
         }
 
-        protected virtual void UpdateEntities(GameTime gameTime)
+        protected virtual void UpdateEntities()
         {
             SpatialPartitioning();
 
             for (int i = Entities.Count - 1; i >= 0; i--)
             {
-                Entities[i].Update(gameTime);
+                Entities[i].Update();
 
                 if (Entities[i].Remove)
                     Entities.RemoveAt(i);
@@ -108,23 +108,23 @@ namespace Morro.ECS
             }
         }
 
-        private void UpdateSections(GameTime gameTime, int start, int end)
+        private void UpdateSections(int start, int end)
         {
             for (int i = end - 1; i >= start; i--)
             {
-                Entities[i].Update(gameTime);
+                Entities[i].Update();
 
                 if (Entities[i].Remove)
                     Entities.RemoveAt(i);
             }
         }
 
-        private Task UpdateSection(GameTime gameTime, int start, int end)
+        private Task UpdateSection(int start, int end)
         {
-            return Task.Run(() => UpdateSections(gameTime, start, end));
+            return Task.Run(() => UpdateSections(start, end));
         }
 
-        private Task[] DivideUpdateIntoTasks(GameTime gameTime, int totalTasks)
+        private Task[] DivideUpdateIntoTasks(int totalTasks)
         {
             Task[] result = new Task[totalTasks];
             int increment = Entities.Count / totalTasks;
@@ -133,9 +133,9 @@ namespace Morro.ECS
             for (int i = 0; i < totalTasks; i++)
             {
                 if (i != totalTasks - 1)
-                    result[i] = UpdateSection(gameTime, start, end);
+                    result[i] = UpdateSection(start, end);
                 else
-                    result[i] = UpdateSection(gameTime, start, Entities.Count);
+                    result[i] = UpdateSection(start, Entities.Count);
 
                 start += increment;
                 end += increment;
@@ -143,12 +143,12 @@ namespace Morro.ECS
             return result;
         }
 
-        protected virtual void UpdateEntities(GameTime gameTime, int sections)
+        protected virtual void UpdateEntities(int sections)
         {
             SpatialPartitioning();
 
             Task.WaitAll(
-                DivideUpdateIntoTasks(gameTime, sections)
+                DivideUpdateIntoTasks(sections)
             );
         }
 
@@ -165,7 +165,7 @@ namespace Morro.ECS
 
         public abstract void UnloadScene();
 
-        public abstract void Update(GameTime gameTime);
+        public abstract void Update();
 
         public abstract void Draw(SpriteBatch spriteBatch);
     }

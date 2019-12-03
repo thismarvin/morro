@@ -82,9 +82,9 @@ namespace Example.Scenes
             }
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update()
         {
-            UpdateEntities(gameTime);            
+            UpdateEntities();            
             RotatePolygons();
             AnimateTitle();
             

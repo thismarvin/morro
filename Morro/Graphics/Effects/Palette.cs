@@ -10,7 +10,7 @@ namespace Morro.Graphics
     {
         public Color[] Colors { get; private set; }
 
-        public Palette() : base(EffectType.Palette)
+        public Palette() : base("Palette")
         {
             //Colors = new Color[] { new Color(8, 24, 32), new Color(48, 104, 80), new Color(136, 192, 112), new Color(224, 248, 208) };
             //Colors = new Color[] { new Color(14, 56, 15), new Color(48, 98, 48), new Color(139, 172, 15), new Color(155, 188, 15) };

@@ -7,7 +7,7 @@ namespace Morro.Graphics
 {
     class Invert : FX
     {
-        public Invert() : base(EffectType.Invert)
+        public Invert() : base("Invert")
         {
             Initialize();
         }

@@ -27,7 +27,7 @@ namespace Morro.ECS
 
         public Player(float x, float y, PlayerIndex playerIndex) : base(x, y, 10, 28, 75, playerIndex)
         {
-            animatedSprite = new AnimatedSprite(X - 3, Y - 2, SpriteType.Player, AnimationType.Loop, 6, 6, 100, false);
+            animatedSprite = new AnimatedSprite(X - 3, Y - 2, "Player", AnimationType.Loop, 6, 6, 100, false);
 
             jumpHeight = 64 + 4;
             jumpDuration = 0.5f;

@@ -27,7 +27,7 @@ namespace Morro.Utilities
         private string[] splitWords;
         private readonly Timer timer;
         private readonly Quad debugBounds;
-        private SpriteType spriteTypeFont;
+        private string spriteTypeFont;
         private readonly int maximumCharacterCount;
         private float textWidth;
         private float textHeight;
@@ -151,10 +151,10 @@ namespace Morro.Utilities
             switch (FontType)
             {
                 case FontType.Probity:
-                    spriteTypeFont = SpriteType.FontProbity;
+                    spriteTypeFont = "Probity";
                     break;
                 case FontType.Sparge:
-                    spriteTypeFont = SpriteType.FontSparge;
+                    spriteTypeFont = "Sparge";
                     break;
             }
         }

@@ -22,16 +22,16 @@ namespace Morro.Graphics
         public bool Finished { get; private set; }
         public bool AnimationPlaying { get; private set; }
         public AnimationType AnimationType { get; set; }
-        public SpriteType[] Sprites { get; set; }
+        public string[] Sprites { get; set; }
 
         private readonly Timer timer;
 
-        public AnimatedSprite(float x, float y, SpriteType sprite, AnimationType animationType, int totalFrames, int columns, float frameDuration) : this(x, y, sprite, animationType, totalFrames, columns, frameDuration, true)
+        public AnimatedSprite(float x, float y, string sprite, AnimationType animationType, int totalFrames, int columns, float frameDuration) : this(x, y, sprite, animationType, totalFrames, columns, frameDuration, true)
         {
 
         }
 
-        public AnimatedSprite(float x, float y, SpriteType sprite, AnimationType animationType, int totalFrames, int columns, float frameDuration, bool start) : base(x, y, sprite)
+        public AnimatedSprite(float x, float y, string sprite, AnimationType animationType, int totalFrames, int columns, float frameDuration, bool start) : base(x, y, sprite)
         {
             AnimationType = animationType;
             TotalFrames = totalFrames;
@@ -42,9 +42,9 @@ namespace Morro.Graphics
             timer = new Timer(FrameDuration, AnimationPlaying);                     
         }
 
-        public AnimatedSprite(float x, float y, SpriteType[] sprites, float frameDuration) : base(x, y, sprites[0])
+        public AnimatedSprite(float x, float y, string[] sprites, float frameDuration) : base(x, y, sprites[0])
         {
-            this.Sprites = sprites;
+            Sprites = sprites;
             TotalFrames = sprites.Length;
             Columns = TotalFrames;
             FrameDuration = frameDuration;
@@ -68,7 +68,7 @@ namespace Morro.Graphics
             CurrentFrame = 0;
         }
 
-        public SpriteType CurrentSprite()
+        public string CurrentSprite()
         {
             return Sprites[CurrentFrame];
         }

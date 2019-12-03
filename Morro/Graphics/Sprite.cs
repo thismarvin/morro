@@ -8,21 +8,11 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    public enum SpriteType
-    {
-        None,
-
-        FontProbity,
-        FontSparge,
-
-        Player,
-    }
-
     class Sprite : MonoObject
     {
         public float Rotation { get; set; }
         public bool Show { get; set; }
-        public SpriteType SpriteType { get; private set; }
+        public string SpriteType { get; private set; }
         public SpriteEffects SpriteEffect { get; set; }
         public Vector2 RotationOffset { get; set; }
         public Vector2 Scale { get; set; }
@@ -38,12 +28,12 @@ namespace Morro.Graphics
         private int frameX;
         private int frameY;
 
-        public Sprite(float x, float y, int frame, int columns, SpriteType sprite) : this(x, y, sprite)
+        public Sprite(float x, float y, int frame, int columns, string sprite) : this(x, y, sprite)
         {
             SetFrame(frame, columns);
         }
 
-        public Sprite(float x, float y, SpriteType sprite) : base(x, y, 1, 1)
+        public Sprite(float x, float y, string sprite) : base(x, y, 1, 1)
         {
             Rotation = 0;
             Show = true;
@@ -57,36 +47,19 @@ namespace Morro.Graphics
 
         private void InitializeSprite()
         {
-            switch (SpriteType)
-            {
-                #region Fonts
-                case SpriteType.FontProbity:
-                    SpriteSetup(0, 0, 8, 8, AssetManager.FontProbity);
-                    break;
-                case SpriteType.FontSparge:
-                    SpriteSetup(0, 0, 16, 16, AssetManager.FontSparge);
-                    break;
-                #endregion
-
-                case SpriteType.Player:
-                    SpriteSetup(0, 0, 16, 32, AssetManager.Sprites);
-                    break;
-
-                case SpriteType.None:
-                    SpriteSetup(0, 0, 0, 0, AssetManager.Sprites);
-                    break;
-            }
+            SpriteSetup(SpriteManager.GetSpriteData(SpriteType));
         }
 
-        private void SpriteSetup(int frameX, int frameY, int width, int height, Texture2D spriteSheet)
+        private void SpriteSetup(SpriteData spriteData)
         {
-            this.SpriteSheet = spriteSheet;
-            this.frameX = frameX;
-            this.frameY = frameY;
+            SpriteSheet = AssetManager.GetImage(spriteData.SpriteSheet);
+            frameX = spriteData.X;
+            frameY = spriteData.Y;
             originalFrameX = frameX;
             originalFrameY = frameY;
 
-            SetBounds(X, Y, width, height);
+            SetDimensions(spriteData.Width, spriteData.Height);
+
             sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
         }
 
@@ -109,7 +82,7 @@ namespace Morro.Graphics
             sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
         }
 
-        public void SetSprite(SpriteType spriteType)
+        public void SetSprite(string spriteType)
         {
             if (SpriteType == spriteType)
                 return;

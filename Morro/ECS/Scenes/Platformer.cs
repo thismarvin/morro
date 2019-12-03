@@ -50,8 +50,10 @@ namespace Morro.ECS
                 new Keys[] { Keys.W, Keys.Up, Keys.Space },
                 new Buttons[] { Buttons.A }
             );
-
             InputManager.RegisterProfile(inputProfile);
+
+            AssetManager.LoadImage("Sprites", "Assets/Sprites/Sprites");
+            SpriteManager.AddSpriteData("Player", 0, 0, 16, 32, "Sprites");
         }
 
         public override void LoadScene()

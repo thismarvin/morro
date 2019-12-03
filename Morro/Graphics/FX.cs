@@ -7,44 +7,14 @@ using System.Text;
 namespace Morro.Graphics
 {
     abstract class FX : IDisposable
-    {        
+    {
         public Effect Effect { get; private set; }
-        public EffectType EffectType { get; private set; }        
+        public string EffectType { get; private set; }
 
-        public FX(EffectType type)
+        public FX(string type)
         {
-            EffectType = type;
-
-            switch (EffectType)
-            {
-                case EffectType.Blur:
-                    Effect = EffectManager.Blur.Clone();
-                    break;
-                case EffectType.ChromaticAberration:
-                    Effect = EffectManager.ChromaticAberration.Clone();
-                    break;
-                case EffectType.Dither:
-                    Effect = EffectManager.Dither.Clone();
-                    break;
-                case EffectType.DropShadow:
-                    Effect = EffectManager.DropShadow.Clone();
-                    break;
-                case EffectType.Grayscale:
-                    Effect = EffectManager.Grayscale.Clone();
-                    break;
-                case EffectType.Invert:
-                    Effect = EffectManager.Invert.Clone();
-                    break;
-                case EffectType.Outline:
-                    Effect = EffectManager.Outline.Clone();
-                    break;
-                case EffectType.Palette:
-                    Effect = EffectManager.Palette.Clone();
-                    break;
-                case EffectType.Quantize:
-                    Effect = EffectManager.Quantize.Clone();
-                    break;
-            }
+            EffectType = type.ToLowerInvariant();
+            Effect = AssetManager.GetEffect(EffectType).Clone();
         }
 
         public void Reset()
@@ -52,7 +22,7 @@ namespace Morro.Graphics
             Initialize();
         }
 
-        protected abstract void Initialize();    
+        protected abstract void Initialize();
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
@@ -68,7 +38,7 @@ namespace Morro.Graphics
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
-               
+
                 disposedValue = true;
             }
         }

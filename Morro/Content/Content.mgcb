@@ -3,6 +3,7 @@
 
 /outputDir:bin/$(Platform)
 /intermediateDir:obj/$(Platform)
+/platform:Windows
 /config:
 /profile:Reach
 /compress:False
@@ -60,23 +61,11 @@
 /processorParam:DebugMode=Auto
 /build:Assets/Effects/Palette.fx
 
-#begin Assets/Effects/PostProcessing.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Assets/Effects/PostProcessing.fx
-
 #begin Assets/Effects/Quantize.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Assets/Effects/Quantize.fx
-
-#begin Assets/Effects/Transition.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Assets/Effects/Transition.fx
 
 #begin Assets/Fonts/Probity.png
 /importer:TextureImporter

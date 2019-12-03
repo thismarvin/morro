@@ -20,7 +20,7 @@ namespace Morro.Graphics
 
         }
 
-        public ChromaticAberration(Texture2D texture, float offset, Vector2 redShift, Vector2 greenShift, Vector2 blueShift) : base(EffectType.ChromaticAberration)
+        public ChromaticAberration(Texture2D texture, float offset, Vector2 redShift, Vector2 greenShift, Vector2 blueShift) : base("ChromaticAberration")
         {
             Texture = texture;
             RedShift = redShift;

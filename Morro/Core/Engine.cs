@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Morro.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +9,7 @@ namespace Morro.Core
     public class Engine : Game
     {
         public static GraphicsDeviceManager Graphics { get; private set; }
-        public static Engine Instance { get; private set; }        
+        public static Engine Instance { get; private set; }
         public static RenderTarget2D RenderTarget { get { return WindowManager.RenderTarget; } }
         public static float DeltaTime { get; private set; }
 
@@ -22,7 +20,7 @@ namespace Morro.Core
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             Instance = this;
-            
+
             IsMouseVisible = true;
 
             Window.AllowUserResizing = true;
@@ -32,10 +30,12 @@ namespace Morro.Core
         }
 
         protected override void Initialize()
-        {          
-            AssetManager.LoadContent(Content);            
+        {
+            AssetManager.Initialize();
+            AssetManager.LoadContent();
+
             GraphicsManager.Initialize();
-            
+
             WindowManager.Initialize
             (
                 pixelWidth: 320,
@@ -50,11 +50,12 @@ namespace Morro.Core
             );
 
             RandomManager.Initialize();
+            SpriteManager.Initialize();
             SketchManager.Initialize();
             InputManager.Initialize();
             DebugManager.Initialize();
             CameraManager.Initialize();
-            SoundManager.Initialize();            
+            SoundManager.Initialize();
             SceneManager.Initialize();
 
             base.Initialize();
@@ -62,7 +63,7 @@ namespace Morro.Core
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);          
+            spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
         protected override void UnloadContent()
@@ -70,7 +71,7 @@ namespace Morro.Core
             base.UnloadContent();
 
             spriteBatch.Dispose();
-            
+
             AssetManager.UnloadContent();
             GraphicsManager.UnloadContent();
         }
@@ -81,21 +82,18 @@ namespace Morro.Core
 
             InputManager.Update();
             GraphicsManager.Update();
-            WindowManager.Update(gameTime);
+            WindowManager.Update();
             CameraManager.Update();
             SceneManager.Update(gameTime);
             DebugManager.Update();
-           
+
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             SceneManager.Draw(spriteBatch);
-            //SketchManager.AttachEffect(new Dither(RenderTarget));
-            //SketchManager.AttachEffect(new Palette());
             SketchManager.Draw(spriteBatch);
-
             DebugManager.Draw(spriteBatch);
             WindowManager.Draw(spriteBatch);
 

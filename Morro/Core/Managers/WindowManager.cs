@@ -272,11 +272,11 @@ namespace Morro.Core
             ResetScale();
         }
 
-        private static void CalculateFPS(GameTime gameTime)
+        private static void CalculateFPS()
         {
-            if ((float)gameTime.ElapsedGameTime.TotalSeconds != 0)
+            if (Engine.DeltaTime != 0)
             {
-                sampleFPS.Enqueue(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
+                sampleFPS.Enqueue(1 / Engine.DeltaTime);
             }
 
             if (sampleFPS.Count == 100)
@@ -301,10 +301,10 @@ namespace Morro.Core
 #endif
         }
 
-        public static void Update(GameTime gameTime)
+        public static void Update()
         {
             UpdateInput();
-            CalculateFPS(gameTime);
+            CalculateFPS();
         }
 
         public static void Draw(SpriteBatch spriteBatch)

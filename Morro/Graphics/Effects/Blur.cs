@@ -18,7 +18,7 @@ namespace Morro.Graphics
 
         }
 
-        public Blur(Texture2D texture, Vector2 direction, float offset) : base(EffectType.Blur)
+        public Blur(Texture2D texture, Vector2 direction, float offset) : base("Blur")
         {
             Texture = texture;
             Direction = direction;

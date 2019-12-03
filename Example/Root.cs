@@ -1,0 +1,21 @@
+﻿using Example.Scenes;
+using Morro.Core;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Example
+{
+    class Root : Engine
+    {
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            SceneManager.RegisterScene(new Menu());
+            SceneManager.RegisterScene(new Flocking());
+            SceneManager.RegisterScene(new Platformer());
+            SceneManager.QueueScene("Menu");
+        }
+    }
+}

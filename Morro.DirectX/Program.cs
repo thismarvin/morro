@@ -1,4 +1,4 @@
-﻿using Morro.Core;
+﻿using Example;
 using System;
 
 namespace Morro.DirectX
@@ -15,7 +15,7 @@ namespace Morro.DirectX
         [STAThread]
         static void Main()
         {
-            using (var game = new Engine())
+            using (var game = new Root())
                 game.Run();
         }
     }

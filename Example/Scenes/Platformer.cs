@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Example.Entities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Core;
+using Morro.ECS;
 using Morro.Graphics;
 using Morro.Input;
 using Morro.Utilities;
@@ -9,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.ECS
+namespace Example.Scenes
 {
     class Platformer : Scene
     {
@@ -17,12 +19,12 @@ namespace Morro.ECS
 
         private BitmapFont notice;
 
-        public Platformer() : base(SceneType.Platformer)
+        public Platformer() : base("Platformer")
         {
-
+            Initialize();
         }
 
-        protected override void Initialize()
+        private void Initialize()
         {
             BoundingBoxes = new List<Polygon>()
             {

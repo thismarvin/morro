@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Core;
+using Morro.ECS;
 using Morro.Graphics;
 using Morro.Maths;
 using Morro.Utilities;
@@ -9,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.ECS
+namespace Example.Scenes
 {
     class Menu : Scene
     {
@@ -18,12 +19,12 @@ namespace Morro.ECS
         private Color[] colors;
         private float titleAngle;
 
-        public Menu() : base(SceneType.Menu)
+        public Menu() : base("Menu")
         {
-
+            Initialize();
         }
 
-        protected override void Initialize()
+        private void Initialize()
         {
             polygons = new List<Polygon>();
             colors = new Color[] { PICO8.BloodRed, PICO8.ConeOrange, PICO8.DarkPurple, PICO8.FleshPink, PICO8.GrassGreen, PICO8.LightGray, PICO8.LightPurple, PICO8.OceanBlue, PICO8.PeachWhite, PICO8.SkyBlue, PICO8.TaxiYellow };
@@ -89,7 +90,7 @@ namespace Morro.ECS
             
             if (InputManager.BasicInputHandler.Pressed("Start"))
             {
-                SceneManager.QueueScene(SceneType.Platformer);
+                SceneManager.QueueScene("Platformer");
             }
         }
 

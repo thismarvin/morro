@@ -63,7 +63,7 @@ namespace Morro.Core
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);            
         }
 
         protected override void UnloadContent()

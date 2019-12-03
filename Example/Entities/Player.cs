@@ -1,13 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Example.Scenes;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.ECS;
 using Morro.Graphics;
 using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.ECS
+namespace Example.Entities
 {
     class Player : Actor
     {

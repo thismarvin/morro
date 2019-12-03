@@ -55,7 +55,7 @@ namespace Morro.Core
                 return;
 
             FPS.SetText(string.Format(CultureInfo.InvariantCulture, "{0} FPS", Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture)));
-            currentScene.SetText(string.Format(CultureInfo.InvariantCulture, "CURRENT SCENE: {0}", SceneManager.CurrentScene.SceneType.ToString()));
+            currentScene.SetText(string.Format(CultureInfo.InvariantCulture, "CURRENT SCENE: {0}", SceneManager.CurrentScene.Name.ToString()));
             totalEntities.SetText(string.Format(CultureInfo.InvariantCulture, "TOTAL ENTITIES: {0}", SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture)));
         }
 

@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.ECS;
 using Morro.Graphics;
 using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.ECS
+namespace Example.Entities
 {
     class Boid : Kinetic
     {
@@ -177,8 +178,8 @@ namespace Morro.ECS
 
         private void UpdateFlocking()
         {
-            Core.Rectangle queryBounds =
-                new Core.Rectangle(
+            Morro.Core.Rectangle queryBounds =
+                new Morro.Core.Rectangle(
                     X - viewRadius,
                     Y - viewRadius,
                     (int)viewRadius * 2 + Width,

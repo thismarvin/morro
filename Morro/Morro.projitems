@@ -50,14 +50,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Maths\VectorHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\WindowManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Actor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Entities\Boid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Entities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Kinetic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Scene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scenes\Flocking.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scenes\Menu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Scenes\Platformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\AABB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\AnimatedSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Batcher.cs" />

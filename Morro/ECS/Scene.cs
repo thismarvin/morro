@@ -18,15 +18,15 @@ namespace Morro.ECS
         public Partitioner Partitioner { get; private set; }
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
-        public SceneType SceneType { get; private set; }
+        public string Name { get; private set; }
         public Core.Rectangle SceneBounds { get; private set; }
 
-        public Scene(SceneType type)
+        public Scene(string name)
         {
             Entities = new List<Entity>();
             EntityBuffer = new List<Entity>();
 
-            SceneType = type;
+            Name = name.ToLowerInvariant();
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
             PartitionerPreference = PartitionerType.Quadtree;
@@ -34,8 +34,6 @@ namespace Morro.ECS
 
             EnterTransition = new Pinhole(TransitionType.Enter);
             ExitTransition = new Fade(TransitionType.Exit);
-
-            Initialize();
         }
 
         public List<Entity> Query(Core.Rectangle bounds)
@@ -162,8 +160,6 @@ namespace Morro.ECS
                 queryResult[i].Draw(spriteBatch);
             }
         }
-
-        protected abstract void Initialize();
 
         public abstract void LoadScene();
 

@@ -10,53 +10,26 @@ using System.Text;
 
 namespace Morro.Core
 {
-    public enum SceneType
-    {
-        Menu,
-        Platformer,
-        Flocking,
-    }
-
     static class SceneManager
     {
         public static Scene CurrentScene { get; private set; }
         public static Scene NextScene { get; private set; }
 
-        private static List<Scene> scenes;
         private static Transition enterTransition;
         private static Transition exitTransition;
         private static bool transitionInProgress;
         private static bool exitCompleted;
 
+        private static Dictionary<string, Scene> scenes;
+
         public static void Initialize()
         {
-            PreLoadScenes();
-            SetStartingScene(SceneType.Menu);
+            scenes = new Dictionary<string, Scene>();
         }
 
-        private static void PreLoadScenes()
+        public static void RegisterScene(Scene scene)
         {
-            scenes = new List<Scene>()
-            {
-                new Menu(),
-                new Platformer(),
-                new Flocking(),
-            };
-        }
-
-        private static void SetStartingScene(SceneType scene)
-        {
-            QueueScene(scene);
-        }
-
-        private static Scene ParseSceneType(SceneType scene)
-        {
-            foreach (Scene s in scenes)
-            {
-                if (s.SceneType == scene)
-                    return s;
-            }
-            return null;
+            scenes.Add(scene.Name, scene);
         }
 
         private static void SetupTransitions()
@@ -76,12 +49,15 @@ namespace Morro.Core
             transitionInProgress = true;
         }
 
-        public static void QueueScene(SceneType scene)
+        public static void QueueScene(string scene)
         {
+            if (!scenes.ContainsKey(scene.ToLowerInvariant()))
+                throw new Exception("A scene with that name has not been registered.");
+
             if (transitionInProgress)
                 return;
 
-            NextScene = ParseSceneType(scene);
+            NextScene = scenes[scene.ToLowerInvariant()];
             SetupTransitions();
         }
 

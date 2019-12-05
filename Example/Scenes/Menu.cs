@@ -90,7 +90,7 @@ namespace Example.Scenes
             
             if (InputManager.BasicInputHandler.Pressed("Start"))
             {
-                SceneManager.QueueScene("Platformer");
+                SceneManager.QueueScene("Flocking");
             }
         }
 

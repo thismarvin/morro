@@ -12,6 +12,8 @@ namespace Example
         {
             base.Initialize();
 
+            WindowManager.SetTitle("Example");
+
             SceneManager.RegisterScene(new Menu());
             SceneManager.RegisterScene(new Flocking());
             SceneManager.RegisterScene(new Platformer());

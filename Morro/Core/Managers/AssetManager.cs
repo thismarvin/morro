@@ -88,13 +88,13 @@ namespace Morro.Core
         private static void VerifyImage(string name)
         {
             if (!textures.ContainsKey(name.ToLowerInvariant()))
-                throw new Exception("An image with that name has not been loaded.");
+                throw new MorroException("An image with that name has not been loaded.", new KeyNotFoundException());
         }
 
         private static void VerifyEffect(string name)
         {
             if (!effects.ContainsKey(name.ToLowerInvariant()))
-                throw new Exception("An effect with that name has not been loaded.");
+                throw new MorroException("An effect with that name has not been loaded.", new KeyNotFoundException());
         }
     }
 }

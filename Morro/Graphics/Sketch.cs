@@ -26,7 +26,7 @@ namespace Morro.Graphics
             PreventFumble();
 
             if (!SketchManager.VerifyQueue())
-                throw new Exception("CreateBackgroundLayer(spriteBatch, color) must be independent of any other Sketch calls.");
+                throw new MorroException("CreateBackgroundLayer(spriteBatch, color) must be independent of any other Sketch calls.", new MethodOrderException());
 
             // Initialize a RenderTarget2D to accumulate all spriteBatch draw calls.
             accumulation = new RenderTarget2D(spriteBatch.GraphicsDevice, WindowManager.WindowWidth, WindowManager.WindowHeight);
@@ -56,7 +56,7 @@ namespace Morro.Graphics
 
             // Make sure that this method is always called before Begin(spriteBatch).
             if (!SketchManager.VerifyQueue(StageType.Setup))
-                throw new Exception("SetBackgroundColor(color) must be called before Begin(spriteBatch).");
+                throw new MorroException("SetBackgroundColor(color) must be called before Begin(spriteBatch).", new MethodOrderException());
 
             clearColor = color;
         }
@@ -80,7 +80,7 @@ namespace Morro.Graphics
 
             // Make sure that this method is always called before Begin(spriteBatch).
             if (!SketchManager.VerifyQueue(StageType.Setup))
-                throw new Exception("AttachEffect(effect) must be called before Begin(spriteBatch).");
+                throw new MorroException("AttachEffect(effect) must be called before Begin(spriteBatch).", new MethodOrderException());
 
             shaders.Enqueue(effect);
         }
@@ -97,7 +97,7 @@ namespace Morro.Graphics
 
             // Make sure that this method is always called before Begin(spriteBatch).
             if (!SketchManager.VerifyQueue(StageType.Setup))
-                throw new Exception("AttachEffect(effect) must be called before Begin(spriteBatch).");
+                throw new MorroException("AttachEffect(effect) must be called before Begin(spriteBatch).", new MethodOrderException());
 
             disableRelay = true;
         }
@@ -118,7 +118,7 @@ namespace Morro.Graphics
 
             // Make sure that this method is always called before End(spriteBatch).
             if (!SketchManager.VerifyQueue(StageType.Setup, StageType.Begin))
-                throw new Exception("Begin(spriteBatch) must be called before End(spriteBatch).");
+                throw new MorroException("Begin(spriteBatch) must be called before End(spriteBatch).", new MethodOrderException());
 
             // Initialize a RenderTarget2D to accumulate all spriteBatch draw calls.
             accumulation = new RenderTarget2D(spriteBatch.GraphicsDevice, WindowManager.WindowWidth, WindowManager.WindowHeight);
@@ -140,7 +140,7 @@ namespace Morro.Graphics
 
             // Make sure that this method is always called after Begin(spriteBatch).
             if (!SketchManager.VerifyQueue(StageType.Setup, StageType.Begin, StageType.End))
-                throw new Exception("End(spriteBatch) must be called after Begin(spriteBatch).");
+                throw new MorroException("End(spriteBatch) must be called after Begin(spriteBatch).", new MethodOrderException());
 
             // Reset the GraphicsDevice's RenderTarget.
             spriteBatch.GraphicsDevice.SetRenderTarget(null);
@@ -227,11 +227,11 @@ namespace Morro.Graphics
 
             // Make sure that this method is always called after End(spriteBatch).
             if (!SketchManager.VerifyQueue(StageType.Setup, StageType.Begin, StageType.End, StageType.Post))
-                throw new Exception("InterceptRelay() must be called after End(spriteBatch).");
+                throw new MorroException("InterceptRelay() must be called after End(spriteBatch).", new MethodOrderException());
 
             // Make sure that DisableRelay() was called.
             if (result == null)
-                throw new Exception("There is nothing to intercept. Make sure to call DisableRelay() before calling Begin(spriteBatch)");
+                throw new MorroException("There is nothing to intercept. Make sure to call DisableRelay() before calling Begin(spriteBatch)", new MethodOrderException());
 
             SketchManager.GiveUpControl();
             disableRelay = false;
@@ -246,7 +246,7 @@ namespace Morro.Graphics
         private static void PreventFumble()
         {
             if (preventFumbledRelay)
-                throw new Exception("DisableRelay() was called, but InterceptRelay() was never called.");
+                throw new MorroException("DisableRelay() was called, but InterceptRelay() was never called.", new MethodOrderException());
         }
     }
 }

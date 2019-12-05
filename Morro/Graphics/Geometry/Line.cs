@@ -36,7 +36,7 @@ namespace Morro.Graphics
         {
             if (points.Count < 2)
             {
-                throw new Exception("A line must have at least two points.");
+                throw new MorroException("A line must have at least two points.", new ArgumentException());
             }
 
             this.points = points;

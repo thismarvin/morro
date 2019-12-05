@@ -52,7 +52,7 @@ namespace Morro.Core
         public static void QueueScene(string scene)
         {
             if (!scenes.ContainsKey(scene.ToLowerInvariant()))
-                throw new Exception("A scene with that name has not been registered.");
+                throw new MorroException("A scene with that name has not been registered.", new KeyNotFoundException());
 
             if (transitionInProgress)
                 return;

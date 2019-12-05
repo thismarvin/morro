@@ -40,7 +40,7 @@ namespace Morro.Core
         public static void RegisterProfile(InputProfile profile)
         {
             if (profiles.ContainsKey(profile.Name))
-                throw new Exception("An InputProfile with that name already exists; try a different name.");
+                throw new MorroException("An InputProfile with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
 
             profiles.Add(profile.Name, profile);
         }
@@ -48,7 +48,7 @@ namespace Morro.Core
         public static InputProfile GetInputProfile(string name)
         {
             if (!profiles.ContainsKey(name.ToUpper(CultureInfo.InvariantCulture)))
-                throw new Exception("An InputProfile with that name does not exist.");
+                throw new MorroException("An InputProfile with that name does not exist.", new KeyNotFoundException());
 
             return profiles[name.ToUpper(CultureInfo.InvariantCulture)];
         }

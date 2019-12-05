@@ -25,7 +25,7 @@ namespace Morro.Core
         public static SpriteData GetSpriteData(string name)
         {
             if (!spriteDataLookup.ContainsKey(name.ToLowerInvariant()))
-                throw new Exception("SpriteData with that name has not been added.");
+                throw new MorroException("SpriteData with that name has not been added.", new KeyNotFoundException());
 
             return spriteDataLookup[name.ToLowerInvariant()];
         }       

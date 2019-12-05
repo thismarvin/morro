@@ -34,7 +34,7 @@ namespace Morro.Graphics
         {
             if (Width <= 0 || Height <= 0)
             {
-                throw new Exception("Polygons must have dimensions greater then zero.");
+                throw new MorroException("Polygons must have dimensions greater then zero.", new ArgumentException());
             }
 
             LineWidth = lineWidth;
@@ -44,7 +44,7 @@ namespace Morro.Graphics
 
             if (totalVertices <= 2)
             {
-                throw new Exception("Polygons require at least three vertices.");
+                throw new MorroException("Polygons require at least three vertices.", new ArgumentException());
             }
 
             base.SetColor(color);
@@ -241,7 +241,7 @@ namespace Morro.Graphics
         }
 
         protected virtual void CreateTransform()
-        {
+        {            
             transform = 
                 // Scale unit vertices by the polygon's dimensions.
                 Matrix.CreateScale(Width, Height, 1) *

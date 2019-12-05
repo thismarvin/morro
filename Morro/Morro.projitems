@@ -21,10 +21,13 @@
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MissingMethodException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodOrderException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\AssetManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\RandomManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SpriteManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />

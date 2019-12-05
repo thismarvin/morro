@@ -25,7 +25,7 @@ namespace Morro.Input
         {
             if (!isBeingUpdated)
             {
-                throw new Exception("Make sure to call Input.Mouse.Update() in Engine.cs before you use any of the built in methods.");
+                throw new MorroException("Make sure to call Input.Mouse.Update() in Engine.cs before you use any of the built in methods.", new MissingMethodException());
             }
         }
 

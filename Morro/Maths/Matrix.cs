@@ -71,7 +71,7 @@ namespace Morro.Maths
             }
             else
             {
-                throw new Exception("The data does not match the dimensions of the Matrix.");
+                throw new ArgumentException("The data does not match the dimensions of the Matrix.");
             }
         }
 

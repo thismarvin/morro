@@ -23,7 +23,7 @@ namespace Morro.Input
         public InputMapping GetInputMapping(string name)
         {
             if (!inputMappings.ContainsKey(name.ToUpper(CultureInfo.InvariantCulture)))
-                throw new Exception("An InputMapping with that name does not exist.");
+                throw new MorroException("An InputMapping with that name does not exist.", new KeyNotFoundException());
 
             return inputMappings[name.ToUpper(CultureInfo.InvariantCulture)];
         }
@@ -36,7 +36,7 @@ namespace Morro.Input
         public void CreateMapping(string name, Keys[] keys, Buttons[] buttons)
         {
             if (inputMappings.ContainsKey(name))
-                throw new Exception("An InputMapping with that name already exists; try a different name.\nIf you are trying to remap a pre-exsiting InputMapping then use the Remap() method.");
+                throw new MorroException("An InputMapping with that name already exists; try a different name.\nIf you are trying to remap a pre-exsiting InputMapping then use the Remap() method.", new ArgumentException("An item with the same key has already been added."));
 
             inputMappings.Add(name.ToUpper(CultureInfo.InvariantCulture), new InputMapping(name, keys, buttons));
         }
@@ -49,7 +49,7 @@ namespace Morro.Input
         public void Remap(string name, Keys[] keys, Buttons[] buttons)
         {
             if (!inputMappings.ContainsKey(name))
-                throw new Exception("An InputMapping with that name does not exist. If you are trying to create a new InputMapping then use the CreateMapping() method.");
+                throw new Exception("An InputMapping with that name does not exist. If you are trying to create a new InputMapping then use the CreateMapping() method.", new KeyNotFoundException());
 
             GetInputMapping(name).Remap(keys, buttons);
         }

@@ -35,19 +35,7 @@ namespace Morro.Core
             AssetManager.LoadContent();
 
             GraphicsManager.Initialize();
-
-            WindowManager.Initialize
-            (
-                pixelWidth: 320,
-                pixelHeight: 180,
-                windowWidth: 320 * 3,
-                windowHeight: 180 * 3,
-                orientation: OrientationType.Landscape,
-                title: "morroEngine",
-                enableVSync: true,
-                startFullScreen: false,
-                supportWideScreen: false
-            );
+            WindowManager.Initialize();
 
             RandomManager.Initialize();
             SpriteManager.Initialize();

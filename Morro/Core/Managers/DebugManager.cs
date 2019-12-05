@@ -78,9 +78,11 @@ namespace Morro.Core
                     }
                 }
 
-                FPS.Draw(spriteBatch, CameraType.LeftJustified);
-                currentScene.Draw(spriteBatch, CameraType.LeftJustified);
-                totalEntities.Draw(spriteBatch, CameraType.LeftJustified);
+                CameraType cameraType = WindowManager.Orientation == OrientationType.Landscape ? CameraType.LeftJustified : CameraType.TopJustified;
+
+                FPS.Draw(spriteBatch, cameraType);
+                currentScene.Draw(spriteBatch, cameraType);
+                totalEntities.Draw(spriteBatch, cameraType);
             }
         }
     }

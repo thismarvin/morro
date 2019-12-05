@@ -23,20 +23,32 @@ namespace Morro.Core
         /// The RightJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become right justified to use the extra window space.
         /// </summary>
         RightJustified,
+        /// <summary>
+        /// The TopJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become top justified to use the extra window space.
+        /// </summary>
+        TopJustified,
+        /// <summary>
+        /// The BottomJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become bottom justified to use the extra window space.
+        /// </summary>
+        BottomJustified,
     }
 
     class CameraManager
     {
-        private static List<Camera> cameras;
+        private static Dictionary<CameraType, Camera> cameras;
 
         public static void Initialize()
         {
-            cameras = new List<Camera>()
+            cameras = new Dictionary<CameraType, Camera>
             {
-                new Camera(CameraType.Dynamic),
-                new Camera(CameraType.Static),
-                new Camera(CameraType.LeftJustified),
-                new Camera(CameraType.RightJustified),
+                { CameraType.Static, new Camera(CameraType.Static) },
+                { CameraType.Dynamic, new Camera(CameraType.Dynamic) },
+
+                { CameraType.LeftJustified, new Camera(CameraType.LeftJustified) },
+                { CameraType.RightJustified, new Camera(CameraType.RightJustified) },
+
+                { CameraType.TopJustified, new Camera(CameraType.TopJustified) },
+                { CameraType.BottomJustified, new Camera(CameraType.BottomJustified) }
             };
 
             WindowManager.WindowChanged += HandleWindowChange;
@@ -44,14 +56,7 @@ namespace Morro.Core
 
         public static Camera GetCamera(CameraType type)
         {
-            foreach (Camera camera in cameras)
-            {
-                if (camera.CameraType == type)
-                {
-                    return camera;
-                }
-            }
-            return null;
+            return cameras[type];
         }
 
         private static void HandleWindowChange(object sender, EventArgs e)
@@ -61,9 +66,9 @@ namespace Morro.Core
 
         private static void ResetCameras()
         {
-            foreach (Camera camera in cameras)
+            foreach (KeyValuePair<CameraType, Camera> entry in cameras)
             {
-                camera.Reset();
+                entry.Value.Reset();
             }
         }
 
@@ -73,18 +78,22 @@ namespace Morro.Core
             {
                 GetCamera(CameraType.LeftJustified).SetTopLeft(WindowManager.PillarBox, 0);
                 GetCamera(CameraType.RightJustified).SetTopLeft(-WindowManager.PillarBox, 0);
+                GetCamera(CameraType.TopJustified).SetTopLeft(0, WindowManager.LetterBox);
+                GetCamera(CameraType.BottomJustified).SetTopLeft(0, -WindowManager.LetterBox);
             }
             else
             {
                 GetCamera(CameraType.LeftJustified).SetTopLeft(0, 0);
                 GetCamera(CameraType.RightJustified).SetTopLeft(0, 0);
+                GetCamera(CameraType.TopJustified).SetTopLeft(0, 0);
+                GetCamera(CameraType.BottomJustified).SetTopLeft(0, 0);
             }
 
             GetCamera(CameraType.Static).SetTopLeft(0, 0);
 
-            foreach (Camera camera in cameras)
+            foreach (KeyValuePair<CameraType, Camera> entry in cameras)
             {
-                camera.Update();
+                entry.Value.Update();
             }
         }
     }

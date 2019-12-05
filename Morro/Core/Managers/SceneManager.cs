@@ -127,7 +127,7 @@ namespace Morro.Core
 
         private static void UpdateCurrentScene()
         {
-            CurrentScene.Update();
+            CurrentScene?.Update();
         }
 
         private static void DrawTransitions(SpriteBatch spriteBatch)
@@ -156,13 +156,13 @@ namespace Morro.Core
 
             if (Input.Keyboard.Pressed(Keys.R))
             {
-                CurrentScene.LoadScene();
+                CurrentScene?.LoadScene();
             }
         }
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            CurrentScene.Draw(spriteBatch);
+            CurrentScene?.Draw(spriteBatch);
             DrawTransitions(spriteBatch);
         }
     }

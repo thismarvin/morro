@@ -67,7 +67,7 @@ namespace Morro.Core
             SetTitle("morroEngine");
             EnableVSync(true);
             EnableFullscreen(false);
-            SetupWideScreenSupport(true);
+            SetupWideScreenSupport(false);
         }
 
         public static void SetPixelDimensions(int pixelWidth, int pixelHeight)

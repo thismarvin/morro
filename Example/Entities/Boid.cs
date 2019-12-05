@@ -67,7 +67,7 @@ namespace Example.Entities
             }
         }
 
-        private Vector2 Seperation(List<MonoObject> queryResult)
+        private Vector2 Seperation(List<Entity> queryResult)
         {
             Vector2 result = Vector2.Zero;
             Vector2 cumulative = Vector2.Zero;
@@ -105,7 +105,7 @@ namespace Example.Entities
             return result;
         }
 
-        private Vector2 Alignment(List<MonoObject> queryResult)
+        private Vector2 Alignment(List<Entity> queryResult)
         {
             Vector2 result = Vector2.Zero;
             Vector2 cumulative = Vector2.Zero;
@@ -140,7 +140,7 @@ namespace Example.Entities
             return result;
         }
 
-        private Vector2 Cohesion(List<MonoObject> queryResult)
+        private Vector2 Cohesion(List<Entity> queryResult)
         {
             Vector2 result = Vector2.Zero;
             Vector2 cumulative = Vector2.Zero;
@@ -178,15 +178,7 @@ namespace Example.Entities
 
         private void UpdateFlocking()
         {
-            Morro.Core.Rectangle queryBounds =
-                new Morro.Core.Rectangle(
-                    X - viewRadius,
-                    Y - viewRadius,
-                    (int)viewRadius * 2 + Width,
-                    (int)viewRadius * 2 + Height
-                );
-
-            List<MonoObject> queryResult = SceneManager.CurrentScene.Partitioner.Query(queryBounds);
+            List<Entity> queryResult = SceneManager.CurrentScene.Query(GetQueryingBounds((int)viewRadius));
 
             Vector2 separation = Seperation(queryResult);
             Vector2 alignment = Alignment(queryResult);

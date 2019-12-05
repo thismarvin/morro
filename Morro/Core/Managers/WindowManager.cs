@@ -57,42 +57,117 @@ namespace Morro.Core
             WindowChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        public static void Initialize(int pixelWidth, int pixelHeight, int windowWidth, int windowHeight, OrientationType orientation, string title, bool enableVSync, bool startFullScreen, bool supportWideScreen)
+        internal static void Initialize()
         {
-            SetupPixelScene(pixelWidth, pixelHeight);
-            SetupWindow(windowWidth, windowHeight, orientation);
-            SetupTitle(title);
-            EnableVSync(enableVSync);
-            EnableFullscreen(startFullScreen);
-            SetupWideScreenSupport(supportWideScreen);
-            SetupBoxing();
-
-            Engine.Graphics.ApplyChanges();
-
-            CalculateScale();
-            CalculateBoxing();
-            UpdateRenderTarget();
-
             sampleFPS = new Queue<float>();
-
             Engine.Instance.Window.ClientSizeChanged += HandleWindowResize;
+
+            InitializeWindow();            
+
+            SetTitle("morroEngine");
+            EnableVSync(true);
+            EnableFullscreen(false);
+            SetupWideScreenSupport(true);
         }
 
-        private static void SetupPixelScene(int pixelWidth, int pixelHeight)
+        public static void SetPixelDimensions(int pixelWidth, int pixelHeight)
         {
             defaultPixelWidth = pixelWidth;
             defaultPixelHeight = pixelHeight;
             PixelWidth = defaultPixelWidth;
             PixelHeight = defaultPixelHeight;
+
+            SetupOrientation();
+            SetupBoxing();
+            ResetScale();
         }
 
-        private static void SetupWindow(int defaultWindowWidth, int defaultWindowHeight, OrientationType orientation)
+        public static void SetWindowDimensions(int defaultWindowWidth, int defaultWindowHeight)
         {
             DefaultWindowWidth = defaultWindowWidth;
             DefaultWindowHeight = defaultWindowHeight;
             DisplayWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             DisplayHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            Orientation = orientation;
+
+            // Set Screen Dimensions.
+#if __IOS__ || __ANDROID__
+            Engine.Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            Engine.Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+#else
+            Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
+            Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
+#endif           
+            Engine.Graphics.ApplyChanges();
+
+            ResetScale();
+        }
+
+        public static void SetTitle(string title)
+        {
+            Title = title;
+            Engine.Instance.Window.Title = Title;
+        }
+
+        public static void EnableVSync(bool enabled)
+        {
+            Engine.Instance.IsFixedTimeStep = false;
+
+            if (enabled)
+                Engine.Graphics.SynchronizeWithVerticalRetrace = true;
+            else
+                Engine.Graphics.SynchronizeWithVerticalRetrace = false;
+
+            Engine.Graphics.ApplyChanges();
+        }
+
+        public static void EnableFullscreen(bool enabled)
+        {
+            if (enabled)
+            {
+                ToggleFullScreen();
+            }
+        }
+
+        public static void SetupWideScreenSupport(bool supportWideScreen)
+        {
+            WideScreenSupported = supportWideScreen;
+            IsWideScreen = GraphicsAdapter.DefaultAdapter.IsWideScreen;
+
+            Engine.Graphics.ApplyChanges();
+        }
+
+        private static void InitializeWindow()
+        {
+            defaultPixelWidth = 320;
+            defaultPixelHeight = 180;
+            PixelWidth = defaultPixelWidth;
+            PixelHeight = defaultPixelHeight;
+
+            DefaultWindowWidth = PixelWidth * 2;
+            DefaultWindowHeight = PixelHeight * 2;
+            DisplayWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            DisplayHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+
+            Orientation = OrientationType.Landscape;
+            Engine.Graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+
+            // Set Screen Dimensions.
+#if __IOS__ || __ANDROID__
+            Engine.Graphics.PreferredBackBufferWidth = DisplayWidth;
+            Engine.Graphics.PreferredBackBufferHeight = DisplayHeight;
+#else
+            Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
+            Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
+#endif           
+            Engine.Graphics.ApplyChanges();
+
+            SetupBoxing();
+            ResetScale();
+        }
+
+        private static void SetupOrientation()
+        {
+            Orientation = PixelWidth > PixelHeight ? OrientationType.Landscape : OrientationType.Portrait;
 
             // Set Supported Orientations.
             switch (Orientation)
@@ -105,54 +180,7 @@ namespace Morro.Core
                     break;
             }
 
-            // Make sure pixel dimensions are in line with the game's orientation.
-            if (Orientation == OrientationType.Landscape && PixelHeight > PixelWidth)
-            {
-                throw new Exception("When the Orientation is set to Landscape, PixelWidth must be greater than PixelHeight.");
-            }
-            else if (Orientation == OrientationType.Portrait && PixelWidth > PixelHeight)
-            {
-                throw new Exception("When the Orientation is set to Portrait, PixelHeight must be greater than PixelWidth.");
-            }
-
-            // Set Screen Dimensions.
-#if __IOS__ || __ANDROID__
-            Engine.Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            Engine.Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-#else
-            Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
-            Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
-#endif           
-        }
-
-        private static void SetupTitle(string title)
-        {
-            Title = title;
-            Engine.Instance.Window.Title = Title;
-        }
-
-        private static void EnableVSync(bool vsync)
-        {
-            Engine.Instance.IsFixedTimeStep = false;
-
-            if (vsync)
-                Engine.Graphics.SynchronizeWithVerticalRetrace = true;
-            else
-                Engine.Graphics.SynchronizeWithVerticalRetrace = false;
-        }
-
-        private static void EnableFullscreen(bool enableFullScreen)
-        {
-            if (enableFullScreen)
-            {
-                ToggleFullScreen();
-            }
-        }
-
-        private static void SetupWideScreenSupport(bool supportWideScreen)
-        {
-            WideScreenSupported = supportWideScreen;
-            IsWideScreen = GraphicsAdapter.DefaultAdapter.IsWideScreen;
+            Engine.Graphics.ApplyChanges();
         }
 
         private static void SetupBoxing()
@@ -265,7 +293,7 @@ namespace Morro.Core
 
             Engine.Graphics.ToggleFullScreen();
             Engine.Graphics.ApplyChanges();
-            
+
             Fullscreen = !Fullscreen;
             togglingFullscreen = false;
 

@@ -16,6 +16,11 @@ namespace Morro.Graphics
         private static bool disableRelay;
         private static bool preventFumbledRelay;
 
+        internal static void Initialize()
+        {
+            shaders = new Queue<FX>();
+        }
+
         /// <summary>
         /// Creates a background layer that fills the entire screen with a specified color.
         /// </summary>
@@ -71,10 +76,6 @@ namespace Morro.Graphics
         public static void AttachEffect(FX effect)
         {
             PreventFumble();
-
-            // Initialize shader queue if it hasn't been already.
-            if (shaders == null)
-                shaders = new Queue<FX>();
 
             SketchManager.RegisterStage(StageType.Setup);
 

@@ -17,6 +17,7 @@ namespace Morro.Graphics
         public Vector2 RotationOffset { get; set; }
         public Vector2 Scale { get; set; }
         public Effect Effect { get; set; }
+        public BlendState BlendState { get; set; }
         public SamplerState SamplerState { get; set; }
         public Texture2D SpriteSheet { get; private set; }
 
@@ -40,6 +41,7 @@ namespace Morro.Graphics
             SpriteType = sprite;
             RotationOffset = Vector2.Zero;
             Scale = new Vector2(1, 1);
+            BlendState = BlendState.NonPremultiplied;
             SamplerState = SamplerState.PointClamp;
 
             InitializeSprite();
@@ -107,12 +109,17 @@ namespace Morro.Graphics
             spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Color, Rotation, RotationOffset, Scale, SpriteEffect, 0);
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        {
+            Draw(spriteBatch, CameraManager.GetCamera(cameraType));
+        }
+
+        public virtual void Draw(SpriteBatch spriteBatch, Camera camera)
         {
             if (!Show)
                 return;
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState, null, GraphicsManager.DefaultRasterizerState, Effect, CameraManager.GetCamera(cameraType).Transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState, null, GraphicsManager.DefaultRasterizerState, Effect, camera.Transform);
             {
                 if (customScissorRectangle)
                     spriteBatch.GraphicsDevice.ScissorRectangle = scissorRectangle;

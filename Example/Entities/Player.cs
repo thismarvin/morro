@@ -5,6 +5,7 @@ using Morro.Core;
 using Morro.ECS;
 using Morro.Graphics;
 using Morro.Maths;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -179,9 +180,9 @@ namespace Example.Entities
             animatedSprite.Update();
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, Camera camera)
         {
-            animatedSprite.Draw(spriteBatch, CameraType.Dynamic);
+            animatedSprite.Draw(spriteBatch, camera);
         }
     }
 }

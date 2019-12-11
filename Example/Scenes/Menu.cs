@@ -104,7 +104,7 @@ namespace Example.Scenes
             {                
                 foreach (Polygon p in polygons)
                 {
-                    p.Draw(spriteBatch, CameraType.Static);
+                    p.Draw(spriteBatch, Camera);
                 }
             }
             Sketch.End(spriteBatch);
@@ -114,7 +114,7 @@ namespace Example.Scenes
             Sketch.AttachEffect(new DropShadow(Engine.RenderTarget, direction, WindowManager.Scale * title.Scale.X * 1.25f, Color.Black));
             Sketch.Begin(spriteBatch);
             {
-                title.Draw(spriteBatch, CameraType.Static);
+                title.Draw(spriteBatch, Camera);
             }
             Sketch.End(spriteBatch);
         }

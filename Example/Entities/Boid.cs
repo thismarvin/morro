@@ -4,6 +4,7 @@ using Morro.Core;
 using Morro.ECS;
 using Morro.Graphics;
 using Morro.Maths;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -201,9 +202,9 @@ namespace Example.Entities
             UpdateFlocking();
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, Camera camera)
         {
-            body.Draw(spriteBatch, CameraType.Dynamic);
+            body.Draw(spriteBatch, camera);
         }
     }
 }

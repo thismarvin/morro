@@ -49,13 +49,13 @@ namespace Morro.ECS
             );
         }
 
-        public virtual void DrawBoundingBox(SpriteBatch spriteBatch)
+        public virtual void DrawBoundingBox(SpriteBatch spriteBatch, Camera camera)
         {
             if (DebugManager.ShowBoundingBoxes)
-                AABB.Draw(spriteBatch, CameraType.Dynamic);
+                AABB.Draw(spriteBatch, camera);
         }
 
         public abstract void Update();
-        public abstract void Draw(SpriteBatch spriteBatch);
+        public abstract void Draw(SpriteBatch spriteBatch, Camera camera);
     }
 }

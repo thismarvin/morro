@@ -83,10 +83,10 @@ namespace Example.Scenes
             {
                 foreach (Polygon polygon in BoundingBoxes)
                 {
-                    polygon.Draw(spriteBatch, CameraType.Dynamic);
+                    polygon.Draw(spriteBatch, Camera);
                 }
 
-                notice.Draw(spriteBatch, CameraType.Dynamic);
+                notice.Draw(spriteBatch, Camera);
 
                 DrawEntities(spriteBatch);                
             }

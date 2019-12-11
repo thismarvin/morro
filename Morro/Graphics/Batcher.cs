@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,12 +9,12 @@ namespace Morro.Graphics
 {
     static class Batcher
     {
-        public static void DrawSprites(SpriteBatch spriteBatch, List<Sprite> sprites, CameraType cameraType)
+        public static void DrawSprites(SpriteBatch spriteBatch, List<Sprite> sprites, Camera camera)
         {
             List<SpriteGroup> spriteGroups = OrganizeSprites(sprites);
             for (int i = 0; i < spriteGroups.Count; i++)
             {
-                spriteGroups[i].Draw(spriteBatch, cameraType);
+                spriteGroups[i].Draw(spriteBatch, camera);
             }
         }
 
@@ -27,7 +28,7 @@ namespace Morro.Graphics
             {
                 if (result.Count == 0 || !result[resultIndex].Add(sprites[i]))
                 {
-                    result.Add(new SpriteGroup(sprites[i].SamplerState, sprites[i].Effect, spriteGroupCapacity));
+                    result.Add(new SpriteGroup(sprites[i].BlendState, sprites[i].SamplerState, sprites[i].Effect, spriteGroupCapacity));
                     resultIndex++;
                     result[resultIndex].Add(sprites[i]);                    
                 }

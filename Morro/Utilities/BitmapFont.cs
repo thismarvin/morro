@@ -332,16 +332,16 @@ namespace Morro.Utilities
 
         public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
         {
-            //foreach (Sprite sprite in sprites)
-            //{
-            //    sprite.Draw(spriteBatch, cameraType);
-            //}
+            Draw(spriteBatch, CameraManager.GetCamera(cameraType));
+        }
 
-            Batcher.DrawSprites(spriteBatch, sprites, cameraType);
+        public void Draw(SpriteBatch spriteBatch, Camera camera)
+        {
+            Batcher.DrawSprites(spriteBatch, sprites, camera);
 
             if (DebugManager.ShowBoundingBoxes)
             {
-                debugBounds.Draw(spriteBatch, cameraType);
+                debugBounds.Draw(spriteBatch, camera);
             }
         }
 

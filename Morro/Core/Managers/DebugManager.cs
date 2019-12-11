@@ -69,20 +69,15 @@ namespace Morro.Core
         {
             if (Debugging)
             {
-                List<MonoObject> queryResult = SceneManager.CurrentScene.Partitioner.Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
+                List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
                 for (int i = 0; i < queryResult.Count; i++)
                 {
-                    if (queryResult[i] is Entity)
-                    {
-                        ((Entity)queryResult[i]).DrawBoundingBox(spriteBatch);
-                    }
+                    queryResult[i].DrawBoundingBox(spriteBatch, SceneManager.CurrentScene.Camera);
                 }
 
-                CameraType cameraType = WindowManager.Orientation == OrientationType.Landscape ? CameraType.LeftJustified : CameraType.TopJustified;
-
-                FPS.Draw(spriteBatch, cameraType);
-                currentScene.Draw(spriteBatch, cameraType);
-                totalEntities.Draw(spriteBatch, cameraType);
+                FPS.Draw(spriteBatch, CameraType.TopLeftAlign);
+                currentScene.Draw(spriteBatch, CameraType.TopLeftAlign);
+                totalEntities.Draw(spriteBatch, CameraType.TopLeftAlign);
             }
         }
     }

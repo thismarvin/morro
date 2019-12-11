@@ -16,6 +16,7 @@ namespace Morro.ECS
         public List<Entity> EntityBuffer { get; private set; }
         public PartitionerType PartitionerPreference { get; private set; }
         public Partitioner Partitioner { get; private set; }
+        public Camera Camera { get; private set; }
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
         public string Name { get; private set; }
@@ -31,6 +32,10 @@ namespace Morro.ECS
 
             PartitionerPreference = PartitionerType.Quadtree;
             Partitioner = new Quadtree(SceneBounds, 4);
+
+            Camera = new Camera(Name);
+            Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
+            CameraManager.RegisterCamera(Camera);
 
             EnterTransition = new Pinhole(TransitionType.Enter);
             ExitTransition = new Fade(TransitionType.Exit);
@@ -74,8 +79,13 @@ namespace Morro.ECS
 
         protected void SetSceneBounds(int width, int height)
         {
+            if (SceneBounds.Width == width && SceneBounds.Height == height)
+                return;
+
             SceneBounds = new Core.Rectangle(0, 0, width, height);
             Partitioner.SetBoundary(SceneBounds);
+
+            Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
         }
 
         protected void SpatialPartitioning()
@@ -154,10 +164,10 @@ namespace Morro.ECS
 
         protected virtual void DrawEntities(SpriteBatch spriteBatch)
         {
-            List<Entity> queryResult = Query(CameraManager.GetCamera(CameraType.Dynamic).Bounds);
+            List<Entity> queryResult = Query(Camera.Bounds);
             for (int i = 0; i < queryResult.Count; i++)
             {
-                queryResult[i].Draw(spriteBatch);
+                queryResult[i].Draw(spriteBatch, Camera);
             }
         }
 

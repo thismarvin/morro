@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Graphics;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,12 +61,9 @@ namespace Morro.Core
             sampleFPS = new Queue<float>();
             Engine.Instance.Window.ClientSizeChanged += HandleWindowResize;
 
-            InitializeWindow();            
+            InitializeWindow();
 
             SetTitle("morroEngine");
-            EnableVSync(true);
-            EnableFullscreen(false);
-            SetupWideScreenSupport(false);
         }
 
         public static void SetPixelDimensions(int pixelWidth, int pixelHeight)
@@ -128,9 +124,9 @@ namespace Morro.Core
             }
         }
 
-        public static void SetupWideScreenSupport(bool supportWideScreen)
+        public static void EnableWideScreenSupport(bool enabled)
         {
-            WideScreenSupported = supportWideScreen;
+            WideScreenSupported = enabled;
             IsWideScreen = GraphicsAdapter.DefaultAdapter.IsWideScreen;
 
             Engine.Graphics.ApplyChanges();
@@ -158,7 +154,10 @@ namespace Morro.Core
 #else
             Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
             Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
-#endif           
+#endif
+            Engine.Instance.IsFixedTimeStep = false;
+            Engine.Graphics.SynchronizeWithVerticalRetrace = true;
+
             Engine.Graphics.ApplyChanges();
 
             SetupBoxing();
@@ -212,14 +211,6 @@ namespace Morro.Core
                     if (PixelWidth * zoom > windowWidth)
                     {
                         zoom = (float)windowWidth / PixelWidth;
-                    }
-                    else if (PixelWidth * zoom < windowWidth)
-                    {
-                        // Disable letterboxing if WideScreenSupport is enabled.
-                        if (WideScreenSupported)
-                        {
-                            PixelWidth = (int)((windowWidth - PixelWidth * zoom) / zoom) + PixelWidth;
-                        }
                     }
                     Bounds = new Rectangle(0, 0, PixelWidth, PixelHeight);
                     break;
@@ -337,29 +328,12 @@ namespace Morro.Core
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            switch (Orientation)
+            if (!WideScreenSupported)
             {
-                case OrientationType.Landscape:
-                    topLetterBox.Draw(spriteBatch, CameraType.Static);
-                    bottomLetterBox.Draw(spriteBatch, CameraType.Static);
-
-                    if (!WideScreenSupported)
-                    {
-                        leftPillarBox.Draw(spriteBatch, CameraType.Static);
-                        rightPillarBox.Draw(spriteBatch, CameraType.Static);
-                    }
-                    break;
-
-                case OrientationType.Portrait:
-                    leftPillarBox.Draw(spriteBatch, CameraType.Static);
-                    rightPillarBox.Draw(spriteBatch, CameraType.Static);
-
-                    if (!WideScreenSupported)
-                    {
-                        topLetterBox.Draw(spriteBatch, CameraType.Static);
-                        bottomLetterBox.Draw(spriteBatch, CameraType.Static);
-                    }
-                    break;
+                topLetterBox.Draw(spriteBatch, CameraType.Static);
+                bottomLetterBox.Draw(spriteBatch, CameraType.Static);
+                leftPillarBox.Draw(spriteBatch, CameraType.Static);
+                rightPillarBox.Draw(spriteBatch, CameraType.Static);
             }
         }
     }

@@ -15,12 +15,7 @@ namespace Morro.Utilities
         private Color fadeColor;
         private readonly Quad fade;
 
-        public Fade(TransitionType type) : this(type, Color.Black, 0, 0.2f)
-        {
-
-        }
-
-        public Fade(TransitionType type, Color color) : this(type, color, 0, 0.2f)
+        public Fade(TransitionType type) : this(type, Color.Black, 1, 5)
         {
 
         }
@@ -54,14 +49,22 @@ namespace Morro.Utilities
 
             CalculateForce();
 
+            if (WindowManager.WideScreenSupported)
+            {
+                fade.SetBounds
+                (
+                    -WindowManager.PillarBox - BUFFER,
+                    -WindowManager.LetterBox - BUFFER,
+                    CameraManager.GetCamera(CameraType.Static).Bounds.Width + BUFFER * 2,
+                    CameraManager.GetCamera(CameraType.Static).Bounds.Height + BUFFER * 2
+                );
+            }
+
             switch (Type)
             {
                 case TransitionType.Exit:
-                    if (alpha + velocity < 1)
-                    {
-                        alpha += velocity;
-                    }
-                    else
+                    alpha += velocity * Engine.DeltaTime;
+                    if (alpha > 1)
                     {
                         alpha = 1;
                         lastDraw = true;
@@ -69,11 +72,8 @@ namespace Morro.Utilities
                     break;
 
                 case TransitionType.Enter:
-                    if (alpha - velocity > 0)
-                    {
-                        alpha -= velocity;
-                    }
-                    else
+                    alpha -= velocity * Engine.DeltaTime;
+                    if (alpha < 0)
                     {
                         alpha = 0;
                         lastDraw = true;

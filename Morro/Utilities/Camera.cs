@@ -8,16 +8,17 @@ namespace Morro.Utilities
 {
     class Camera
     {
-        public CameraType CameraType { get; private set; }
+        public string Name { get; private set; }
         public Matrix Transform { get; private set; }
         public Matrix World { get; private set; }
         public Matrix View { get; private set; }
         public Matrix Projection { get; private set; }
         public Vector3 TopLeft { get; private set; }
         public Core.Rectangle Bounds { get; private set; }
+        public Vector3 TrackingPosition { get; private set; }
+        public float SmoothTrackingSpeed { get; set; }
         public float Zoom { get; private set; }
         public float Rotation { get; private set; }
-        public bool ForceReset { get; private set; }
 
         private Vector3 cameraPosition;
         private Vector3 cameraTarget;
@@ -29,26 +30,23 @@ namespace Morro.Utilities
         private float minX;
         private float minY;
         private float maxX;
-        private float maxY;        
+        private float maxY;
 
-        public Camera(CameraType cameraType) : this(0, 0, cameraType)
+        private bool tracking;
+        private bool smoothTracking;
+
+        public Camera(string name) : this(0, 0, name)
         {
 
         }
 
-        public Camera(float x, float y, float minX, float minY, float maxX, float maxY) : this(x, y, CameraType.Dynamic)
+        public Camera(float x, float y, string name)
         {
-            movementRestricted = true;
-            this.minX = minX;
-            this.minY = minY;
-            this.maxX = maxX;
-            this.maxY = maxY;
-        }
-
-        public Camera(float x, float y, CameraType cameraType)
-        {
-            CameraType = cameraType;
+            Name = CameraManager.FormatCameraName(name);
             TopLeft = new Vector3(x, y, 0);
+            TrackingPosition = new Vector3(0, 0, 0);
+            SmoothTrackingSpeed = 1;
+
             Initialize();
         }
 
@@ -63,7 +61,8 @@ namespace Morro.Utilities
                 return;
 
             Rotation = rotation;
-            UpdateMatrices();
+
+            Initialize();
         }
 
         public void SetZoomOffset(float offset)
@@ -72,7 +71,18 @@ namespace Morro.Utilities
                 return;
 
             zoomOffset = offset;
-            UpdateMatrices();
+
+            Initialize();
+        }
+
+        public void SetTopLeft(Vector2 position)
+        {
+            SetTopLeft(position.X, position.Y);
+        }
+
+        public void SetTopLeft(Vector3 position)
+        {
+            SetTopLeft(position.X, position.Y);
         }
 
         public void SetTopLeft(float x, float y)
@@ -80,9 +90,37 @@ namespace Morro.Utilities
             if (TopLeft.X == x && TopLeft.Y == y)
                 return;
 
-            TopLeft = new Vector3(x, y, 0);
-            Bounds = new Core.Rectangle((int)TopLeft.X, (int)TopLeft.Y, WindowManager.PixelWidth, WindowManager.PixelHeight);
-            UpdateMatrices();
+            TopLeft = new Vector3(x, y, TopLeft.Z);
+
+            Initialize();
+        }
+
+        public void Track(Vector2 position)
+        {
+            Track(position.X, position.Y);
+        }
+
+        public void Track(float x, float y)
+        {
+            if (TrackingPosition.X == x && TrackingPosition.Y == y)
+                return;
+
+            tracking = true;
+            SetupTracking(x, y);
+        }
+
+        public void SmoothTrack(Vector2 position)
+        {
+            SmoothTrack(position.X, position.Y);
+        }
+
+        public void SmoothTrack(float x, float y)
+        {
+            if (TrackingPosition.X == x && TrackingPosition.Y == y)
+                return;
+
+            smoothTracking = true;
+            SetupTracking(x, y);
         }
 
         public void SetMovementRestriction(float minX, float minY, float maxX, float maxY)
@@ -96,55 +134,55 @@ namespace Morro.Utilities
 
         private void Initialize()
         {
-            Zoom = WindowManager.Scale;
-            Bounds = new Core.Rectangle((int)TopLeft.X, (int)TopLeft.Y, WindowManager.PixelWidth, WindowManager.PixelHeight);
-            cameraCenter = new Vector3(Bounds.Width / 2, Bounds.Height / 2, 0);
+            UpdatePositions();
             UpdateMatrices();
         }
 
-        private void StayWithinBounds()
+        private void UpdatePositions()
         {
-            if (!movementRestricted)
-                return;
+            Zoom = WindowManager.Scale;
 
-            if (TopLeft.X < minX)
+            if (WindowManager.WideScreenSupported)
             {
-                SetTopLeft(minX, TopLeft.Y);
+                Bounds = new Core.Rectangle
+                (
+                    (int)TopLeft.X - WindowManager.PillarBox,
+                    (int)TopLeft.Y - WindowManager.LetterBox,
+                    WindowManager.PixelWidth + (int)Math.Ceiling(WindowManager.PillarBox * 2),
+                    WindowManager.PixelHeight + (int)Math.Ceiling(WindowManager.LetterBox * 2)
+                );
+                cameraCenter = new Vector3(Bounds.Width / 2 - WindowManager.PillarBox, Bounds.Height / 2 - WindowManager.LetterBox, 0);
+            }
+            else
+            {
+                Bounds = new Core.Rectangle
+                (
+                    (int)TopLeft.X,
+                    (int)TopLeft.Y,
+                    WindowManager.PixelWidth,
+                    WindowManager.PixelHeight
+                );
+                cameraCenter = new Vector3(Bounds.Width / 2, Bounds.Height / 2, 0);
             }
 
-            if (TopLeft.X + Bounds.Width > maxX)
-            {
-                SetTopLeft(maxX - Bounds.Width, TopLeft.Y);
-            }
-
-            if (TopLeft.Y < minY)
-            {
-                SetTopLeft(TopLeft.X, minY);
-            }
-
-            if (TopLeft.Y + Bounds.Height > maxY)
-            {
-                SetTopLeft(TopLeft.X, maxY - Bounds.Height);
-            }
+            cameraPosition = new Vector3(-TopLeft.X, -TopLeft.Y, -1);
+            cameraTarget = new Vector3(cameraPosition.X, cameraPosition.Y, 0);
         }
 
         private void UpdateMatrices()
         {
-            cameraPosition = new Vector3(-TopLeft.X, -TopLeft.Y, -1);
-            cameraTarget = new Vector3(cameraPosition.X, cameraPosition.Y, 0);
-
             Transform =
-                    // M = R * T * S 
-                    // Translate the transform matrix to the inverse of the camera's center.
-                    Matrix.CreateTranslation(-cameraCenter) *
-                    // Rotate the camera relative to the center of the camera bounds.
-                    Matrix.CreateRotationZ(Rotation) *
-                    // Translate the transform matrix to the transform matrix to the inverse of the camera's top left.
-                    Matrix.CreateTranslation(-TopLeft) *
-                    // Scale the transform matrix by the camera's zoom.
-                    Matrix.CreateScale(Zoom + zoomOffset) *
-                    // Anchor the transform matrix to the center of the screen instead of the top left.
-                    Matrix.CreateTranslation(new Vector3(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2, 0));
+                // M = R * T * S 
+                // Translate the transform matrix to the inverse of the camera's center.
+                Matrix.CreateTranslation(-cameraCenter) *
+                // Rotate the camera relative to the center of the camera bounds.
+                Matrix.CreateRotationZ(Rotation) *
+                // Translate the transform matrix to the transform matrix to the inverse of the camera's top left.
+                Matrix.CreateTranslation(-TopLeft) *
+                // Scale the transform matrix by the camera's zoom.
+                Matrix.CreateScale(Zoom + zoomOffset) *
+                // Anchor the transform matrix to the center of the screen instead of the top left.
+                Matrix.CreateTranslation(new Vector3(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2, 0));
 
             World =
                 // Set the origin of the world matrix to the camera's center.
@@ -156,8 +194,142 @@ namespace Morro.Utilities
             Projection = Matrix.CreateOrthographic(WindowManager.WindowWidth / (Zoom + zoomOffset), WindowManager.WindowHeight / (Zoom + zoomOffset), -1000, 1000);
         }
 
+        private void SetupTracking(float x, float y)
+        {
+            if (WindowManager.WideScreenSupported)
+            {
+                TrackingPosition = new Vector3(x - Bounds.Width / 2 + WindowManager.PillarBox, y - Bounds.Height / 2 + WindowManager.LetterBox, TrackingPosition.Z);
+            }
+            else
+            {
+                TrackingPosition = new Vector3(x - Bounds.Width / 2, y - Bounds.Height / 2, TrackingPosition.Z);
+            }            
+        }
+
+        private void NormalCollision()
+        {
+            if (Bounds.Width > maxX - minX)
+            {
+                float restrictedRange = maxX - minX;
+                SetTopLeft(WindowManager.PillarBox - (Bounds.Width - restrictedRange) / 2, TopLeft.Y);
+            }
+            else
+            {
+                if (TopLeft.X < minX)
+                {
+                    SetTopLeft(minX, TopLeft.Y);
+                }
+
+                if (TopLeft.X + Bounds.Width > maxX)
+                {
+                    SetTopLeft(maxX - Bounds.Width, TopLeft.Y);
+                }
+            }
+
+            if (Bounds.Height > maxY - minY)
+            {
+                float restrictedRange = maxY - minY;
+                SetTopLeft(TopLeft.X, WindowManager.LetterBox - (Bounds.Height - restrictedRange) / 2);
+            }
+            else
+            {
+                if (TopLeft.Y < minY)
+                {
+                    SetTopLeft(TopLeft.X, minY);
+
+                }
+                if (TopLeft.Y + Bounds.Height > maxY)
+                {
+                    SetTopLeft(TopLeft.X, maxY - Bounds.Height);
+                }
+            }
+        }
+
+        private void WidescreenCollision()
+        {
+            if (Bounds.Width > maxX - minX)
+            {
+                float restrictedRange = maxX - minX;
+                SetTopLeft(WindowManager.PillarBox - (Bounds.Width - restrictedRange) / 2, TopLeft.Y);
+            }
+            else
+            {
+                if (TopLeft.X - WindowManager.PillarBox < minX)
+                {
+                    SetTopLeft(minX + WindowManager.PillarBox, TopLeft.Y);
+                }
+
+                if (TopLeft.X + Bounds.Width - WindowManager.PillarBox > maxX)
+                {
+                    SetTopLeft(maxX - Bounds.Width + WindowManager.PillarBox, TopLeft.Y);
+                }
+            }
+
+            if (Bounds.Height > maxY - minY)
+            {
+                float restrictedRange = maxY - minY;
+                SetTopLeft(TopLeft.X, WindowManager.LetterBox - (Bounds.Height - restrictedRange) / 2);
+            }
+            else
+            {
+                if (TopLeft.Y - WindowManager.LetterBox < minY)
+                {
+                    SetTopLeft(TopLeft.X, minY + WindowManager.LetterBox);
+
+                }
+                if (TopLeft.Y + Bounds.Height - WindowManager.LetterBox > maxY)
+                {
+                    SetTopLeft(TopLeft.X, maxY - Bounds.Height + WindowManager.LetterBox);
+                }
+            }
+        }
+
+        private void StayWithinBounds()
+        {
+            if (!movementRestricted)
+                return;
+
+            if (WindowManager.WideScreenSupported)
+            {
+                WidescreenCollision();
+            }
+            else
+            {
+                NormalCollision();
+            }
+        }
+
+        private void UpdateTracking()
+        {
+            if (!tracking)
+                return;
+
+            SetTopLeft(TrackingPosition);
+            tracking = false;
+        }
+
+        private void UpdateSmoothTracking()
+        {
+            if (!smoothTracking)
+                return;
+
+            Vector3 difference = TrackingPosition - TopLeft;
+            difference = new Vector3(Math.Abs(difference.X), Math.Abs(difference.Y), Math.Abs(difference.Z));
+
+            SetTopLeft(Vector3.Lerp(TopLeft, TrackingPosition, SmoothTrackingSpeed * Engine.DeltaTime));
+
+            float min = 0.5f;
+            if (difference.X < min && difference.Y < min && difference.Z < min)
+            {
+                SetTopLeft(TrackingPosition);
+                smoothTracking = false;
+            }
+        }
+
         public virtual void Update()
         {
+            UpdateTracking();
+            UpdateSmoothTracking();
             StayWithinBounds();
         }
     }

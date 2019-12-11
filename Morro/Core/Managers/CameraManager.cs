@@ -8,55 +8,60 @@ namespace Morro.Core
     public enum CameraType
     {
         /// <summary>
-        /// Anything drawn with a dynamic camera will move inversely to the camera's top left. This effect will create the illusion of movement.
-        /// </summary>
-        Dynamic,
-        /// <summary>
         /// The static camera will never move, and is used for drawing anything that must always be visible on the screen (e.g. menus, transitions, etc.).
         /// </summary>
         Static,
+
         /// <summary>
-        /// The LeftJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become left justified to use the extra window space.
+        /// The TopLeftAlign camera will also never move, but if WideScreenSupported is true, anything drawn will become top-left aligned to use the extra window space.
         /// </summary>
-        LeftJustified,
+        TopLeftAlign,
         /// <summary>
-        /// The RightJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become right justified to use the extra window space.
+        /// The RightAlign camera will also never move, but if WideScreenSupported is true, anything drawn will become top-right aligned to use the extra window space.
         /// </summary>
-        RightJustified,
-        /// <summary>
-        /// The TopJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become top justified to use the extra window space.
-        /// </summary>
-        TopJustified,
-        /// <summary>
-        /// The BottomJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become bottom justified to use the extra window space.
-        /// </summary>
-        BottomJustified,
+        TopRightAlign,
     }
 
     class CameraManager
     {
-        private static Dictionary<CameraType, Camera> cameras;
+        private static Dictionary<string, Camera> cameras;
 
-        public static void Initialize()
+        internal static void Initialize()
         {
-            cameras = new Dictionary<CameraType, Camera>
-            {
-                { CameraType.Static, new Camera(CameraType.Static) },
-                { CameraType.Dynamic, new Camera(CameraType.Dynamic) },
+            cameras = new Dictionary<string, Camera>();
 
-                { CameraType.LeftJustified, new Camera(CameraType.LeftJustified) },
-                { CameraType.RightJustified, new Camera(CameraType.RightJustified) },
-
-                { CameraType.TopJustified, new Camera(CameraType.TopJustified) },
-                { CameraType.BottomJustified, new Camera(CameraType.BottomJustified) }
-            };
+            RegisterCamera(new Camera("Static"));
+            RegisterCamera(new Camera("TopLeftAlign"));
+            RegisterCamera(new Camera("TopRightAlign"));
 
             WindowManager.WindowChanged += HandleWindowChange;
         }
 
-        public static Camera GetCamera(CameraType type)
+        public static void RegisterCamera(Camera camera)
         {
-            return cameras[type];
+            if (cameras.ContainsKey(camera.Name))
+                throw new MorroException("A Camera with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
+
+            cameras.Add(camera.Name, camera);
+        }
+
+        public static Camera GetCamera(string name)
+        {
+            string formattedName = FormatCameraName(name);
+            if (!cameras.ContainsKey(formattedName))
+                throw new Exception("A camera with that name does not exist.", new KeyNotFoundException());
+
+            return cameras[formattedName];
+        }
+
+        public static Camera GetCamera(CameraType cameraType)
+        {
+            return GetCamera(cameraType.ToString());
+        }
+
+        internal static string FormatCameraName(string name)
+        {
+            return name.ToLowerInvariant();
         }
 
         private static void HandleWindowChange(object sender, EventArgs e)
@@ -66,35 +71,40 @@ namespace Morro.Core
 
         private static void ResetCameras()
         {
-            foreach (KeyValuePair<CameraType, Camera> entry in cameras)
+            foreach (KeyValuePair<string, Camera> entry in cameras)
             {
                 entry.Value.Reset();
             }
         }
 
-        public static void Update()
+        private static void ManageManagedCameras()
         {
             if (WindowManager.WideScreenSupported)
             {
-                GetCamera(CameraType.LeftJustified).SetTopLeft(WindowManager.PillarBox, 0);
-                GetCamera(CameraType.RightJustified).SetTopLeft(-WindowManager.PillarBox, 0);
-                GetCamera(CameraType.TopJustified).SetTopLeft(0, WindowManager.LetterBox);
-                GetCamera(CameraType.BottomJustified).SetTopLeft(0, -WindowManager.LetterBox);
+                GetCamera("TopLeftAlign").SetTopLeft(WindowManager.PillarBox, WindowManager.LetterBox);
+                GetCamera("TopRightAlign").SetTopLeft(-WindowManager.PillarBox, -WindowManager.LetterBox);
             }
             else
             {
-                GetCamera(CameraType.LeftJustified).SetTopLeft(0, 0);
-                GetCamera(CameraType.RightJustified).SetTopLeft(0, 0);
-                GetCamera(CameraType.TopJustified).SetTopLeft(0, 0);
-                GetCamera(CameraType.BottomJustified).SetTopLeft(0, 0);
+                GetCamera("TopLeftAlign").SetTopLeft(0, 0);
+                GetCamera("TopRightAlign").SetTopLeft(0, 0);
             }
 
-            GetCamera(CameraType.Static).SetTopLeft(0, 0);
+            GetCamera("Static").SetTopLeft(0, 0);
+        }
 
-            foreach (KeyValuePair<CameraType, Camera> entry in cameras)
+        private static void UpdateCameras()
+        {
+            foreach (KeyValuePair<string, Camera> entry in cameras)
             {
                 entry.Value.Update();
             }
+        }
+
+        public static void Update()
+        {
+            ManageManagedCameras();
+            UpdateCameras();
         }
     }
 }

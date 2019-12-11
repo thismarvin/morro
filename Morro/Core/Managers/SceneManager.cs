@@ -35,16 +35,21 @@ namespace Morro.Core
             scenes.Add(scene.Name, scene);
         }
 
-        public static void QueueScene(string name)
+        public static Scene GetScene(string name)
         {
             string formattedName = FormatName(name);
             if (!scenes.ContainsKey(formattedName))
                 throw new MorroException("A scene with that name has not been registered.", new KeyNotFoundException());
 
+            return scenes[formattedName];
+        }
+
+        public static void QueueScene(string name)
+        {
             if (transitionInProgress)
                 return;
 
-            NextScene = scenes[formattedName];
+            NextScene = GetScene(name);
             SetupTransitions();
         }
 

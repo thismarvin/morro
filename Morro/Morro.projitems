@@ -73,7 +73,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\Outline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\Palette.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Palettes\PICO8.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\Polygon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Polygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\Quad.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\Quantize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\RegularPolygon.cs" />

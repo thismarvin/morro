@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.Maths;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -317,11 +318,16 @@ namespace Morro.Graphics
             }
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
         {
-            GraphicsManager.BasicEffect.World = transform * CameraManager.GetCamera(cameraType).World;
-            GraphicsManager.BasicEffect.View = CameraManager.GetCamera(cameraType).View;
-            GraphicsManager.BasicEffect.Projection = CameraManager.GetCamera(cameraType).Projection;
+            Draw(spriteBatch, CameraManager.GetCamera(cameraType));
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Camera camera)
+        {
+            GraphicsManager.BasicEffect.World = transform * camera.World;
+            GraphicsManager.BasicEffect.View = camera.View;
+            GraphicsManager.BasicEffect.Projection = camera.Projection;
 
             spriteBatch.GraphicsDevice.RasterizerState = DebugManager.ShowWireFrame ? GraphicsManager.DebugRasterizerState : GraphicsManager.DefaultRasterizerState;
             spriteBatch.GraphicsDevice.BlendState = BlendState.NonPremultiplied;

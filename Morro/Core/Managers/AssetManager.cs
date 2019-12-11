@@ -20,6 +20,9 @@ namespace Morro.Core
         public static void LoadImage(string name, string path)
         {
             string formattedName = FormatName(name);
+            if (textures.ContainsKey(formattedName))
+                throw new MorroException("An Image with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
+
             textures.Add(formattedName, Engine.Instance.Content.Load<Texture2D>(path));
         }
 
@@ -27,6 +30,7 @@ namespace Morro.Core
         {
             string formattedName = FormatName(name);
             VerifyImage(formattedName);
+
             return textures[formattedName];
         }
 
@@ -34,6 +38,7 @@ namespace Morro.Core
         {
             string formattedName = FormatName(name);
             VerifyImage(formattedName);
+
             textures[formattedName].Dispose();
             textures.Remove(formattedName);
         }
@@ -42,20 +47,28 @@ namespace Morro.Core
         #region Handle Effects
         public static void LoadEffect(string name, string path)
         {
-            effects.Add(name.ToLowerInvariant(), Engine.Instance.Content.Load<Effect>(path));
+            string formattedName = FormatName(name);
+            if (effects.ContainsKey(formattedName))
+                throw new MorroException("An Effect with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
+
+            effects.Add(formattedName, Engine.Instance.Content.Load<Effect>(path));
         }
 
         public static Effect GetEffect(string name)
         {
-            VerifyEffect(name);
-            return effects[name.ToLowerInvariant()];
+            string formattedName = FormatName(name);
+            VerifyEffect(formattedName);
+
+            return effects[formattedName];
         }
 
         public static void RemoveEffect(string name)
         {
-            VerifyEffect(name);
-            effects[name.ToLowerInvariant()].Dispose();
-            effects.Remove(name.ToLowerInvariant());
+            string formattedName = FormatName(name);
+            VerifyEffect(formattedName);
+
+            effects[formattedName].Dispose();
+            effects.Remove(formattedName);
         }
         #endregion
 

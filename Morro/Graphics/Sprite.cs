@@ -12,7 +12,7 @@ namespace Morro.Graphics
     {
         public float Rotation { get; set; }
         public bool Show { get; set; }
-        public string SpriteType { get; private set; }
+        public string SpriteDataName { get; private set; }
         public SpriteEffects SpriteEffect { get; set; }
         public Vector2 RotationOffset { get; set; }
         public Vector2 Scale { get; set; }
@@ -34,11 +34,11 @@ namespace Morro.Graphics
             SetFrame(frame, columns);
         }
 
-        public Sprite(float x, float y, string sprite) : base(x, y, 1, 1)
+        public Sprite(float x, float y, string spriteDataName) : base(x, y, 1, 1)
         {
             Rotation = 0;
             Show = true;
-            SpriteType = sprite;
+            SpriteDataName = SpriteManager.FormatName(spriteDataName);
             RotationOffset = Vector2.Zero;
             Scale = new Vector2(1, 1);
             BlendState = BlendState.NonPremultiplied;
@@ -49,7 +49,7 @@ namespace Morro.Graphics
 
         private void InitializeSprite()
         {
-            SpriteSetup(SpriteManager.GetSpriteData(SpriteType));
+            SpriteSetup(SpriteManager.GetSpriteData(SpriteDataName));
         }
 
         private void SpriteSetup(SpriteData spriteData)
@@ -84,12 +84,12 @@ namespace Morro.Graphics
             sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
         }
 
-        public void SetSprite(string spriteType)
+        public void SetSprite(string spriteDataName)
         {
-            if (SpriteType == spriteType)
+            if (SpriteDataName == spriteDataName)
                 return;
 
-            SpriteType = spriteType;
+            SpriteDataName = spriteDataName;
             InitializeSprite();
         }
 

@@ -168,7 +168,7 @@ namespace Morro.Core
             UpdateTransitions();
             UpdateCurrentScene();
 
-            if (Input.Keyboard.Pressed(Keys.R))
+            if (DebugManager.Debugging && Input.Keyboard.Pressed(Keys.R))
             {
                 CurrentScene?.LoadScene();
             }

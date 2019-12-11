@@ -21,11 +21,15 @@ namespace Morro.Graphics
             Radius = radius;
         }
 
+        public override void SetLocation(float x, float y)
+        {
+            base.SetLocation(x - Radius, y - Radius);
+        }
+
         public void SetRadius(int radius)
         {
             Radius = radius;
             SetDimensions(Radius * 2, Radius * 2);
-            SetLocation(X - Radius, Y - Radius);
         }
 
         public bool Intersects(Circle circle)

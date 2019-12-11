@@ -10,15 +10,15 @@ namespace Morro.Input
 {
     static class Mouse
     {
-        public static Vector2 DynamicLocation { get { return dynamicLocation; } }
-        public static Vector2 StaticLocation { get { return staticLocation; } }
+        public static Vector2 SceneLocation { get { return sceneLocation; } }
+        public static Vector2 WindowLocation { get { return windowLocation; } }
         public static Core.Rectangle DynamicBounds { get; private set; }
         public static Core.Rectangle StaticBounds { get; private set; }
 
         private static MouseState previousMouseState;
         private static MouseState currentMouseState;
-        private static Vector2 dynamicLocation;
-        private static Vector2 staticLocation;
+        private static Vector2 sceneLocation;
+        private static Vector2 windowLocation;
         private static bool isBeingUpdated;
 
         private static void VerifyUpdateIsCalled()
@@ -35,14 +35,17 @@ namespace Morro.Input
             previousMouseState = currentMouseState;
             currentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
 
-            dynamicLocation.X = currentMouseState.X / CameraManager.GetCamera(CameraType.Dynamic).Zoom + CameraManager.GetCamera(CameraType.Dynamic).TopLeft.X - WindowManager.PillarBox;
-            dynamicLocation.Y = currentMouseState.Y / CameraManager.GetCamera(CameraType.Dynamic).Zoom + CameraManager.GetCamera(CameraType.Dynamic).TopLeft.Y - WindowManager.LetterBox;
+            if (SceneManager.CurrentScene != null)
+            {
+                sceneLocation.X = currentMouseState.X / SceneManager.CurrentScene.Camera.Zoom + SceneManager.CurrentScene.Camera.TopLeft.X - WindowManager.PillarBox;
+                sceneLocation.Y = currentMouseState.Y / SceneManager.CurrentScene.Camera.Zoom + SceneManager.CurrentScene.Camera.TopLeft.Y - WindowManager.LetterBox;
+            }
 
-            staticLocation.X = currentMouseState.X / CameraManager.GetCamera(CameraType.Static).Zoom - WindowManager.PillarBox;
-            staticLocation.Y = currentMouseState.Y / CameraManager.GetCamera(CameraType.Static).Zoom - WindowManager.LetterBox;
+            windowLocation.X = currentMouseState.X / CameraManager.GetCamera(CameraType.Static).Zoom - WindowManager.PillarBox;
+            windowLocation.Y = currentMouseState.Y / CameraManager.GetCamera(CameraType.Static).Zoom - WindowManager.LetterBox;
 
-            DynamicBounds = new Core.Rectangle(dynamicLocation.X, dynamicLocation.Y, 1, 1);
-            StaticBounds = new Core.Rectangle(staticLocation.X, staticLocation.Y, 1, 1);
+            DynamicBounds = new Core.Rectangle(sceneLocation.X, sceneLocation.Y, 1, 1);
+            StaticBounds = new Core.Rectangle(windowLocation.X, windowLocation.Y, 1, 1);
         }
 
         public static bool PressedLeftClick()

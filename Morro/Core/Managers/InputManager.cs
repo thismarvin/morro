@@ -47,10 +47,16 @@ namespace Morro.Core
 
         public static InputProfile GetInputProfile(string name)
         {
-            if (!profiles.ContainsKey(name.ToUpper(CultureInfo.InvariantCulture)))
+            string formattedName = FormatName(name);
+            if (!profiles.ContainsKey(formattedName))
                 throw new MorroException("An InputProfile with that name does not exist.", new KeyNotFoundException());
 
-            return profiles[name.ToUpper(CultureInfo.InvariantCulture)];
+            return profiles[formattedName];
+        }
+
+        internal static string FormatName(string name)
+        {
+            return name.ToLowerInvariant();
         }
 
         private static void LoadProfiles()

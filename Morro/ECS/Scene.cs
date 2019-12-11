@@ -27,7 +27,7 @@ namespace Morro.ECS
             Entities = new List<Entity>();
             EntityBuffer = new List<Entity>();
 
-            Name = name.ToLowerInvariant();
+            Name = SceneManager.FormatName(name);
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
             PartitionerPreference = PartitionerType.Quadtree;

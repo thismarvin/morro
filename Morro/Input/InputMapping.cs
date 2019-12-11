@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using Morro.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,7 +20,7 @@ namespace Morro.Input
 
         public InputMapping(string name, Keys[] keys, Buttons[] buttons)
         {
-            Name = name.ToUpper(CultureInfo.InvariantCulture);
+            Name = InputManager.FormatName(name);
             Keys = keys;
             Buttons = buttons;
         }

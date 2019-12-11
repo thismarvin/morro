@@ -19,15 +19,22 @@ namespace Morro.Core
 
         public static void AddSpriteData(string name, int x, int y, int width, int height, string spriteSheet)
         {
-            spriteDataLookup.Add(name.ToLowerInvariant(), new SpriteData(x, y, width, height, spriteSheet));
+            string formattedName = FormatName(name);
+            spriteDataLookup.Add(formattedName, new SpriteData(x, y, width, height, spriteSheet));
         }
 
         public static SpriteData GetSpriteData(string name)
         {
-            if (!spriteDataLookup.ContainsKey(name.ToLowerInvariant()))
+            string formattedName = FormatName(name);
+            if (!spriteDataLookup.ContainsKey(formattedName))
                 throw new MorroException("SpriteData with that name has not been added.", new KeyNotFoundException());
 
-            return spriteDataLookup[name.ToLowerInvariant()];
+            return spriteDataLookup[formattedName];
         }       
+
+        internal static string FormatName(string name)
+        {
+            return name.ToLowerInvariant();
+        }
     }
 }

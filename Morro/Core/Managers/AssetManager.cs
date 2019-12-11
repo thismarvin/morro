@@ -19,20 +19,23 @@ namespace Morro.Core
         #region Handle Images
         public static void LoadImage(string name, string path)
         {
-            textures.Add(name.ToLowerInvariant(), Engine.Instance.Content.Load<Texture2D>(path));
+            string formattedName = FormatName(name);
+            textures.Add(formattedName, Engine.Instance.Content.Load<Texture2D>(path));
         }
 
         public static Texture2D GetImage(string name)
         {
-            VerifyImage(name);
-            return textures[name.ToLowerInvariant()];
+            string formattedName = FormatName(name);
+            VerifyImage(formattedName);
+            return textures[formattedName];
         }
 
         public static void RemoveImage(string name)
         {
-            VerifyImage(name);
-            textures[name.ToLowerInvariant()].Dispose();
-            textures.Remove(name.ToLowerInvariant());
+            string formattedName = FormatName(name);
+            VerifyImage(formattedName);
+            textures[formattedName].Dispose();
+            textures.Remove(formattedName);
         }
         #endregion
 
@@ -85,9 +88,14 @@ namespace Morro.Core
             }
         }
 
+        private static string FormatName(string name)
+        {
+            return name.ToLowerInvariant();
+        }
+
         private static void VerifyImage(string name)
         {
-            if (!textures.ContainsKey(name.ToLowerInvariant()))
+            if (!textures.ContainsKey(name))
                 throw new MorroException("An image with that name has not been loaded.", new KeyNotFoundException());
         }
 

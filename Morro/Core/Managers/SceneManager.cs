@@ -29,7 +29,28 @@ namespace Morro.Core
 
         public static void RegisterScene(Scene scene)
         {
+            if (scenes.ContainsKey(scene.Name))
+                throw new MorroException("A Scene with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
+
             scenes.Add(scene.Name, scene);
+        }
+
+        public static void QueueScene(string name)
+        {
+            string formattedName = FormatName(name);
+            if (!scenes.ContainsKey(formattedName))
+                throw new MorroException("A scene with that name has not been registered.", new KeyNotFoundException());
+
+            if (transitionInProgress)
+                return;
+
+            NextScene = scenes[formattedName];
+            SetupTransitions();
+        }
+
+        internal static string FormatName(string name)
+        {
+            return name.ToLowerInvariant();
         }
 
         private static void SetupTransitions()
@@ -47,18 +68,6 @@ namespace Morro.Core
             }
 
             transitionInProgress = true;
-        }
-
-        public static void QueueScene(string scene)
-        {
-            if (!scenes.ContainsKey(scene.ToLowerInvariant()))
-                throw new MorroException("A scene with that name has not been registered.", new KeyNotFoundException());
-
-            if (transitionInProgress)
-                return;
-
-            NextScene = scenes[scene.ToLowerInvariant()];
-            SetupTransitions();
         }
 
         private static void UnloadCurrentScene()

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.Debug;
 using Morro.Graphics;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Morro.Utilities
         Sparge,
     }
 
-    class BitmapFont : MonoObject, IDisposable
+    class BitmapFont : MonoObject, IDisposable, IDebugable
     {
         public FontType FontType { get; private set; }
         public Vector2 Scale { get; private set; }
@@ -28,7 +29,7 @@ namespace Morro.Utilities
         private readonly Timer timer;
         private readonly Quad debugBounds;
         private string spriteTypeFont;
-        private readonly int maximumCharacterCount;
+        //private readonly int maximumCharacterCount;
         private float textWidth;
         private float textHeight;
         private float extraHorizontalWidth;
@@ -52,7 +53,7 @@ namespace Morro.Utilities
             timer = new Timer(0);            
             FontType = type;
             Text = dialogue;
-            maximumCharacterCount = dialogue.Length * 20;
+            //maximumCharacterCount = 20;
             compact = true;
             showAll = true;
             Scale = scale;
@@ -214,12 +215,12 @@ namespace Morro.Utilities
 
             foreach (string s in words)
             {
-                if (s.Length + lineIndex + 1 > maximumCharacterCount)
-                {
-                    wordLength = 0;
-                    lineIndex = 1;
-                    y++;
-                }
+                //if (s.Length + lineIndex + 1 > maximumCharacterCount)
+                //{
+                //    wordLength = 0;
+                //    lineIndex = 1;
+                //    y++;
+                //}
 
                 for (int i = 0; i < s.Length; i++)
                 {
@@ -303,10 +304,16 @@ namespace Morro.Utilities
                 wordLength += textWidth;
             }
 
-            base.SetBounds(X, Y, (int)Math.Ceiling(y == 0 ? wordLength - textWidth + extraHorizontalWidth : maximumCharacterCount * textWidth), (int)Math.Ceiling(textHeight * (y + 1)));
+            //base.SetBounds(X, Y, (int)Math.Ceiling(y == 0 ? wordLength - textWidth + extraHorizontalWidth : maximumCharacterCount * textWidth), (int)Math.Ceiling(textHeight * (y + 1)));
+            base.SetBounds(X, Y, (int)Math.Ceiling(wordLength - textWidth + extraHorizontalWidth), (int)Math.Ceiling(textHeight * (y + 1)));
             debugBounds.SetBounds(X, Y, Width, Height);
             debugBounds.SetRotationOffset(Width / 2, Height / 2);
             debugBounds.SetRotation(Rotation);
+        }
+
+        public void Debug(SpriteBatch spriteBatch, Camera camera)
+        {
+            debugBounds.Draw(spriteBatch, camera);
         }
 
         public void Update()
@@ -338,11 +345,6 @@ namespace Morro.Utilities
         public void Draw(SpriteBatch spriteBatch, Camera camera)
         {
             Batcher.DrawSprites(spriteBatch, sprites, camera);
-
-            if (DebugManager.ShowBoundingBoxes)
-            {
-                debugBounds.Draw(spriteBatch, camera);
-            }
         }
 
         #region IDisposable Support

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Debug;
 using Morro.ECS;
@@ -18,15 +19,62 @@ namespace Morro.Core
         public static bool ShowWireFrame { get; private set; }
         public static bool ShowDebugLayer { get; private set; }
 
-        private static BitmapFont FPS;
-        private static BitmapFont currentScene;
-        private static BitmapFont totalEntities;
+        private static Dictionary<string, DebugEntry> debugEntries;
 
-        public static void Initialize()
+        internal static void Initialize()
         {
-            FPS = new BitmapFont(4, 4, "FPS", FontType.Probity);
-            currentScene = new BitmapFont(4, 4 + 8 + 2, "CURRENT SCENE:", FontType.Probity);
-            totalEntities = new BitmapFont(4, 4 + 8 + 2 + 8 + 2, "TOTAL ENTITIES:", FontType.Probity);
+            debugEntries = new Dictionary<string, DebugEntry>();
+
+            AddDebugEntry(new DebugEntry("FPS", "{0} FPS"));
+            AddDebugEntry(new DebugEntry("Scene", "SCENE: {0}"));
+            AddDebugEntry(new DebugEntry("Entities", "ENTITIES: {0}"));
+        }
+
+        internal static string FormatName(string name)
+        {
+            return name.ToLowerInvariant();
+        }
+
+        #region Handle DebugEntries
+        public static void AddDebugEntry(DebugEntry debugEntry)
+        {
+            if (debugEntries.ContainsKey(debugEntry.Name))
+                throw new MorroException("A DebugEntry with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
+
+            debugEntries.Add(debugEntry.Name, debugEntry);
+        }
+
+        public static DebugEntry GetDebugEntry(string name)
+        {
+            string formattedName = FormatName(name);
+            VerifyDebugEntryExists(formattedName);
+
+            return debugEntries[formattedName];
+        }
+
+        public static void RemoveDebugEntry(string name)
+        {
+            string formattedName = FormatName(name);
+            VerifyDebugEntryExists(formattedName);
+
+            debugEntries[formattedName].Dispose();
+            debugEntries.Remove(formattedName);
+        }
+
+        private static void VerifyDebugEntryExists(string name)
+        {
+            if (!debugEntries.ContainsKey(name))
+                throw new Exception("A debug entry with that name does not exist.", new KeyNotFoundException());
+        }
+        #endregion
+
+        internal static Vector2 NextDebugEntryPosition()
+        {
+            int padding = 4;
+            int textHeight = 8;
+            int lineHeight = textHeight + 2;
+
+            return new Vector2(padding, padding + debugEntries.Count * lineHeight);
         }
 
         private static void UpdateInput()
@@ -52,12 +100,9 @@ namespace Morro.Core
 
         private static void UpdateInfo()
         {
-            if (!Debugging)
-                return;
-
-            FPS.SetText(string.Format(CultureInfo.InvariantCulture, "{0} FPS", Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture)));
-            currentScene.SetText(string.Format(CultureInfo.InvariantCulture, "CURRENT SCENE: {0}", SceneManager.CurrentScene.Name.ToString()));
-            totalEntities.SetText(string.Format(CultureInfo.InvariantCulture, "TOTAL ENTITIES: {0}", SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture)));
+            GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture));
+            GetDebugEntry("Scene").SetInformation(SceneManager.CurrentScene.Name);
+            GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture));
         }
 
         private static void DrawDebugLayer(SpriteBatch spriteBatch)
@@ -75,6 +120,17 @@ namespace Morro.Core
             }
         }
 
+        private static void DrawDebugEntries(SpriteBatch spriteBatch)
+        {
+            if (!Debugging)
+                return;
+
+            foreach (KeyValuePair<string, DebugEntry> entry in debugEntries)
+            {
+                entry.Value.Draw(spriteBatch, CameraType.TopLeftAlign);
+            }
+        }
+
         public static void Update()
         {
             UpdateInput();
@@ -83,14 +139,8 @@ namespace Morro.Core
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            if (!Debugging)
-                return;
-
             DrawDebugLayer(spriteBatch);
-
-            FPS.Draw(spriteBatch, CameraType.TopLeftAlign);
-            currentScene.Draw(spriteBatch, CameraType.TopLeftAlign);
-            totalEntities.Draw(spriteBatch, CameraType.TopLeftAlign);
+            DrawDebugEntries(spriteBatch);
         }
     }
 }

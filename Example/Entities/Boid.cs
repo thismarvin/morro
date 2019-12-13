@@ -13,21 +13,21 @@ namespace Example.Entities
 {
     class Boid : Kinetic
     {
-        private readonly RegularPolygon body;
+        private readonly RegularPolygon body;        
         private readonly float viewRadius;
         private readonly float maxForce;
         private float angle;
 
         public Boid(float x, float y) : base(x, y, 4, 2, 1)
         {
-            body = new RegularPolygon(X, Y, Width, Height, 3, Color, VertexInformation.Static);
+            body = new RegularPolygon(X, Y, Width, Height, 3, Color, VertexInformation.Static);            
             MoveSpeed = RandomHelper.Range(40, 50);
             viewRadius = 16;
             maxForce = 0.5f;
 
             Velocity = new Vector2(
-            (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.01f,
-            (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.01f
+            (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f,
+            (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f
             );
 
             SetColor(Color.Black);

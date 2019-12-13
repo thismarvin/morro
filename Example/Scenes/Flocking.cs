@@ -25,7 +25,7 @@ namespace Example.Scenes
         private void Initialize()
         {
             PreferBinPartitioner(8);
-            totalBoids = 750;
+            totalBoids = 500;
         }
 
         public override void LoadScene()

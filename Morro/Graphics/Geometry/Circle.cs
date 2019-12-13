@@ -16,7 +16,7 @@ namespace Morro.Graphics
 
         }
 
-        public Circle(float x, float y, int radius, float lineWidth, Color color, VertexInformation vertexInformation) : base(x - radius, y - radius, radius * 2, radius * 2, (radius + 1) * 4 > 90 ? 90 :(radius + 1) * 4, lineWidth, color, vertexInformation)
+        public Circle(float x, float y, int radius, float lineWidth, Color color, VertexInformation vertexInformation) : base(x - radius, y - radius, radius * 2, radius * 2, 90, lineWidth, color, vertexInformation)
         {
             Radius = radius;
         }

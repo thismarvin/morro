@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SpriteManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Partitioner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMapping.cs" />

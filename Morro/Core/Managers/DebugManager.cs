@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Morro.Debug;
 using Morro.ECS;
 using Morro.Utilities;
 using System;
@@ -15,7 +16,7 @@ namespace Morro.Core
     {
         public static bool Debugging { get; private set; }
         public static bool ShowWireFrame { get; private set; }
-        public static bool ShowBoundingBoxes { get; private set; }
+        public static bool ShowDebugLayer { get; private set; }
 
         private static BitmapFont FPS;
         private static BitmapFont currentScene;
@@ -45,7 +46,7 @@ namespace Morro.Core
 
             if (Input.Keyboard.Pressing(Keys.LeftShift) && Input.Keyboard.Pressed(Keys.D2))
             {
-                ShowBoundingBoxes = !ShowBoundingBoxes;
+                ShowDebugLayer = !ShowDebugLayer;
             }
         }
 
@@ -59,6 +60,21 @@ namespace Morro.Core
             totalEntities.SetText(string.Format(CultureInfo.InvariantCulture, "TOTAL ENTITIES: {0}", SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture)));
         }
 
+        private static void DrawDebugLayer(SpriteBatch spriteBatch)
+        {
+            if (!ShowDebugLayer)
+                return;
+
+            List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
+            for (int i = 0; i < queryResult.Count; i++)
+            {
+                if (queryResult[i] is IDebugable)
+                {
+                    ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
+                }
+            }
+        }
+
         public static void Update()
         {
             UpdateInput();
@@ -67,18 +83,14 @@ namespace Morro.Core
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            if (Debugging)
-            {
-                List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
-                for (int i = 0; i < queryResult.Count; i++)
-                {
-                    queryResult[i].DrawBoundingBox(spriteBatch, SceneManager.CurrentScene.Camera);
-                }
+            if (!Debugging)
+                return;
 
-                FPS.Draw(spriteBatch, CameraType.TopLeftAlign);
-                currentScene.Draw(spriteBatch, CameraType.TopLeftAlign);
-                totalEntities.Draw(spriteBatch, CameraType.TopLeftAlign);
-            }
+            DrawDebugLayer(spriteBatch);
+
+            FPS.Draw(spriteBatch, CameraType.TopLeftAlign);
+            currentScene.Draw(spriteBatch, CameraType.TopLeftAlign);
+            totalEntities.Draw(spriteBatch, CameraType.TopLeftAlign);
         }
     }
 }

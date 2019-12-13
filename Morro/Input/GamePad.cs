@@ -24,7 +24,7 @@ namespace Morro.Input
         {
             if (!isBeingUpdated)
             {
-                throw new MorroException("Make sure to call your GamePad's Update() method before you use any of the built in methods.", new MissingMethodException());
+                throw new MorroException("Make sure to call your GamePad's Update() method before you use any of the built in methods.", new MethodExpectedException());
             }
         }
 

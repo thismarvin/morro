@@ -21,7 +21,7 @@
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MissingMethodException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodExpectedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodOrderException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\AssetManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\InputManager.cs" />

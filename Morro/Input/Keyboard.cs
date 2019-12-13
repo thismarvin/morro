@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Morro.Core;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +17,7 @@ namespace Morro.Input
         {
             if (!isBeingUpdated)
             {
-                throw new MorroException("Make sure to call Input.Keyboard.Update() in Engine.cs before you use any of the built in methods.", new MissingMethodException());
+                throw new MorroException("Make sure to call Input.Keyboard.Update() in Engine.cs before you use any of the built in methods.", new MethodExpectedException());
             }
         }
 

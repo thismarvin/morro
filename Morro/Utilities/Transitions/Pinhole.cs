@@ -10,66 +10,54 @@ namespace Morro.Utilities
 {
     class Pinhole : Transition
     {
-        private readonly Circle pinhole;
-        private readonly int size;
+        const int PADDING = 64;
 
-        private bool setup; 
+        private Circle pinhole;
+        private int radius;
 
-        public Pinhole(TransitionType type) : this(type, 50, 500)
+        public Pinhole(TransitionType type) : this(type, 1, 5)
         {
 
         }
 
-        public Pinhole(TransitionType type, float speed, float jerk) : base(type)
+        public Pinhole(TransitionType type, float speed, float acceleration) : base(type, speed, acceleration)
         {
-            this.speed = speed;
-            this.jerk = jerk;
-            size = Width > Height ? Width / 2 : Height / 2;
-
-            switch (Type)
-            {
-                case TransitionType.Enter:
-                    pinhole = new Circle(X, Y, size, size, Color.Black, VertexInformation.Dynamic);
-                    break;
-                case TransitionType.Exit:
-                    pinhole = new Circle(X, Y, size, 1, Color.Black, VertexInformation.Dynamic);
-                    break;
-            }            
+            pinhole = new Circle(0, 0, 1, Color.Black, VertexInformation.Dynamic);
         }
 
-        public override void Reset()
+        private void AccommodateToCamera()
         {
-            base.Reset();
-            setup = false;
-            switch (Type)
-            {
-                case TransitionType.Enter:
-                    pinhole.SetLineWidth(size);
-                    break;
-
-                case TransitionType.Exit:
-                    pinhole.SetLineWidth(1);
-                    break;
-            }
+            Camera camera = CameraManager.GetCamera(CameraType.Static);
+            radius = camera.Bounds.Width > camera.Bounds.Height ? camera.Bounds.Width / 2 : camera.Bounds.Height / 2;
+            radius += PADDING;
+            pinhole.SetRadius(radius);
+            pinhole.SetLocation(camera.Bounds.X + camera.Bounds.Width / 2, camera.Bounds.Y + camera.Bounds.Height / 2);
         }
 
-        public override void SetLocation(float x, float y)
+        private void CalculateLineWidth()
         {
-            base.SetLocation(x, y);
-            pinhole.SetLocation(X, Y);
+            int lineWidth = Type == TransitionType.Enter ? radius : 1;
+            pinhole.SetLineWidth(lineWidth);
+        }
+
+        private void Setup()
+        {
+            setup = true;
+            AccommodateToCamera();
+            CalculateLineWidth();
         }
 
         public override void Update()
         {
-            if (Done)
+            if (Done || !setup)
                 return;
-            
+
             CalculateForce();
 
             switch (Type)
             {
                 case TransitionType.Enter:
-                    pinhole.SetLineWidth(pinhole.LineWidth - velocity * Engine.DeltaTime);
+                    pinhole.SetLineWidth(pinhole.LineWidth - Force);
                     if (pinhole.LineWidth <= 1)
                     {
                         pinhole.SetLineWidth(1);
@@ -78,10 +66,10 @@ namespace Morro.Utilities
                     break;
 
                 case TransitionType.Exit:
-                    pinhole.SetLineWidth(pinhole.LineWidth + velocity * Engine.DeltaTime);
-                    if (pinhole.LineWidth >= size)
+                    pinhole.SetLineWidth(pinhole.LineWidth + Force);
+                    if (pinhole.LineWidth >= radius)
                     {
-                        pinhole.SetLineWidth(size);
+                        pinhole.SetLineWidth(radius);
                         lastDraw = true;
                     }
                     break;
@@ -91,22 +79,11 @@ namespace Morro.Utilities
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (!setup)
-            {
-                Camera camera = CameraManager.GetCamera(CameraType.Static);
-                Core.Rectangle bounds = camera.Bounds;
-                int scaledRadius = bounds.Width > bounds.Height ? bounds.Width / 2 : bounds.Height / 2;
-
-                pinhole.SetRadius(scaledRadius + BUFFER);
-                pinhole.SetLineWidth(pinhole.Radius);
-                pinhole.SetLocation(camera.Bounds.X + camera.Bounds.Width / 2, camera.Bounds.Y + camera.Bounds.Height / 2);
-
-                jerk = scaledRadius;
-                setup = true;                
-            }
+                Setup();
 
             if (Done)
                 return;
-            
+
             pinhole.Draw(spriteBatch, CameraType.Static);
 
             if (lastDraw)

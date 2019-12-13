@@ -13,59 +13,47 @@ namespace Morro.Utilities
         Exit
     }
 
-    abstract class Transition : MonoObject
+    abstract class Transition
     {
-        protected const int BUFFER = 100;
         public bool Started { get; private set; }
         public bool Done { get; protected set; }
         protected TransitionType Type { get; private set; }
 
+        protected bool setup;
         protected bool lastDraw;
 
-        protected float speed; // more like initial speed
-        protected float jerk;
-
+        public float Force { get; private set; }
         protected float velocity;
         protected float acceleration;
 
-        private bool initialSpeedSet;
-
-        public Transition(TransitionType type) : this(WindowManager.PixelWidth / 2, WindowManager.PixelHeight / 2, type)
-        {
-
-        }
-
-        public Transition(float x, float y, TransitionType type) : base(x, y, WindowManager.PixelWidth + BUFFER * 2, WindowManager.PixelHeight + BUFFER * 2)
+        public Transition(TransitionType type, float velocity, float acceleration)
         {
             Type = type;
+            this.velocity = velocity;
+            this.acceleration = acceleration;            
         }
 
         public virtual void Reset()
         {
             Started = false;
             Done = false;
+            setup = false;
             lastDraw = false;
-            initialSpeedSet = false;
 
+            Force = 0;
             velocity = 0;
             acceleration = 0;
         }
 
-        public void Start()
+        public void Begin()
         {
             Started = true;
         }
 
         protected void CalculateForce()
         {
-            if (!initialSpeedSet)
-            {
-                velocity = speed;
-                initialSpeedSet = true;
-            }
-
-            velocity += 0.5f * jerk * Engine.DeltaTime * Engine.DeltaTime + acceleration * Engine.DeltaTime;
-            acceleration += jerk * Engine.DeltaTime;
+            Force += velocity * Engine.DeltaTime + 0.5f * acceleration * Engine.DeltaTime * Engine.DeltaTime;
+            velocity += acceleration * Engine.DeltaTime;
         }
 
         public abstract void Update();

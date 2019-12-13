@@ -69,7 +69,7 @@ namespace Morro.Core
             {
                 exitTransition = CurrentScene.ExitTransition;
                 enterTransition = NextScene.EnterTransition;
-                exitTransition.Start();
+                exitTransition.Begin();
             }
 
             transitionInProgress = true;
@@ -100,7 +100,7 @@ namespace Morro.Core
                 if (exitTransition == null)
                 {
                     LoadNextScene();
-                    enterTransition.Start();
+                    enterTransition.Begin();
 
                     exitCompleted = true;
                 }
@@ -115,7 +115,7 @@ namespace Morro.Core
                         exitTransition = null;
 
                         LoadNextScene();
-                        enterTransition.Start();
+                        enterTransition.Begin();
 
                         exitCompleted = true;
                     }

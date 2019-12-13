@@ -19,8 +19,8 @@ namespace Morro.Graphics
 
         protected VertexInformation vertexInformation;
         protected Matrix transform;
-        protected VertexPositionColor[] vertices;        
-        protected Vector2 rotationOffset;        
+        protected VertexPositionColor[] vertices;
+        protected Vector2 rotationOffset;
         protected short[] indices;
         protected int totalTriangles;
         protected int totalIndices;
@@ -100,14 +100,17 @@ namespace Morro.Graphics
             CreateTransform();
         }
 
-        public void SetLineWidth(float lineWidth)
+        public virtual void SetLineWidth(float lineWidth)
         {
             if (LineWidth == lineWidth)
                 return;
 
             LineWidth = lineWidth;
 
+            SetupPolygonInformation();
             CreateVertices();
+            CreateIndices();
+
             SendToGraphicsManager();
 
             CreateTransform();
@@ -183,7 +186,6 @@ namespace Morro.Graphics
 
             for (int i = 0; i < totalVertices; i++)
             {
-                //TransformedVertices[i] = -Matrix<float>.ApplyTransformation(vertices[i].Position.X, vertices[i].Position.Y, transform);
                 TransformedVertices[i] = -Vector2.Transform(new Vector2(vertices[i].Position.X, vertices[i].Position.Y), transform);
             }
         }
@@ -212,10 +214,6 @@ namespace Morro.Graphics
         {
             LineSegments[0] = new LineSegment(TransformedVertices[initialTotalVertices - 1].X, TransformedVertices[initialTotalVertices - 1].Y, TransformedVertices[initialTotalVertices].X, TransformedVertices[initialTotalVertices].Y);
 
-            //for (int i = 1; i < initialTotalVertices; i++)
-            //{
-            //    LineSegments[i] = new LineSegment(TransformedVertices[i - 1].X, TransformedVertices[i - 1].Y, TransformedVertices[i].X, TransformedVertices[i].Y);
-            //}
             for (int i = 1; i < initialTotalVertices; i++)
             {
                 LineSegments[i] = new LineSegment(TransformedVertices[(initialTotalVertices + i) - 1].X, TransformedVertices[(initialTotalVertices + i) - 1].Y, TransformedVertices[initialTotalVertices + i].X, TransformedVertices[initialTotalVertices + i].Y);
@@ -234,7 +232,7 @@ namespace Morro.Graphics
 
         protected virtual void CreatePolygon()
         {
-            SetupPolygonInformation();              
+            SetupPolygonInformation();
             CreateIndices();
             CreateVertices();
             SendToGraphicsManager();
@@ -242,8 +240,8 @@ namespace Morro.Graphics
         }
 
         protected virtual void CreateTransform()
-        {            
-            transform = 
+        {
+            transform =
                 // Scale unit vertices by the polygon's dimensions.
                 Matrix.CreateScale(Width, Height, 1) *
 

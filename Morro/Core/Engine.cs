@@ -74,6 +74,7 @@ namespace Morro.Core
             CameraManager.Update();
             SceneManager.Update();
             DebugManager.Update();
+            SoundManager.Update();
 
             base.Update(gameTime);
         }

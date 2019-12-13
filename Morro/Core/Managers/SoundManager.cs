@@ -9,8 +9,8 @@ namespace Morro.Core
 {
     static class SoundManager
     {
-        public static float MasterVolume 
-        { 
+        public static float MasterVolume
+        {
             get { return SoundEffect.MasterVolume; }
             set { SoundEffect.MasterVolume = value; }
         }
@@ -18,6 +18,17 @@ namespace Morro.Core
         private static AudioEmitter audioEmitter;
         private static AudioListener audioListener;
         private static SoundEffectInstance soundEffectInstance;
+
+        private static SoundEffectInstance currentSongInstance;
+        private static string currentSongName;
+
+        private static bool songQueued;
+        private static string nextSongName;
+        private static float nextSongVolume;
+        private static bool nextSongLooped;
+
+        private static float fadeAcceleration;
+        private static float fadeVelocity;
 
         internal static void Initialize()
         {
@@ -64,13 +75,121 @@ namespace Morro.Core
             audioListener.Position = listenerPosition;
             audioEmitter.Position = emitterPosition;
 
-            float constrainedVolume = volume;
-            constrainedVolume = constrainedVolume < 0 ? 0 : constrainedVolume;
-            constrainedVolume = constrainedVolume > 1 ? 1 : constrainedVolume;
+            float constrainedVolume = ConstrainVolume(volume);
 
             soundEffectInstance.Volume = constrainedVolume;
             soundEffectInstance.Apply3D(audioListener, audioEmitter);
             soundEffectInstance.Play();
+        }
+
+        /// <summary>
+        /// Plays a <see cref="SoundEffect"/>, but with additional functionality of a music player.
+        /// </summary>
+        /// <param name="song">The name of <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
+        /// <param name="volume">The <see cref="SoundEffect"/>'s unique volume constrained within 0.0f and 1.0f.</param>
+        /// <param name="looped">Whether or not the song should loop or not.</param>
+        public static void PlaySong(string song, float volume, bool looped)
+        {
+            string formattedName = AssetManager.FormatName(song);
+
+            if (currentSongName == formattedName && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
+                return;
+
+            currentSongName = formattedName;
+
+            currentSongInstance?.Pause();
+            currentSongInstance = AssetManager.GetSoundEffect(formattedName).CreateInstance();
+
+            float constrainedVolume = ConstrainVolume(volume);
+
+            currentSongInstance.Volume = constrainedVolume;
+            currentSongInstance.IsLooped = looped;
+            currentSongInstance.Play();
+        }
+
+        /// <summary>
+        /// Queues a song to be played next. Unlike <see cref="PlaySong(string, float, bool)"/>, the queued song will start playing after the current song finishes fading out.
+        /// </summary>
+        /// <param name="song">The name of <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
+        /// <param name="volume">The <see cref="SoundEffect"/>'s unique volume constrained within 0.0f and 1.0f.</param>
+        /// <param name="looped">Whether or not the song should loop or not.</param>
+        /// <param name="fadeAcceleration">The acceleration of how fast the current song should fade away.</param>
+        public static void QueueSong(string song, float volume, bool looped, float fadeAcceleration)
+        {
+            if (songQueued)
+                return;
+
+            string formattedName = AssetManager.FormatName(song);
+
+            if (currentSongName == formattedName && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
+                return;
+
+            songQueued = true;
+            nextSongName = formattedName;
+            nextSongVolume = volume;
+            nextSongLooped = looped;
+
+            SoundManager.fadeAcceleration = -fadeAcceleration;
+        }
+
+        /// <summary>
+        /// Pauses the current song if it is playing, or unpauses the current song if it is paused.
+        /// </summary>
+        public static void ToggleCurrentSong()
+        {
+            if (currentSongInstance == null)
+                return;
+
+            if (currentSongInstance.State == SoundState.Playing)
+            {
+                currentSongInstance.Pause();
+            }
+            else if (currentSongInstance.State == SoundState.Paused)
+            {
+                currentSongInstance.Resume();
+            }
+        }
+
+        private static float ConstrainVolume(float volume)
+        {
+            float constrainedVolume = volume;
+            constrainedVolume = constrainedVolume < 0 ? 0 : constrainedVolume;
+            constrainedVolume = constrainedVolume > 1 ? 1 : constrainedVolume;
+
+            return constrainedVolume;
+        }
+
+        private static void UpdateSongTransitions()
+        {
+            if (!songQueued)
+                return;
+
+            if (currentSongInstance == null)
+            {
+                PlaySong(nextSongName, nextSongVolume, nextSongLooped);
+            }
+            else
+            {
+                float currentVolume = currentSongInstance.Volume;
+
+                currentVolume += fadeVelocity * Engine.DeltaTime + 0.5f * fadeAcceleration * Engine.DeltaTime * Engine.DeltaTime;
+                fadeVelocity += fadeAcceleration * Engine.DeltaTime;
+
+                if (currentVolume <= 0)
+                {
+                    songQueued = false;
+                    PlaySong(nextSongName, nextSongVolume, nextSongLooped);
+                }
+                else
+                {
+                    currentSongInstance.Volume = currentVolume;
+                }
+            }
+        }
+
+        public static void Update()
+        {
+            UpdateSongTransitions();
         }
     }
 }

@@ -137,7 +137,7 @@ namespace Morro.Core
             }
         }
 
-        private static string FormatName(string name)
+        internal static string FormatName(string name)
         {
             return name.ToLowerInvariant();
         }

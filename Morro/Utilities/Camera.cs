@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Morro.Core;
+using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -34,6 +35,14 @@ namespace Morro.Utilities
 
         private bool tracking;
         private bool smoothTracking;
+
+        private bool shaking;
+        private bool finishingShake;
+        private float shakeRoughness;
+        private float shakeDistance;
+        private Timer shakeTimer;
+        private Vector3 shakePosition;
+        private Vector2 originalPosition;
 
         public Camera(string name) : this(0, 0, name)
         {
@@ -132,6 +141,21 @@ namespace Morro.Utilities
             this.maxY = maxY;
         }
 
+        public void Shake(float roughness, float distance, int duration)
+        {
+            if (shaking)
+                return;
+
+            shaking = true;
+            finishingShake = false;
+            shakeRoughness = roughness;
+            shakeDistance = distance;
+            shakeTimer = new Timer(duration);
+            shakeTimer.Start();
+            originalPosition = new Vector2(TopLeft.X, TopLeft.Y);
+            shakePosition = TopLeft;
+        }
+
         private void Initialize()
         {
             UpdatePositions();
@@ -203,7 +227,7 @@ namespace Morro.Utilities
             else
             {
                 TrackingPosition = new Vector3(x - Bounds.Width / 2, y - Bounds.Height / 2, TrackingPosition.Z);
-            }            
+            }
         }
 
         private void NormalCollision()
@@ -313,11 +337,10 @@ namespace Morro.Utilities
             if (!smoothTracking)
                 return;
 
-            Vector3 difference = TrackingPosition - TopLeft;
-            difference = new Vector3(Math.Abs(difference.X), Math.Abs(difference.Y), Math.Abs(difference.Z));
-
             SetTopLeft(Vector3.Lerp(TopLeft, TrackingPosition, SmoothTrackingSpeed * Engine.DeltaTime));
 
+            Vector3 difference = TrackingPosition - TopLeft;
+            difference = new Vector3(Math.Abs(difference.X), Math.Abs(difference.Y), Math.Abs(difference.Z));
             float min = 0.5f;
             if (difference.X < min && difference.Y < min && difference.Z < min)
             {
@@ -326,11 +349,53 @@ namespace Morro.Utilities
             }
         }
 
+        private void UpdateShaking()
+        {
+            if (!shaking)
+                return;
+
+            if (!finishingShake)
+            {
+                Vector3 difference = shakePosition - TopLeft;
+                difference = new Vector3(Math.Abs(difference.X), Math.Abs(difference.Y), Math.Abs(difference.Z));
+                float min = 0.5f;
+                if (difference.X < min && difference.Y < min && difference.Z < min)
+                {
+                    //float xOffset = (float)RandomHelper.Range(-shakeDistance, shakeDistance);
+                    //float yOffset = (float)RandomHelper.Range(-shakeDistance, shakeDistance);
+                    float xOffset = (float)RandomHelper.Gaussian(0, shakeDistance * 0.75);
+                    float yOffset = (float)RandomHelper.Gaussian(0, shakeDistance * 0.75);
+                    shakePosition = TopLeft + new Vector3(xOffset, yOffset, 0);
+                }
+
+                SetTopLeft(Vector3.Lerp(TopLeft, shakePosition, shakeRoughness * Engine.DeltaTime));
+
+                if (shakeTimer.Done())
+                {
+                    finishingShake = true;
+                }
+            }
+            else
+            {
+                SetTopLeft(Vector3.Lerp(TopLeft, new Vector3(originalPosition.X, originalPosition.Y, 0), shakeRoughness * 0.25f * Engine.DeltaTime));
+
+                Vector3 difference = TrackingPosition - TopLeft;
+                difference = new Vector3(Math.Abs(difference.X), Math.Abs(difference.Y), Math.Abs(difference.Z));
+                float min = 0.5f;
+                if (difference.X < min && difference.Y < min && difference.Z < min)
+                {
+                    SetTopLeft(originalPosition);
+                    shaking = false;
+                }
+            }
+        }
+
         public virtual void Update()
         {
             UpdateTracking();
             UpdateSmoothTracking();
-            StayWithinBounds();
+            //StayWithinBounds();
+            UpdateShaking();
         }
     }
 }

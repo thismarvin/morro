@@ -53,6 +53,7 @@ namespace Morro.Utilities
                 return;
 
             CalculateForce();
+            AccommodateToCamera();
 
             switch (Type)
             {

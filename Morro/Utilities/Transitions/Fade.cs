@@ -31,13 +31,26 @@ namespace Morro.Utilities
         private void AccommodateToCamera()
         {
             Camera camera = CameraManager.GetCamera(CameraType.Static);
-            fade.SetBounds
-            (
-                -WindowManager.PillarBox - PADDING,
-                -WindowManager.LetterBox - PADDING,
-                camera.Bounds.Width + PADDING * 2,
-                camera.Bounds.Height + PADDING * 2
-            );
+            if (WindowManager.WideScreenSupported)
+            {
+                fade.SetBounds
+                (
+                    -WindowManager.PillarBox - PADDING,
+                    -WindowManager.LetterBox - PADDING,
+                    camera.Bounds.Width + PADDING * 2,
+                    camera.Bounds.Height + PADDING * 2
+                );
+            }
+            else
+            {
+                fade.SetBounds
+                (
+                    -PADDING,
+                    -PADDING,
+                    camera.Bounds.Width + PADDING * 2,
+                    camera.Bounds.Height + PADDING * 2
+                );
+            }
         }
 
         private void CalculateColor()
@@ -60,11 +73,7 @@ namespace Morro.Utilities
                 return;
 
             CalculateForce();
-
-            if (WindowManager.WideScreenSupported)
-            {
-                AccommodateToCamera();
-            }
+            AccommodateToCamera();
 
             switch (Type)
             {

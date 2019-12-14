@@ -28,6 +28,9 @@ namespace Morro.Graphics
 
         public void SetRadius(int radius)
         {
+            if (Radius == radius)
+                return;
+
             Radius = radius;
             SetDimensions(Radius * 2, Radius * 2);
         }

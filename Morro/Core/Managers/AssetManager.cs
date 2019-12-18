@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,12 +12,14 @@ namespace Morro.Core
         private static Dictionary<string, Texture2D> textures;
         private static Dictionary<string, Effect> effects;
         private static Dictionary<string, SoundEffect> soundEffects;
+        private static Dictionary<string, BMFont> fonts;
 
         public static void Initialize()
         {
             textures = new Dictionary<string, Texture2D>();
             effects = new Dictionary<string, Effect>();
             soundEffects = new Dictionary<string, SoundEffect>();
+            fonts = new Dictionary<string, BMFont>();
         }
                   
         #region Handle Images
@@ -103,6 +106,33 @@ namespace Morro.Core
         }
         #endregion
 
+        #region Handle BMFonts
+        public static void LoadFont(string name, string path)
+        {
+            string formattedName = FormatName(name);
+            if (fonts.ContainsKey(formattedName))
+                throw new MorroException("A Font with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
+
+            fonts.Add(formattedName, Engine.Instance.Content.Load<BMFont>(path));
+        }
+
+        public static BMFont GetFont(string name)
+        {
+            string formattedName = FormatName(name);
+            VerifyFont(formattedName);
+
+            return fonts[formattedName];
+        }
+
+        public static void RemoveFont(string name)
+        {
+            string formattedName = FormatName(name);
+            VerifyFont(formattedName);
+
+            fonts.Remove(formattedName);
+        }
+        #endregion
+
         public static void LoadContent()
         {
             LoadImage("Probity", "Assets/Fonts/Probity");
@@ -117,6 +147,7 @@ namespace Morro.Core
             LoadEffect("Outline", "Assets/Effects/Outline");
             LoadEffect("Palette", "Assets/Effects/Palette");
             LoadEffect("Quantize", "Assets/Effects/Quantize");
+            LoadEffect("BMFontShader", "Assets/Effects/BMFontShader");
         }
 
         public static void UnloadContent()
@@ -158,6 +189,12 @@ namespace Morro.Core
         {
             if (!soundEffects.ContainsKey(name))
                 throw new MorroException("A sound effect with that name has not been loaded.", new KeyNotFoundException());
+        }
+
+        private static void VerifyFont(string name)
+        {
+            if (!fonts.ContainsKey(name))
+                throw new MorroException("A font with that name has not been loaded.", new KeyNotFoundException());
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Example.Scenes
     class Menu : Scene
     {
         private List<Polygon> polygons;
-        private BitmapFont title;
+        private Text title;
         private Color[] colors;
         private float titleAngle;
 
@@ -29,7 +29,7 @@ namespace Example.Scenes
             polygons = new List<Polygon>();
             colors = new Color[] { PICO8.BloodRed, PICO8.ConeOrange, PICO8.DarkPurple, PICO8.FleshPink, PICO8.GrassGreen, PICO8.LightGray, PICO8.LightPurple, PICO8.OceanBlue, PICO8.PeachWhite, PICO8.SkyBlue, PICO8.TaxiYellow };
 
-            title = new BitmapFont(0, 0, "morro", FontType.Sparge);
+            title = new Text(16, 16, "morro", "Sparge");
             title.SetLocation((WindowManager.PixelWidth - title.Width) / 2f, (WindowManager.PixelHeight - title.Height) / 2f);
 
             titleAngle = MathHelper.PiOver2;
@@ -63,15 +63,15 @@ namespace Example.Scenes
 
         private void AnimateTitle()
         {
-            titleAngle += Engine.DeltaTime * 5;
+            //titleAngle += Engine.DeltaTime * 5;
 
-            float startingScale = 1;
-            float maxScale = 3;
-            float multiplier = (maxScale - startingScale) / 2;
+            //float startingScale = 1;
+            //float maxScale = 3;
+            //float multiplier = (maxScale - startingScale) / 2;
 
-            title.SetScale(multiplier * 2 + (float)Math.Cos(titleAngle) * multiplier, multiplier * 2 + (float)Math.Cos(titleAngle) * multiplier);
-            title.SetLocation((WindowManager.PixelWidth - title.Width) / 2f, (WindowManager.PixelHeight - title.Height) / 2f);
-            title.SetRotation((float)Math.Cos(titleAngle / 2) / 2);
+            //title.SetScale(multiplier * 2 + (float)Math.Cos(titleAngle) * multiplier, multiplier * 2 + (float)Math.Cos(titleAngle) * multiplier);
+            //title.SetLocation((WindowManager.PixelWidth - title.Width) / 2f, (WindowManager.PixelHeight - title.Height) / 2f);
+            //title.SetRotation((float)Math.Cos(titleAngle / 2) / 2);
         }
 
         private void RotatePolygons()
@@ -84,13 +84,18 @@ namespace Example.Scenes
 
         public override void Update()
         {
-            UpdateEntities();            
+            UpdateEntities();
             RotatePolygons();
             AnimateTitle();
-            
+
             if (InputManager.BasicInputHandler.Pressed("Start"))
             {
                 SceneManager.QueueScene("Flocking");
+            }
+
+            if (InputManager.BasicInputHandler.Pressed("Right"))
+            {
+                Camera.Shake(64, 4, 150);
             }
         }
 
@@ -100,8 +105,8 @@ namespace Example.Scenes
 
             Sketch.AttachEffect(new ChromaticAberration(Engine.RenderTarget, 10 * WindowManager.Scale));
             Sketch.DisableRelay();
-            Sketch.Begin(spriteBatch);                      
-            {                
+            Sketch.Begin(spriteBatch);
+            {
                 foreach (Polygon p in polygons)
                 {
                     p.Draw(spriteBatch, Camera);
@@ -110,8 +115,8 @@ namespace Example.Scenes
             Sketch.End(spriteBatch);
             SketchHelper.ApplyGaussianBlur(spriteBatch, Sketch.InterceptRelay(), 2);
 
-            Vector2 direction = VectorHelper.FromAngle(title.Rotation + MathHelper.PiOver4);
-            Sketch.AttachEffect(new DropShadow(Engine.RenderTarget, direction, WindowManager.Scale * title.Scale.X * 1.25f, Color.Black));
+            //Vector2 direction = VectorHelper.FromAngle(title.Rotation + MathHelper.PiOver4);
+            //Sketch.AttachEffect(new DropShadow(Engine.RenderTarget, direction, WindowManager.Scale * title.Scale.X * 1.25f, Color.Black));
             Sketch.Begin(spriteBatch);
             {
                 title.Draw(spriteBatch, Camera);

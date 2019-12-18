@@ -17,7 +17,7 @@ namespace Example.Scenes
     {
         public List<Polygon> BoundingBoxes { get; private set; }
 
-        private BitmapFont notice;
+        //private BitmapFont notice;
 
         public Platformer() : base("Platformer")
         {
@@ -33,8 +33,8 @@ namespace Example.Scenes
                 new RightTriangle(128, WindowManager.PixelHeight - 32 - 64, 64, 64, RightAnglePositionType.BottomRight, Color.Black, VertexInformation.Static),
             };
 
-            notice = new BitmapFont(0, 32, "Collision is still a work in progress!", FontType.Probity);
-            notice.SetLocation((SceneBounds.Width - notice.Width) / 2, notice.Y);
+            //notice = new BitmapFont(0, 32, "Collision is still a work in progress!", FontType.Probity);
+            //notice.SetLocation((SceneBounds.Width - notice.Width) / 2, notice.Y);
 
             InputProfile inputProfile = new InputProfile("Player");
             inputProfile.CreateMapping(
@@ -86,7 +86,7 @@ namespace Example.Scenes
                     polygon.Draw(spriteBatch, Camera);
                 }
 
-                notice.Draw(spriteBatch, Camera);
+                //notice.Draw(spriteBatch, Camera);
 
                 DrawEntities(spriteBatch);                
             }

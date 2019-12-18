@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SourceFile>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Fonts/comic_sans.fnt</SourceFile>
+  <SourceTime>2019-12-16T13:41:46.9538755-06:00</SourceTime>
+  <DestFile>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/bin/Windows/Content/Assets/Fonts/comic_sans.xnb</DestFile>
+  <DestTime>2019-12-18T12:24:33.7885082-06:00</DestTime>
+  <Importer>BMFontImporter</Importer>
+  <ImporterTime>2019-12-18T11:50:07.7800208-06:00</ImporterTime>
+  <Processor>BMFontProcessor</Processor>
+  <ProcessorTime>2019-12-18T11:50:07.7800208-06:00</ProcessorTime>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

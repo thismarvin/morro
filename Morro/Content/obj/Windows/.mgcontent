@@ -5,6 +5,7 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/Blur.fx</File>
+    <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/BMFontShader.fx</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/ChromaticAberration.fx</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/Dither.fx</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/DropShadow.fx</File>
@@ -13,11 +14,16 @@
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/Outline.fx</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/Palette.fx</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Effects/Quantize.fx</File>
+    <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Fonts/comic_sans.fnt</File>
+    <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Fonts/comic_sans_0.png</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Fonts/Probity.png</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Fonts/Sparge.png</File>
     <File>C:/Users/Marvin/Desktop/Master/Programming/MonoGame/Workspace/Git Projects/morroEngine/Morro/Content/Assets/Sprites/Sprites.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

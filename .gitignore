@@ -4,3 +4,8 @@
 /Morro.OpenGL/obj
 /Morro.DirectX/bin
 /Morro.DirectX/obj
+/Morro.Content.Pipeline/obj/Debug
+/Morro.Content.Pipeline/obj/Release
+/Morro.Content.Pipeline/bin/Debug
+/Morro.Content.Pipeline/bin/Release
+/packages

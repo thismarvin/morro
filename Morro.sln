@@ -11,11 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morro.Content.Pipeline", "M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morro.Windows", "Morro.Windows\Morro.Windows.csproj", "{33924B0C-0116-40C4-917D-AC9B0E73A42B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morro.DesktopGL", "Morro.DesktopGL\Morro.DesktopGL.csproj", "{E10777A5-BD3B-4BEE-9FB2-915A501E033E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Example\Example.projitems*{33924b0c-0116-40c4-917d-ac9b0e73a42b}*SharedItemsImports = 4
 		Morro\Morro.projitems*{33924b0c-0116-40c4-917d-ac9b0e73a42b}*SharedItemsImports = 4
 		Morro\Morro.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
+		Example\Example.projitems*{e10777a5-bd3b-4bee-9fb2-915a501e033e}*SharedItemsImports = 4
+		Morro\Morro.projitems*{e10777a5-bd3b-4bee-9fb2-915a501e033e}*SharedItemsImports = 4
 		Example\Example.projitems*{fa0f3b9f-6f14-4c5d-bc19-12ec185ca9d2}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,8 +42,17 @@ Global
 		{33924B0C-0116-40C4-917D-AC9B0E73A42B}.Debug|x86.ActiveCfg = Debug|x86
 		{33924B0C-0116-40C4-917D-AC9B0E73A42B}.Debug|x86.Build.0 = Debug|x86
 		{33924B0C-0116-40C4-917D-AC9B0E73A42B}.Release|Any CPU.ActiveCfg = Release|x86
+		{33924B0C-0116-40C4-917D-AC9B0E73A42B}.Release|Any CPU.Build.0 = Release|x86
 		{33924B0C-0116-40C4-917D-AC9B0E73A42B}.Release|x86.ActiveCfg = Release|x86
 		{33924B0C-0116-40C4-917D-AC9B0E73A42B}.Release|x86.Build.0 = Release|x86
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Debug|x86.Build.0 = Debug|Any CPU
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Release|x86.ActiveCfg = Release|Any CPU
+		{E10777A5-BD3B-4BEE-9FB2-915A501E033E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -32,13 +32,13 @@ namespace Morro.Core
         protected override void Initialize()
         {
             AssetManager.Initialize();
+            SpriteManager.Initialize();
             AssetManager.LoadContent();
 
             GraphicsManager.Initialize();
             WindowManager.Initialize();
 
-            RandomManager.Initialize();
-            SpriteManager.Initialize();
+            RandomManager.Initialize();            
             SketchManager.Initialize();
             InputManager.Initialize();
             DebugManager.Initialize();

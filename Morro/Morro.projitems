@@ -89,7 +89,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\GamePad.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Mouse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\BitmapFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFontCharacter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Camera.cs" />

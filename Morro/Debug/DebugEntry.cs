@@ -30,11 +30,11 @@ namespace Morro.Debug
         /// <summary>
         /// The final text after formatting the information.
         /// </summary>
-        public string Text { get { return entryText.Text; } }
+        public string Content { get { return entryText.Content; } }
         #endregion
 
         #region Fields
-        private readonly BitmapFont entryText;
+        private readonly Text entryText;
         #endregion
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Morro.Debug
             Information = new string[] { "" };
 
             Vector2 position = DebugManager.NextDebugEntryPosition();
-            entryText = new BitmapFont(position.X, position.Y, "", FontType.Probity);
+            entryText = new Text(position.X, position.Y, "", "Probity");
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Morro.Debug
 
         private void FormatEntry()
         {
-            entryText.SetText(string.Format(CultureInfo.InvariantCulture, Format, Information));
+            entryText.SetContent(string.Format(CultureInfo.InvariantCulture, Format, Information));
         }
 
         public void Draw(SpriteBatch spriteBatch, CameraType cameraType)

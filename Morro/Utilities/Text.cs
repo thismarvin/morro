@@ -22,7 +22,20 @@ namespace Morro.Utilities
             font = AssetManager.GetFont(fontName);
 
             sprites = new List<Sprite>();
-            shader = new BMFontShader(Color.White, Color.Transparent, Color.Transparent);
+            shader = new BMFontShader(Color.White, Color.Black, Color.Transparent);
+
+            CreateText();
+        }
+
+        public override void SetLocation(float x, float y)
+        {
+            base.SetLocation(x, y);
+            CreateText();
+        }
+
+        public void SetContent(string content)
+        {
+            Content = content;
 
             CreateText();
         }
@@ -58,6 +71,13 @@ namespace Morro.Utilities
 
                 x += characterData.XAdvance;
             }
+
+            SetDimensions((int)Math.Ceiling(x - X), font.Size);
+        }
+
+        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        {
+            Draw(spriteBatch, CameraManager.GetCamera(cameraType));
         }
 
         public void Draw(SpriteBatch spriteBatch, Camera camera)

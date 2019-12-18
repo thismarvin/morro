@@ -73,12 +73,12 @@
 /processorParam:DebugMode=Auto
 /build:Assets/Effects/Quantize.fx
 
-#begin Assets/Fonts/comic_sans.fnt
+#begin Assets/Fonts/probity.fnt
 /importer:BMFontImporter
 /processor:BMFontProcessor
-/build:Assets/Fonts/comic_sans.fnt
+/build:Assets/Fonts/probity.fnt
 
-#begin Assets/Fonts/comic_sans_0.png
+#begin Assets/Fonts/probity_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -88,9 +88,14 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Assets/Fonts/comic_sans_0.png
+/build:Assets/Fonts/probity_0.png
 
-#begin Assets/Fonts/Probity.png
+#begin Assets/Fonts/sparge.fnt
+/importer:BMFontImporter
+/processor:BMFontProcessor
+/build:Assets/Fonts/sparge.fnt
+
+#begin Assets/Fonts/sparge_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -100,19 +105,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Assets/Fonts/Probity.png
-
-#begin Assets/Fonts/Sparge.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Assets/Fonts/Sparge.png
+/build:Assets/Fonts/sparge_0.png
 
 #begin Assets/Sprites/Sprites.png
 /importer:TextureImporter

@@ -77,7 +77,8 @@ namespace Morro.Core
             if (postProcessing != null)
             {
                 // Initialize a RenderTarget2D to accumulate all RenderTargets.
-                using var accumulation = new RenderTarget2D(spriteBatch.GraphicsDevice, WindowManager.WindowWidth, WindowManager.WindowHeight);
+                RenderTarget2D accumulation = new RenderTarget2D(spriteBatch.GraphicsDevice, WindowManager.WindowWidth, WindowManager.WindowHeight);
+
                 // Setup the GraphicsDevice with the new accumulation RenderTarget2D.
                 spriteBatch.GraphicsDevice.SetRenderTarget(accumulation);
                 spriteBatch.GraphicsDevice.Clear(Color.Transparent);
@@ -104,15 +105,16 @@ namespace Morro.Core
                 spriteBatch.End();
 
                 // Dispose of all RenderTargets.
+                accumulation.Dispose();
                 for (int i = 0; i < renderTargets.Count; i++)
                 {
                     renderTargets[i].Dispose();
                 }
-                renderTargets.Clear();
+                renderTargets.Clear();                
 
                 // Dispose of shader.
                 postProcessing.Dispose();
-                postProcessing = null;
+                postProcessing = null;                
             }
             else
             {

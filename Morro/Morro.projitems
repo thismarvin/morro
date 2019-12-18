@@ -12,7 +12,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
     <Folder Include="$(MSBuildThisFileDirectory)Core\Partitioning\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Geometry\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Graphics\Effects\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Palettes\" />
     <Folder Include="$(MSBuildThisFileDirectory)Maths\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\Transitions\" />
@@ -31,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMapping.cs" />
@@ -90,7 +90,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Mouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BitmapFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFontCharacter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Readers\BMFontReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Text.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transitions\Fade.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transitions\Pinhole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Timer.cs" />

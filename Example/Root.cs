@@ -16,8 +16,9 @@ namespace Example
 
             SceneManager.RegisterScene(new Menu());
             SceneManager.RegisterScene(new Flocking());
-            SceneManager.RegisterScene(new Platformer());
-            SceneManager.QueueScene("Menu");
+            SceneManager.RegisterScene(new Platformer());            
+
+            SceneManager.QueueScene("Menu");            
         }
     }
 }

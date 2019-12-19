@@ -30,7 +30,7 @@ namespace Example.Scenes
             colors = new Color[] { PICO8.BloodRed, PICO8.ConeOrange, PICO8.DarkPurple, PICO8.FleshPink, PICO8.GrassGreen, PICO8.LightGray, PICO8.LightPurple, PICO8.OceanBlue, PICO8.PeachWhite, PICO8.SkyBlue, PICO8.TaxiYellow };
 
             title = new Text(16, 16, "morro", "Sparge");
-            title.SetLocation((WindowManager.PixelWidth - title.Width) / 2f, (WindowManager.PixelHeight - title.Height) / 2f);
+            title.SetPosition((WindowManager.PixelWidth - title.Width) / 2f, (WindowManager.PixelHeight - title.Height) / 2f);
             titleAngle = MathHelper.PiOver2;
         }
 
@@ -70,7 +70,7 @@ namespace Example.Scenes
 
             title.SetScale(multiplier * 2 + (float)Math.Cos(titleAngle) * multiplier, multiplier * 2 + (float)Math.Cos(titleAngle) * multiplier);
             title.SetRotation((float)Math.Cos(titleAngle / 2) / 2);
-            title.SetLocation((WindowManager.PixelWidth - title.Width) / 2f, (WindowManager.PixelHeight - title.Height) / 2f);
+            title.SetPosition((WindowManager.PixelWidth - title.Width) / 2f, (WindowManager.PixelHeight - title.Height) / 2f);
         }
 
         private void RotatePolygons()

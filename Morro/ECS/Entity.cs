@@ -12,19 +12,20 @@ namespace Morro.ECS
     abstract class Entity : MonoObject
     {
         public AABB AABB { get; private set; }
+        public bool Remove { get; set; }
 
         public Entity(float x, float y, int width, int height) : base(x, y, width, height)
         {
             AABB = new AABB(X, Y, Width, Height, 2, Color.Red, VertexInformation.Dynamic);
         }
 
-        public override void SetLocation(float x, float y)
+        public override void SetPosition(float x, float y)
         {
             if (X == x && Y == y)
                 return;
 
-            base.SetLocation(x, y);
-            AABB.SetLocation(X, Y);
+            base.SetPosition(x, y);
+            AABB.SetPosition(X, Y);
         }
 
         public override void SetBounds(float x, float y, int width, int height)

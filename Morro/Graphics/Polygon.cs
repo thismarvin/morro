@@ -17,6 +17,8 @@ namespace Morro.Graphics
         public float LineWidth { get; private set; }
         public bool Filled { get; protected set; }
 
+        public Color Color { get; private set; }
+
         protected VertexInformation vertexInformation;
         protected Matrix transform;
         protected VertexPositionColor[] vertices;
@@ -48,15 +50,15 @@ namespace Morro.Graphics
                 throw new MorroException("Polygons require at least three vertices.", new ArgumentException());
             }
 
-            base.SetColor(color);
+            Color = color;
         }
 
-        public override void SetLocation(float x, float y)
+        public override void SetPosition(float x, float y)
         {
             if (X == x && Y == y)
                 return;
 
-            base.SetLocation(x, y);
+            base.SetPosition(x, y);
 
             CreateTransform();
         }
@@ -87,12 +89,12 @@ namespace Morro.Graphics
             CreateTransform();
         }
 
-        public override void SetColor(Color color)
+        public void SetColor(Color color)
         {
             if (Color == color)
                 return;
 
-            base.SetColor(color);
+            Color = color;
 
             CreateVertices();
             SendToGraphicsManager();

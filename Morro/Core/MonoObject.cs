@@ -8,53 +8,35 @@ namespace Morro.Core
 {
     abstract class MonoObject : IComparable
     {
-        public float X { get; private set; }
-        public float Y { get; private set; }
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public int LayerDepth { get; set; }
-        public bool Remove { get; set; }
-        public Color Color { get; private set; }
         public Vector2 Position { get; private set; }
-        public Vector2 Center { get; private set; }
         public Rectangle Bounds { get; private set; }
+
+        public float X { get { return Position.X; } }
+        public float Y { get { return Position.Y; } }
+        public int Width { get { return Bounds.Width; } }
+        public int Height { get { return Bounds.Height; } }
+        public Vector2 Center { get { return new Vector2(Position.X + Width / 2, Position.Y + Height / 2); } }
+
+        public int Depth { get; set; }
 
         public MonoObject(float x, float y, int width, int height)
         {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            LayerDepth = 1;
-            Color = Color.White;
-            Position = new Vector2(X, Y);
-            Center = new Vector2(X + Width / 2, Y + Height / 2);
-            Bounds = new Rectangle(X, Y, Width, Height);
+            Position = new Vector2(x, y);
+            Bounds = new Rectangle(Position.X, Position.Y, width, height);
+
+            Depth = 1;
         }
 
-        public virtual void SetLocation(float x, float y)
+        public virtual void SetPosition(float x, float y)
         {
-            X = x;
-            Y = y;
-            Position = new Vector2(X, Y);
-            Center = new Vector2(X + Width / 2, Y + Height / 2);
-            Bounds = new Rectangle(X, Y, Width, Height);
-        }
-
-        public virtual void SetCenter(float x, float y)
-        {
-            SetLocation(x - Width / 2, y - Height / 2);
+            Position = new Vector2(x, y);
+            Bounds = new Rectangle(Position.X, Position.Y, Width, Height);
         }
 
         public virtual void SetBounds(float x, float y, int width, int height)
         {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            Position = new Vector2(X, Y);
-            Center = new Vector2(X + Width / 2, Y + Height / 2);
-            Bounds = new Rectangle(X, Y, Width, Height);
+            Position = new Vector2(x, y);
+            Bounds = new Rectangle(Position.X, Position.Y, width, height);
         }
 
         public virtual void SetWidth(int width)
@@ -69,25 +51,17 @@ namespace Morro.Core
 
         public virtual void SetDimensions(int width, int height)
         {
-            Width = width;
-            Height = height;
-            Center = new Vector2(X + Width / 2, Y + Height / 2);
-            Bounds = new Rectangle(X, Y, Width, Height);
-        }
-
-        public virtual void SetColor(Color color)
-        {
-            Color = color;
+            Bounds = new Rectangle(X, Y, width, height);
         }
 
         public int CompareTo(object obj)
         {
-            return LayerDepth.CompareTo(((MonoObject)obj).LayerDepth);
+            return Depth.CompareTo(((MonoObject)obj).Depth);
         }
 
         public override string ToString()
         {
-            return base.ToString() + " " + string.Format(CultureInfo.InvariantCulture, "- [ {0}, {1} ], {2}x{3}", X, Y, Width, Height);
+            return base.ToString() + string.Format(CultureInfo.InvariantCulture, ": Position:(X:{0}, Y:{1}), Dimensions:(W:{2}, H:{3})", X, Y, Width, Height);
         }
     }
 }

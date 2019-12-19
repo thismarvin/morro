@@ -11,8 +11,9 @@ namespace Morro.Graphics
     class Sprite : MonoObject
     {
         public float Rotation { get; set; }
-        public bool Show { get; set; }
         public string SpriteDataName { get; private set; }
+        public bool Visible { get; set; }
+        public Color Tint { get; private set; }
         public SpriteEffects SpriteEffect { get; set; }
         public Vector2 RotationOffset { get; set; }
         public Vector2 Scale { get; set; }
@@ -37,12 +38,13 @@ namespace Morro.Graphics
         public Sprite(float x, float y, string spriteDataName) : base(x, y, 1, 1)
         {
             Rotation = 0;
-            Show = true;
+            Visible = true;
             SpriteDataName = SpriteManager.FormatName(spriteDataName);
             RotationOffset = Vector2.Zero;
             Scale = new Vector2(1, 1);
             BlendState = BlendState.NonPremultiplied;
             SamplerState = SamplerState.PointClamp;
+            Tint = Color.White;
 
             InitializeSprite();
         }
@@ -104,9 +106,9 @@ namespace Morro.Graphics
 
         }
 
-        public virtual void ManagedDraw(SpriteBatch spriteBatch)
+        internal virtual void ManagedDraw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Color, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+            spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
         }
 
         public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
@@ -116,7 +118,7 @@ namespace Morro.Graphics
 
         public virtual void Draw(SpriteBatch spriteBatch, Camera camera)
         {
-            if (!Show)
+            if (!Visible)
                 return;
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState, null, GraphicsManager.DefaultRasterizerState, Effect, camera.Transform);
@@ -124,7 +126,7 @@ namespace Morro.Graphics
                 if (customScissorRectangle)
                     spriteBatch.GraphicsDevice.ScissorRectangle = scissorRectangle;
 
-                spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Color, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+                spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
             }
             spriteBatch.End();
         }

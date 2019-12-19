@@ -20,7 +20,7 @@ namespace Example.Entities
 
         public Boid(float x, float y) : base(x, y, 4, 2, 1)
         {
-            body = new RegularPolygon(X, Y, Width, Height, 3, Color, VertexInformation.Static);            
+            body = new RegularPolygon(X, Y, Width, Height, 3, Color.Black, VertexInformation.Static);            
             MoveSpeed = RandomHelper.Range(40, 50);
             viewRadius = 16;
             maxForce = 0.5f;
@@ -30,41 +30,33 @@ namespace Example.Entities
             (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f
             );
 
-            SetColor(Color.Black);
-
             body.SetRotationOffset(body.Width / 2, body.Height / 2);
         }
 
-        public override void SetColor(Color color)
+        public override void SetPosition(float x, float y)
         {
-            base.SetColor(color);
-            body.SetColor(Color);
-        }
-
-        public override void SetLocation(float x, float y)
-        {
-            base.SetLocation(x, y);
-            body.SetLocation(X, Y);
+            base.SetPosition(x, y);
+            body.SetPosition(X, Y);
         }
 
         protected override void Collision()
         {
             if (Bounds.Right < 0)
             {
-                SetLocation(SceneManager.CurrentScene.SceneBounds.Width, Y);
+                SetPosition(SceneManager.CurrentScene.SceneBounds.Width, Y);
             }
             else if (Bounds.Left > SceneManager.CurrentScene.SceneBounds.Width)
             {
-                SetLocation(0 - Width, Y);
+                SetPosition(0 - Width, Y);
             }
 
             if (Bounds.Bottom < 0)
             {
-                SetLocation(X, SceneManager.CurrentScene.SceneBounds.Height);
+                SetPosition(X, SceneManager.CurrentScene.SceneBounds.Height);
             }
             else if (Bounds.Top > SceneManager.CurrentScene.SceneBounds.Height)
             {
-                SetLocation(X, 0 - Height);
+                SetPosition(X, 0 - Height);
             }
         }
 

@@ -31,7 +31,7 @@ namespace Morro.Utilities
             radius = camera.Bounds.Width > camera.Bounds.Height ? camera.Bounds.Width / 2 : camera.Bounds.Height / 2;
             radius += PADDING;
             pinhole.SetRadius(radius);
-            pinhole.SetLocation(camera.Bounds.X + camera.Bounds.Width / 2, camera.Bounds.Y + camera.Bounds.Height / 2);
+            pinhole.SetPosition(camera.Bounds.X + camera.Bounds.Width / 2, camera.Bounds.Y + camera.Bounds.Height / 2);
         }
 
         private void CalculateLineWidth()

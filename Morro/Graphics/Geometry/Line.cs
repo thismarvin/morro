@@ -46,7 +46,7 @@ namespace Morro.Graphics
             CreatePolygon();
         }
 
-        public override void SetLocation(float x, float y)
+        public override void SetPosition(float x, float y)
         {
             SetStartingPoint(x, y);
         }

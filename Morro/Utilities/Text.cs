@@ -41,12 +41,12 @@ namespace Morro.Utilities
             CreateText();
         }
 
-        public override void SetLocation(float x, float y)
+        public override void SetPosition(float x, float y)
         {
             if (X == x && Y == y)
                 return;
 
-            base.SetLocation(x, y);
+            base.SetPosition(x, y);
 
             UpdateText();
         }
@@ -137,14 +137,14 @@ namespace Morro.Utilities
                 character = Content.Substring(i, 1).ToCharArray()[0];
                 characterData = font.GetCharacterData(character);
 
-                sprites[i].SetLocation(xFinal + characterData.XOffset * Scale.X, Y + characterData.YOffset * Scale.Y);
+                sprites[i].SetPosition(xFinal + characterData.XOffset * Scale.X, Y + characterData.YOffset * Scale.Y);
                 sprites[i].Scale = Scale;
                 sprites[i].Rotation = Rotation;
 
                 if (Rotation != 0)
                 {
                     result = Vector2.Transform(sprites[i].Position, transform);
-                    sprites[i].SetLocation(result.X, result.Y);
+                    sprites[i].SetPosition(result.X, result.Y);
                 }
 
                 xFinal += characterData.XAdvance * Scale.X;

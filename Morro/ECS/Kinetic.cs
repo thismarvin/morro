@@ -33,27 +33,31 @@ namespace Morro.ECS
             switch (integrator)
             {
                 case Integrator.Euler:
-                    SetLocation(
+                    SetPosition
+                    (
                         Position.X + Velocity.X * Engine.DeltaTime,
                         Position.Y + Velocity.Y * Engine.DeltaTime
-                        );
+                    );
 
-                    Velocity = new Vector2(
+                    Velocity = new Vector2
+                    (
                         Velocity.X + Acceleration.X * Engine.DeltaTime,
                         Velocity.Y + Acceleration.Y * Engine.DeltaTime
-                        );
+                    );
                     break;
 
                 case Integrator.VelocityVerlet:
-                    SetLocation(
+                    SetPosition
+                    (
                         Position.X + Velocity.X * Engine.DeltaTime + 0.5f * Acceleration.X * Engine.DeltaTime * Engine.DeltaTime,
                         Position.Y + Velocity.Y * Engine.DeltaTime + 0.5f * Acceleration.Y * Engine.DeltaTime * Engine.DeltaTime
-                        );
+                    );
 
-                    Velocity = new Vector2(
+                    Velocity = new Vector2
+                    (
                         Velocity.X + Acceleration.X * Engine.DeltaTime,
                         Velocity.Y + Acceleration.Y * Engine.DeltaTime
-                        );
+                    );
                     break;
             }
         }
@@ -72,7 +76,7 @@ namespace Morro.ECS
             else
                 collisionTypes = CollisionHelper.NaivelyResolveCollisionBetween(AABB, polygon, Velocity);
 
-            SetLocation(AABB.X, AABB.Y);
+            SetPosition(AABB.X, AABB.Y);
 
             return collisionTypes;
         }

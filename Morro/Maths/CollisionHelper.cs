@@ -38,16 +38,16 @@ namespace Morro.Maths
                 switch (collisionType)
                 {
                     case CollisionType.Left:
-                        a.SetLocation(b.Bounds.Left - a.Width - leeway, a.Y);
+                        a.SetPosition(b.Bounds.Left - a.Width - leeway, a.Y);
                         break;
                     case CollisionType.Right:
-                        a.SetLocation(b.Bounds.Right + leeway, a.Y);
+                        a.SetPosition(b.Bounds.Right + leeway, a.Y);
                         break;
                     case CollisionType.Top:
-                        a.SetLocation(a.X, b.Bounds.Top - a.Height - leeway);
+                        a.SetPosition(a.X, b.Bounds.Top - a.Height - leeway);
                         break;
                     case CollisionType.Bottom:
-                        a.SetLocation(a.X, b.Bounds.Bottom + leeway);
+                        a.SetPosition(a.X, b.Bounds.Bottom + leeway);
                         break;
                 }
             }
@@ -65,57 +65,57 @@ namespace Morro.Maths
                     case CollisionType.Left:
                         if (a.Bounds.Bottom - b.Bounds.Top <= leeway)
                         {
-                            a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                            a.SetPosition(a.X, b.Bounds.Top - a.Height);
                         }
                         else if (b.Bounds.Bottom - a.Bounds.Top <= leeway)
                         {
-                            a.SetLocation(a.X, b.Bounds.Bottom);
+                            a.SetPosition(a.X, b.Bounds.Bottom);
                         }
                         else
                         {
-                            a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                            a.SetPosition(b.Bounds.Left - a.Width, a.Y);
                         }
                         break;
                     case CollisionType.Right:
                         if (a.Bounds.Bottom - b.Bounds.Top <= leeway)
                         {
-                            a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                            a.SetPosition(a.X, b.Bounds.Top - a.Height);
                         }
                         else if (b.Bounds.Bottom - a.Bounds.Top <= leeway)
                         {
-                            a.SetLocation(a.X, b.Bounds.Bottom);
+                            a.SetPosition(a.X, b.Bounds.Bottom);
                         }
                         else
                         {
-                            a.SetLocation(b.Bounds.Right, a.Y);
+                            a.SetPosition(b.Bounds.Right, a.Y);
                         }
                         break;
                     case CollisionType.Top:
                         if (a.Bounds.Right - b.Bounds.Left <= leeway)
                         {
-                            a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                            a.SetPosition(b.Bounds.Left - a.Width, a.Y);
                         }
                         else if (b.Bounds.Right - a.Bounds.Left <= leeway)
                         {
-                            a.SetLocation(b.Bounds.Right, a.Y);
+                            a.SetPosition(b.Bounds.Right, a.Y);
                         }
                         else
                         {
-                            a.SetLocation(a.X, b.Bounds.Top - a.Height);
+                            a.SetPosition(a.X, b.Bounds.Top - a.Height);
                         }
                         break;
                     case CollisionType.Bottom:
                         if (a.Bounds.Right - b.Bounds.Left <= leeway)
                         {
-                            a.SetLocation(b.Bounds.Left - a.Width, a.Y);
+                            a.SetPosition(b.Bounds.Left - a.Width, a.Y);
                         }
                         else if (b.Bounds.Right - a.Bounds.Left <= leeway)
                         {
-                            a.SetLocation(b.Bounds.Right, a.Y);
+                            a.SetPosition(b.Bounds.Right, a.Y);
                         }
                         else
                         {
-                            a.SetLocation(a.X, b.Bounds.Bottom);
+                            a.SetPosition(a.X, b.Bounds.Bottom);
                         }
                         break;
                 }
@@ -136,7 +136,7 @@ namespace Morro.Maths
                     case CollisionType.Slope:
                         LineSegment lineSegment = new LineSegment(a.Center.X, a.Bounds.Top, a.Center.X, a.Bounds.Bottom);
                         IntersectionInformation intersectionInformation = lineSegment.GetIntersectionInformation(b.LineSegments[2]);
-                        a.SetLocation(a.X, a.Y - ((1 - intersectionInformation.T) * (lineSegment.Y2 - lineSegment.Y1)));
+                        a.SetPosition(a.X, a.Y - ((1 - intersectionInformation.T) * (lineSegment.Y2 - lineSegment.Y1)));
                         break;
                 }
             }
@@ -195,7 +195,7 @@ namespace Morro.Maths
                 if (aVelocity.Y > 0)
                     yOffset *= -1;
 
-                a.SetLocation(a.X + xOffset, a.Y + yOffset);
+                a.SetPosition(a.X + xOffset, a.Y + yOffset);
             }
             else
             {
@@ -228,7 +228,7 @@ namespace Morro.Maths
                 if (aVelocity.Y > 0)
                     yOffset *= -1;
 
-                a.SetLocation(a.X + xOffset, a.Y + yOffset);
+                a.SetPosition(a.X + xOffset, a.Y + yOffset);
             }
 
             return collisionTypes;

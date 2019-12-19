@@ -21,9 +21,9 @@ namespace Morro.Graphics
             Radius = radius;
         }
 
-        public override void SetLocation(float x, float y)
+        public override void SetPosition(float x, float y)
         {
-            base.SetLocation(x - Radius, y - Radius);
+            base.SetPosition(x - Radius, y - Radius);
         }
 
         public void SetRadius(int radius)

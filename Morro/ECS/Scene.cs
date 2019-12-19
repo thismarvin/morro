@@ -45,7 +45,7 @@ namespace Morro.ECS
         {
             List<Entity> result = new List<Entity>();
             List<MonoObject> queryResult = Partitioner.Query(bounds);
-            queryResult.Sort();
+
             for (int i = 0; i < queryResult.Count; i++)
             {
                 if (queryResult[i] is Entity)
@@ -53,6 +53,8 @@ namespace Morro.ECS
                     result.Add((Entity)queryResult[i]);
                 }
             }
+            result.Sort();
+
             return result;
         }
 

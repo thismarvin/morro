@@ -47,10 +47,11 @@ namespace Example.Entities
             inputHandler.LoadProfile("Player");
         }
 
-        public override void SetLocation(float x, float y)
+        public override void SetPosition(float x, float y)
         {
-            base.SetLocation(x, y);
-            animatedSprite.SetLocation(X - 3, Y - 2);
+            base.SetPosition(x, y);
+
+            animatedSprite.SetPosition(X - 3, Y - 2);
         }
 
         protected override void Collision()
@@ -59,13 +60,13 @@ namespace Example.Entities
 
             if (Bounds.Left < 0)
             {
-                SetLocation(0, Y);
+                SetPosition(0, Y);
                 Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
             }
 
             if (Bounds.Right > SceneManager.CurrentScene.SceneBounds.Width)
             {
-                SetLocation(SceneManager.CurrentScene.SceneBounds.Width - Width, Y);
+                SetPosition(SceneManager.CurrentScene.SceneBounds.Width - Width, Y);
                 Velocity = new Vector2(-Velocity.X * 0.75f, Velocity.Y);
             }
 
@@ -94,11 +95,11 @@ namespace Example.Entities
                         case CollisionType.Bottom:
                             if (Bounds.Right - polygon.Bounds.Left <= 4)
                             {
-                                SetLocation(polygon.Bounds.Left - Width, Y);
+                                SetPosition(polygon.Bounds.Left - Width, Y);
                             }
                             else if (polygon.Bounds.Right - Bounds.Left <= 4)
                             {
-                                SetLocation(polygon.Bounds.Right, Y);
+                                SetPosition(polygon.Bounds.Right, Y);
                             }
                             else
                             {

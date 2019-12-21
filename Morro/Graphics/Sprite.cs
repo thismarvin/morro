@@ -42,7 +42,7 @@ namespace Morro.Graphics
             SpriteDataName = SpriteManager.FormatName(spriteDataName);
             RotationOffset = Vector2.Zero;
             Scale = new Vector2(1, 1);
-            BlendState = BlendState.NonPremultiplied;
+            BlendState = BlendState.AlphaBlend;
             SamplerState = SamplerState.PointClamp;
             Tint = Color.White;
 

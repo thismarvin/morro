@@ -56,7 +56,7 @@ namespace Morro.Utilities
         private void CalculateColor()
         {
             alpha = Type == TransitionType.Enter ? 1 : 0;
-            fadeColor = new Color(defaultColor, alpha);
+            fadeColor = defaultColor * alpha;
             fade.SetColor(fadeColor);
         }
 
@@ -96,7 +96,7 @@ namespace Morro.Utilities
                     break;
             }
 
-            fadeColor = new Color(defaultColor, alpha);
+            fadeColor = defaultColor * alpha;
             fade.SetColor(fadeColor);
         }
 

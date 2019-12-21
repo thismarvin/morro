@@ -330,7 +330,7 @@ namespace Morro.Graphics
             GraphicsManager.BasicEffect.Projection = camera.Projection;
 
             spriteBatch.GraphicsDevice.RasterizerState = DebugManager.ShowWireFrame ? GraphicsManager.DebugRasterizerState : GraphicsManager.DefaultRasterizerState;
-            spriteBatch.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
+            spriteBatch.GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
             if (GraphicsManager.BuffersEnabled)
             {

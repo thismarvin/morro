@@ -22,7 +22,7 @@ namespace Morro.Core
         public MonoObject(float x, float y, int width, int height)
         {
             Position = new Vector2(x, y);
-            Bounds = new Rectangle(Position.X, Position.Y, width, height);
+            Bounds = new Rectangle(X, Y, width, height);
 
             Depth = 1;
         }
@@ -30,21 +30,21 @@ namespace Morro.Core
         public virtual void SetPosition(float x, float y)
         {
             Position = new Vector2(x, y);
-            Bounds = new Rectangle(Position.X, Position.Y, Width, Height);
+            Bounds = new Rectangle(X, Y, Width, Height);
         }
 
         public virtual void SetBounds(float x, float y, int width, int height)
         {
             Position = new Vector2(x, y);
-            Bounds = new Rectangle(Position.X, Position.Y, width, height);
+            Bounds = new Rectangle(X, Y, width, height);
         }
 
-        public virtual void SetWidth(int width)
+        public void SetWidth(int width)
         {
             SetDimensions(width, Height);
         }
 
-        public virtual void SetHeight(int height)
+        public void SetHeight(int height)
         {
             SetDimensions(Width, height);
         }

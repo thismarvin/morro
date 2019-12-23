@@ -13,7 +13,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Core\Partitioning\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Geometry\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Palettes\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Maths\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\Transitions\" />
   </ItemGroup>
   <ItemGroup>

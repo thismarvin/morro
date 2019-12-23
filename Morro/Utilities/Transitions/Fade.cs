@@ -28,53 +28,29 @@ namespace Morro.Utilities
             fade = new Quad(-PADDING, -PADDING, 1, 1, Color.Black, VertexInformation.Dynamic);
         }
 
-        private void AccommodateToCamera()
+        protected override void AccommodateToCamera()
         {
-            Camera camera = CameraManager.GetCamera(CameraType.Static);
+            fade.SetDimensions(Camera.Bounds.Width + PADDING * 2, Camera.Bounds.Height + PADDING * 2);
+
             if (WindowManager.WideScreenSupported)
             {
-                fade.SetBounds
-                (
-                    -WindowManager.PillarBox - PADDING,
-                    -WindowManager.LetterBox - PADDING,
-                    camera.Bounds.Width + PADDING * 2,
-                    camera.Bounds.Height + PADDING * 2
-                );
+                fade.SetPosition(-WindowManager.PillarBox - PADDING, -WindowManager.LetterBox - PADDING);
             }
             else
             {
-                fade.SetBounds
-                (
-                    -PADDING,
-                    -PADDING,
-                    camera.Bounds.Width + PADDING * 2,
-                    camera.Bounds.Height + PADDING * 2
-                );
+                fade.SetPosition(-PADDING, -PADDING);
             }
         }
 
-        private void CalculateColor()
+        protected override void SetupTransition()
         {
             alpha = Type == TransitionType.Enter ? 1 : 0;
             fadeColor = defaultColor * alpha;
             fade.SetColor(fadeColor);
         }
 
-        private void Setup()
+        protected override void UpdateLogic()
         {
-            setup = true;
-            AccommodateToCamera();
-            CalculateColor();
-        }
-
-        public override void Update()
-        {
-            if (Done || !setup)
-                return;
-
-            CalculateForce();
-            AccommodateToCamera();
-
             switch (Type)
             {
                 case TransitionType.Exit:
@@ -82,7 +58,7 @@ namespace Morro.Utilities
                     if (alpha > 1)
                     {
                         alpha = 1;
-                        lastDraw = true;
+                        FlagCompletion();
                     }
                     break;
 
@@ -91,7 +67,7 @@ namespace Morro.Utilities
                     if (alpha < 0)
                     {
                         alpha = 0;
-                        lastDraw = true;
+                        FlagCompletion();
                     }
                     break;
             }
@@ -100,18 +76,9 @@ namespace Morro.Utilities
             fade.SetColor(fadeColor);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawTransition(SpriteBatch spriteBatch)
         {
-            if (!setup)
-                Setup();
-
-            if (Done)
-                return;
-
             fade.Draw(spriteBatch, CameraType.Static);
-
-            if (lastDraw)
-                Done = true;
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.Graphics;
+using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,10 +13,10 @@ namespace Morro.Utilities
     {
         const int PADDING = 64;
 
-        private Circle pinhole;
+        private readonly Circle pinhole;
         private int radius;
 
-        public Pinhole(TransitionType type) : this(type, 1, 5)
+        public Pinhole(TransitionType type) : this(type, 0, 4)
         {
 
         }
@@ -25,36 +26,22 @@ namespace Morro.Utilities
             pinhole = new Circle(0, 0, 1, Color.Black, VertexInformation.Dynamic);
         }
 
-        private void AccommodateToCamera()
-        {
-            Camera camera = CameraManager.GetCamera(CameraType.Static);
-            radius = camera.Bounds.Width > camera.Bounds.Height ? camera.Bounds.Width / 2 : camera.Bounds.Height / 2;
-            radius += PADDING;
-            pinhole.SetRadius(radius);
-            pinhole.SetPosition(camera.Bounds.X + camera.Bounds.Width / 2, camera.Bounds.Y + camera.Bounds.Height / 2);
-        }
-
-        private void CalculateLineWidth()
+        protected override void SetupTransition()
         {
             int lineWidth = Type == TransitionType.Enter ? radius : 1;
             pinhole.SetLineWidth(lineWidth);
         }
 
-        private void Setup()
+        protected override void AccommodateToCamera()
         {
-            setup = true;
-            AccommodateToCamera();
-            CalculateLineWidth();
+            radius = Camera.Bounds.Width > Camera.Bounds.Height ? Camera.Bounds.Width / 2 : Camera.Bounds.Height / 2;
+            radius += PADDING;
+            pinhole.SetRadius(radius);
+            pinhole.SetPosition(Camera.Bounds.X + Camera.Bounds.Width / 2, Camera.Bounds.Y + Camera.Bounds.Height / 2);
         }
 
-        public override void Update()
+        protected override void UpdateLogic()
         {
-            if (Done || !setup)
-                return;
-
-            CalculateForce();
-            AccommodateToCamera();
-
             switch (Type)
             {
                 case TransitionType.Enter:
@@ -62,7 +49,7 @@ namespace Morro.Utilities
                     if (pinhole.LineWidth <= 1)
                     {
                         pinhole.SetLineWidth(1);
-                        lastDraw = true;
+                        FlagCompletion();
                     }
                     break;
 
@@ -71,24 +58,15 @@ namespace Morro.Utilities
                     if (pinhole.LineWidth >= radius)
                     {
                         pinhole.SetLineWidth(radius);
-                        lastDraw = true;
+                        FlagCompletion();
                     }
                     break;
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawTransition(SpriteBatch spriteBatch)
         {
-            if (!setup)
-                Setup();
-
-            if (Done)
-                return;
-
             pinhole.Draw(spriteBatch, CameraType.Static);
-
-            if (lastDraw)
-                Done = true;
         }
     }
 }

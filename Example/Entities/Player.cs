@@ -175,10 +175,9 @@ namespace Example.Entities
         public override void Update()
         {
             UpdateInput();
-            ApplyForce(Integrator.VelocityVerlet);
-            Collision();
-
             animatedSprite.Update();
+
+            base.Update();
         }
 
         public override void Draw(SpriteBatch spriteBatch, Camera camera)

@@ -25,9 +25,10 @@ namespace Example.Entities
             viewRadius = 16;
             maxForce = 0.5f;
 
-            Velocity = new Vector2(
-            (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f,
-            (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f
+            Velocity = new Vector2
+            (
+                (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f,
+                (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f
             );
 
             body.SetRotationOffset(body.Width / 2, body.Height / 2);
@@ -189,9 +190,9 @@ namespace Example.Entities
 
         public override void Update()
         {
-            ApplyForce(Integrator.VelocityVerlet);
-            Collision();
             UpdateFlocking();
+
+            base.Update();
         }
 
         public override void Draw(SpriteBatch spriteBatch, Camera camera)

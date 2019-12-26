@@ -11,7 +11,7 @@ namespace Morro.ECS
 {
     public enum Integrator
     {
-        Euler,
+        SemiImplictEuler,
         VelocityVerlet
     }
 
@@ -21,42 +21,46 @@ namespace Morro.ECS
         public Vector2 Velocity { get; protected set; }
         public Vector2 Acceleration { get; protected set; }
 
+        double accumulator;
+        readonly float target;
+
         public Kinetic(float x, float y, int width, int height, float moveSpeed) : base(x, y, width, height)
         {
             MoveSpeed = moveSpeed;
+
+            target = 1f / 120;
         }
 
         protected abstract void Collision();
 
-        protected void ApplyForce(Integrator integrator)
+        protected void ApplyForce(Integrator integrator, float deltaTime)
         {
             switch (integrator)
             {
-                case Integrator.Euler:
-                    SetPosition
-                    (
-                        Position.X + Velocity.X * Engine.DeltaTime,
-                        Position.Y + Velocity.Y * Engine.DeltaTime
-                    );
-
+                case Integrator.SemiImplictEuler:
                     Velocity = new Vector2
                     (
-                        Velocity.X + Acceleration.X * Engine.DeltaTime,
-                        Velocity.Y + Acceleration.Y * Engine.DeltaTime
+                        Velocity.X + Acceleration.X * deltaTime,
+                        Velocity.Y + Acceleration.Y * deltaTime
+                    );
+
+                    SetPosition
+                    (
+                        Position.X + Velocity.X * deltaTime,
+                        Position.Y + Velocity.Y * deltaTime
                     );
                     break;
 
                 case Integrator.VelocityVerlet:
                     SetPosition
                     (
-                        Position.X + Velocity.X * Engine.DeltaTime + 0.5f * Acceleration.X * Engine.DeltaTime * Engine.DeltaTime,
-                        Position.Y + Velocity.Y * Engine.DeltaTime + 0.5f * Acceleration.Y * Engine.DeltaTime * Engine.DeltaTime
+                        Position.X + Velocity.X * deltaTime + 0.5f * Acceleration.X * deltaTime * deltaTime,
+                        Position.Y + Velocity.Y * deltaTime + 0.5f * Acceleration.Y * deltaTime * deltaTime
                     );
-
                     Velocity = new Vector2
                     (
-                        Velocity.X + Acceleration.X * Engine.DeltaTime,
-                        Velocity.Y + Acceleration.Y * Engine.DeltaTime
+                        Velocity.X + Acceleration.X * deltaTime,
+                        Velocity.Y + Acceleration.Y * deltaTime
                     );
                     break;
             }
@@ -79,6 +83,24 @@ namespace Morro.ECS
             SetPosition(AABB.X, AABB.Y);
 
             return collisionTypes;
+        }
+
+        private void Simultate(float elapsedTime)
+        {
+            accumulator += elapsedTime;
+
+            while (accumulator >= target)
+            {
+                ApplyForce(Integrator.VelocityVerlet, target);
+                Collision();
+
+                accumulator -= target;
+            }
+        }
+
+        public override void Update()
+        {
+            Simultate(Engine.DeltaTime);
         }
     }
 }

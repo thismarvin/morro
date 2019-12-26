@@ -91,6 +91,11 @@ namespace Example.Scenes
             {
                 SceneManager.QueueScene("Flocking");
             }
+
+            if (Morro.Input.Keyboard.Pressed(Keys.P))
+            {
+                SceneManager.QueueScene("Platformer");
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)

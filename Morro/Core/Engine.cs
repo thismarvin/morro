@@ -44,6 +44,7 @@ namespace Morro.Core
             DebugManager.Initialize();
             CameraManager.Initialize();
             SoundManager.Initialize();
+            ComponentManager.Initialize();
             SceneManager.Initialize();
 
             base.Initialize();

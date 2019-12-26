@@ -22,6 +22,14 @@ namespace Morro.ECS
         public string Name { get; private set; }
         public Core.Rectangle SceneBounds { get; private set; }
 
+
+        private int totalEntities;
+        private int nextEntity;
+
+        private readonly Dictionary<string, Component[]> data;
+        private readonly Dictionary<string, System> systems;
+        public ComponentBag[] Lentities { get; private set; }
+
         public Scene(string name)
         {
             Entities = new List<Entity>();
@@ -39,8 +47,94 @@ namespace Morro.ECS
 
             EnterTransition = new Pinhole(TransitionType.Enter);
             ExitTransition = new Fade(TransitionType.Exit);
+
+            totalEntities = 1000;
+            data = new Dictionary<string, Component[]>();
+            systems = new Dictionary<string, System>();
+            Lentities = new ComponentBag[totalEntities];
         }
 
+        #region ECS Stuff
+
+        public void AddSystem(System system)
+        {
+            if (systems.ContainsKey(system.Name))
+                return;
+
+            systems.Add(system.Name, system);
+        }
+
+        public int AllocateEntity()
+        {
+            int next = nextEntity;
+            Lentities[next] = new ComponentBag();
+
+            nextEntity = nextEntity + 1 > totalEntities ? 0 : ++nextEntity;
+            
+            return next;
+        }
+
+        public void Require(string componentName)
+        {
+            string formattedName = ComponentManager.FormatName(componentName);
+
+            if (data.ContainsKey(formattedName))
+                return;
+
+            data.Add(formattedName, new Component[totalEntities]);
+        }
+
+        public void RegisterEntity(int entity)
+        {
+            foreach (KeyValuePair<string, System> entry in systems)
+            {
+                entry.Value.RegisterEntity(this, entity);
+            }
+        }
+
+        public Component[] GetData(string componentName)
+        {
+            string formattedName = ComponentManager.FormatName(componentName);
+
+            if (!data.ContainsKey(formattedName))
+                return new Component[0];
+
+            return data[formattedName];
+        }
+
+        public void UpdateECS()
+        {
+            foreach (KeyValuePair<string, System> entry in systems)
+            {
+                entry.Value.Update(this);
+            }
+
+        }
+
+        public void DrawECS(SpriteBatch spriteBatch)
+        {
+            foreach (KeyValuePair<string, System> entry in systems)
+            {
+                entry.Value.Draw(spriteBatch, this);
+            }
+        }
+
+        public void AssignComponent(int entity, Component data)
+        {
+            if (!this.data.ContainsKey(data.Name))
+                throw new MorroException("didnt require that component type", new KeyNotFoundException());
+
+            Lentities[entity].AddComponent(data.Name);
+            this.data[data.Name][entity] = data;
+        }
+
+        public Component GetComponent(string componentName, int entity)
+        {
+            string formattedName = ComponentManager.FormatName(componentName);
+
+            return data[formattedName][entity];
+        }
+        #endregion
         public List<Entity> Query(Core.Rectangle bounds)
         {
             List<Entity> result = new List<Entity>();

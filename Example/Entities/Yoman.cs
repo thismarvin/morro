@@ -8,21 +8,13 @@ namespace Example.Entities
 {
     static class Yoman
     {
-        public static int Create(Scene scene, int x, int y)
+        public static IComponent[] Create(int x, int y)
         {
-            int entity = scene.AllocateEntity();
-
-            scene.Require("Transform");
-            scene.Require("PhysicsBody");
-            scene.Require("DrawableBody");
-
-            scene.AssignComponent(entity, new Transform(x, y));
-            scene.AssignComponent(entity, new PhysicsBody(10));
-            scene.AssignComponent(entity, new DrawableBody());
-
-            scene.RegisterEntity(entity);
-
-            return entity;
+            return new IComponent[] 
+            { 
+                new Transform(x, y),
+                new PhysicsBody(10)
+            };
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Example.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,30 +10,33 @@ using Morro.ECS;
 
 namespace Example.Systems
 {
-    class PhysicsSystem : Morro.ECS.System
+    class PhysicsSystem : MorroSystem
     {
-        public PhysicsSystem() : base("PhysicsSystem")
+        private IComponent[] transforms;
+        private IComponent[] physicsBodies;
+
+        public PhysicsSystem() : base(4)
         {
-            Require("Transform", "PhysicsBody");
+            Require(typeof(Transform), typeof(PhysicsBody));
         }
 
-        public override void Update(Scene scene)
+        public override void GrabData(Scene scene)
         {
-            Component[] transforms = scene.GetData("Transform");
-            Component[] physicBodies = scene.GetData("PhysicsBody");
-
-            Transform transform;
-            PhysicsBody physicsBody;
-            for (int i = 0; i < registeredEntities.Count; i++)
-            {
-                transform = (Transform)transforms[registeredEntities[i]];
-                physicsBody = (PhysicsBody)physicBodies[registeredEntities[i]];
-
-                transform.SetLocation(transform.X + physicsBody.Speed * Engine.DeltaTime, transform.Y);
-            }
+            transforms = scene.GetData<Transform>();
+            physicsBodies = scene.GetData<PhysicsBody>();
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Scene scene)
+        public override void UpdateEntity(int entity)
+        {
+            Transform transform = (Transform)transforms[entity];
+            PhysicsBody physicsBody = (PhysicsBody)physicsBodies[entity];
+
+            transform.SetLocation(transform.X + physicsBody.Speed * Engine.DeltaTime, transform.Y);
+
+            transforms[entity] = transform;
+        }
+
+        public override void DrawEntity(int entity, SpriteBatch spriteBatch)
         {
 
         }

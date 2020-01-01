@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Example.Components
 {
-    class PhysicsBody : Component
+    struct PhysicsBody : IComponent
     {
-        public float Speed { get; private set; }
+        public int Speed { get; private set; }
 
-        public PhysicsBody(float speed) : base("PhysicsBody")
+        public PhysicsBody(int speed)
         {
             Speed = speed;
         }

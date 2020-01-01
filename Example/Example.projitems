@@ -9,18 +9,13 @@
     <Import_RootNamespace>Example</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Components\DrawableBody.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\PhysicsBody.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Boid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Yoman.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Root.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Flocking.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Menu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Platformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Playground.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Transform.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Drawer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\PhysicsSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\SBoxRenderer.cs" />
   </ItemGroup>
 </Project>

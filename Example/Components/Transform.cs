@@ -5,14 +5,14 @@ using System.Text;
 
 namespace Example.Components
 {
-    class Transform : Component
+    struct Transform : IComponent
     {
-        public float X { get; private set; }
+        public float X { get;  set; }
         public float Y { get; private set; }
         public float Scale { get; private set; }
         public float Rotation { get; private set; }
 
-        public Transform(float x, float y) : base("Transform")
+        public Transform(float x, float y)
         {
             X = x;
             Y = y;

@@ -1,9 +1,12 @@
-﻿using Example.Entities;
+﻿using Example.Components;
+using Example.Entities;
 using Example.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Morro.Core;
 using Morro.ECS;
 using Morro.Graphics;
+using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,16 +17,13 @@ namespace Example.Scenes
     {
         public Playground() : base("Playground")
         {          
-            AddSystem(new Drawer());
-            AddSystem(new PhysicsSystem());
+            RegisterSystem(new PhysicsSystem());
+            RegisterSystem(new SBoxRenderer());
 
-            for (int i = 0; i < 999; i++)
+            for (int i = 0; i < maximumEntityCount; i++)
             {
-                Yoman.Create(this, 16, 16);
+                CreateEntity(Yoman.Create(16, 16));
             }
-            
-
-            
         }
 
         public override void LoadScene()
@@ -47,7 +47,9 @@ namespace Example.Scenes
 
             Sketch.Begin(spriteBatch);
             {
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, GraphicsManager.DefaultRasterizerState, null, Camera.Transform);
                 DrawECS(spriteBatch);
+                spriteBatch.End();
             }            
             Sketch.End(spriteBatch);
         }

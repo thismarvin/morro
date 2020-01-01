@@ -102,7 +102,7 @@ namespace Morro.Core
         {
             GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture));
             GetDebugEntry("Scene").SetInformation(SceneManager.CurrentScene.Name);
-            GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture));
+            //GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture));
         }
 
         private static void DrawDebugLayer(SpriteBatch spriteBatch)
@@ -110,14 +110,14 @@ namespace Morro.Core
             if (!ShowDebugLayer)
                 return;
 
-            List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                if (queryResult[i] is IDebugable)
-                {
-                    ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
-                }
-            }
+            //List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
+            //for (int i = 0; i < queryResult.Count; i++)
+            //{
+            //    if (queryResult[i] is IDebugable)
+            //    {
+            //        ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
+            //    }
+            //}
         }
 
         private static void DrawDebugEntries(SpriteBatch spriteBatch)

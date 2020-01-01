@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodExpectedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodOrderException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\AssetManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\ComponentManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\RandomManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SpriteManager.cs" />
@@ -30,10 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Component.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\ComponentBag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\MorroSystem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\System.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />
@@ -58,9 +55,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SoundManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\VectorHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\WindowManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Actor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Entity.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Kinetic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\AABB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\AnimatedSprite.cs" />
@@ -97,6 +91,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFontCharacter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Readers\BMFontReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SparseSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Text.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transitions\Fade.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transitions\Pinhole.cs" />

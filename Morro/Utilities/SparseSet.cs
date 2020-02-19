@@ -12,7 +12,7 @@ namespace Morro.Utilities
         private readonly uint[] dense;
         private readonly uint[] sparse;
         /// <summary>
-        /// The maximum amount of elements allowed inside the sparse set.
+        /// The maximum amount of elements allowed inside the sparse set, AND the upper bounds of the elements allowed inside.
         /// </summary>
         private readonly uint u;
         /// <summary>
@@ -21,19 +21,22 @@ namespace Morro.Utilities
         private uint n;
 
         /// <summary>
-        /// A data structure that stores a set of <see cref="uint"/>. 
+        /// A data structure that stores a set of <see cref="uint"/> that all fall within a specific range. 
         /// </summary>
-        /// <param name="size">The maximum amount of elements allowed inside the sparse set.</param>
-        public SparseSet(int size)
+        /// <param name="range">The maximum amount of elements allowed inside the sparse set, AND the upper bounds of the elements allowed inside the sparse set.</param>
+        public SparseSet(int range)
         {
-            u = (uint)size;
+            u = (uint)range;
             dense = new uint[u];
             sparse = new uint[u];
         }
 
         public void Add(uint k)
         {
-            if (!(0 <= k && k < u) || Contains(k))
+            if (!(0 <= k && k < u))
+                throw new IndexOutOfRangeException("Index was outside the bounds of the array. A SparseSet cannot contain a value less than 0 or greater than its range.");
+
+            if (Contains(k))
                 return;
 
             dense[n] = k;

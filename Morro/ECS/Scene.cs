@@ -20,6 +20,7 @@ namespace Morro.ECS
         public string Name { get; private set; }
         public Core.Rectangle SceneBounds { get; private set; }
 
+        public SparseSet EntitiesInView { get; private set; }
 
         private readonly int maximumComponentCount;
         private readonly HashSet<Type> registeredComponents;
@@ -35,7 +36,7 @@ namespace Morro.ECS
         protected readonly int maximumEntityCount;
         private int nextEntity;
         private readonly SparseSet[] attachedComponents;
-        private readonly SparseSet[] attachedSystems;   
+        private readonly SparseSet[] attachedSystems;
 
         public Scene(string name, int maximumEntityCount = 100, int maximumComponentCount = 64, int maximumSystemCount = 64)
         {
@@ -59,12 +60,14 @@ namespace Morro.ECS
             registeredComponents = new HashSet<Type>();
             componentLookup = new Dictionary<Type, int>();
             data = new IComponent[this.maximumComponentCount][];
-            
+
             registeredSystems = new HashSet<Type>();
             systems = new MorroSystem[this.maximumSystemCount];
 
             attachedComponents = new SparseSet[this.maximumEntityCount];
             attachedSystems = new SparseSet[this.maximumEntityCount];
+
+            EntitiesInView = new SparseSet(this.maximumEntityCount);
         }
 
         #region ECS Stuff
@@ -159,7 +162,7 @@ namespace Morro.ECS
                     if (systems[j].RequiredComponents.Contains(componentTypes[i]))
                     {
                         systems[j].RemoveEntity(entity);
-                    }                    
+                    }
                 }
             }
         }
@@ -223,8 +226,15 @@ namespace Morro.ECS
             return data[componentLookup[componentType]];
         }
 
+        public IComponent GetEntityData(int entity, Type type)
+        {
+            return data[componentLookup[type]][entity];
+        }
+
         public void UpdateECS()
         {
+            SpatialPartitioning();
+
             for (int i = 0; i < systemIndex; i++)
             {
                 systems[i].GrabData(this);
@@ -243,24 +253,18 @@ namespace Morro.ECS
 
         #endregion
 
+        public SparseSet Query(Core.Rectangle bounds)
+        {           
+            List<PartitionEntry> queryResult = Partitioner.Query(bounds);
+            SparseSet result = new SparseSet(maximumEntityCount);
 
+            for (int i = 0; i < queryResult.Count; i++)
+            {
+                result.Add((uint)queryResult[i].ID);
+            }
 
-        //public List<Entity> Query(Core.Rectangle bounds)
-        //{
-        //    List<Entity> result = new List<Entity>();
-        //    List<MonoObject> queryResult = Partitioner.Query(bounds);
-
-        //    for (int i = 0; i < queryResult.Count; i++)
-        //    {
-        //        if (queryResult[i] is Entity)
-        //        {
-        //            result.Add((Entity)queryResult[i]);
-        //        }
-        //    }
-        //    result.Sort();
-
-        //    return result;
-        //}
+            return result;
+        }
 
         /// <summary>
         /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Quadtree"/>, and initialize a new <see cref="Quadtree"/>.
@@ -296,11 +300,31 @@ namespace Morro.ECS
 
         protected void SpatialPartitioning()
         {
-            //Partitioner.Clear();
-            //for (int i = 0; i < Entities.Count; i++)
-            //{
-            //    Partitioner.Insert(Entities[i]);
-            //}
+            Partitioner.Clear();
+
+            CPosition position;
+            CDimension dimension;
+            for (int entity = 0; entity < maximumEntityCount; entity++)
+            {
+                if (attachedComponents[entity] == null)
+                    continue;
+
+                if (EntityContains(entity, typeof(CPosition), typeof(CDimension)))
+                {
+                    position = (CPosition)GetEntityData(entity, typeof(CPosition));
+                    dimension = (CDimension)GetEntityData(entity, typeof(CDimension));
+
+                    Partitioner.Insert(new PartitionEntry(entity, new Core.Rectangle(position.X, position.Y, (int)dimension.Width, (int)dimension.Height)));
+                }
+                else if (EntityContains(entity, typeof(CPosition)))
+                {
+                    position = (CPosition)GetEntityData(entity, typeof(CPosition));
+
+                    Partitioner.Insert(new PartitionEntry(entity, new Core.Rectangle(position.X, position.Y, 1, 1)));
+                }
+            }
+
+            EntitiesInView = Query(Camera.Bounds);
         }
 
         public abstract void LoadScene();

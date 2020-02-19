@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Core\Partitioning\" />
+    <Folder Include="$(MSBuildThisFileDirectory)ECS\Components\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Geometry\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Palettes\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\Transitions\" />
@@ -26,9 +26,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\RandomManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SpriteManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\PartitionEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CDimension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\MorroSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />

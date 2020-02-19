@@ -11,15 +11,19 @@ namespace Morro.ECS
         public HashSet<Type> RequiredComponents { get; private set; }
         public HashSet<int> Entities { get; private set; }
 
+        protected Scene scene;
+
         protected List<int> entitiesAsList;
         protected uint tasks;
 
-        public MorroSystem(uint tasks = 1)
+        public MorroSystem(Scene scene, uint tasks = 1)
         {
             RequiredComponents = new HashSet<Type>();
             Entities = new HashSet<int>();
             entitiesAsList = new List<int>();
             this.tasks = tasks;
+
+            this.scene = scene;
         }
 
         public void Require(params Type[] components)
@@ -47,15 +51,21 @@ namespace Morro.ECS
             entitiesAsList.Remove(entity);
         }
 
-        private void NormalUpdate()
+        protected void NormalUpdate()
         {
+            //List<int> entitiesInView = scene.Query(scene.Camera.Bounds);
+            //for (int i = 0; i < entitiesInView.Count; i++)
+            //{
+            //    UpdateEntity(entitiesInView[i]);
+            //}
+
             foreach (int entity in Entities)
             {
                 UpdateEntity(entity);
             }
         }
 
-        private void ParallelUpdate()
+        protected void ParallelUpdate()
         {
             Task.WaitAll(DivideUpdateIntoTasks(tasks));
 

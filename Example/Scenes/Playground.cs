@@ -17,13 +17,17 @@ namespace Example.Scenes
     {
         public Playground() : base("Playground")
         {          
-            RegisterSystem(new PhysicsSystem());
-            RegisterSystem(new SBoxRenderer());
+            RegisterSystem(new SPhysicsSystem(this));
+            RegisterSystem(new SBoxHandler(this));
 
-            for (int i = 0; i < maximumEntityCount; i++)
-            {
-                CreateEntity(Yoman.Create(16, 16));
-            }
+            //for (int i = 0; i < maximumEntityCount; i++)
+            //{
+            //    CreateEntity(Yoman.Create(SceneBounds.Width / 2, SceneBounds.Height / 2, RandomHelper.Range(1, 5)));
+            //}
+
+            PreferBinPartitioner(8);
+
+            SetSceneBounds(2000, 500);
         }
 
         public override void LoadScene()
@@ -38,18 +42,39 @@ namespace Example.Scenes
 
         public override void Update()
         {
+            if (Morro.Input.Mouse.PressingLeftClick())
+            {
+                //for (int i = 0; i < maximumEntityCount; i++)
+                //{
+                //    CreateEntity(Yoman.Create(SceneBounds.Width / 2, SceneBounds.Height / 2, RandomHelper.Range(1, 5)));
+                //}
+
+                CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, RandomHelper.Range(1, 5)));
+            }
+
             UpdateECS();
+
+            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.D))
+            {
+                Camera.Track( 1 * Engine.DeltaTime, Camera.TrackingPosition.Y);
+            }
+
+            Console.WriteLine(Camera.Bounds);
+
+            //SpatialPartitioning();
+            Console.WriteLine(Query(Camera.Bounds).Count);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             Sketch.CreateBackgroundLayer(spriteBatch, Color.Blue);
 
+            Sketch.AttachEffect(new Palette());
             Sketch.Begin(spriteBatch);
             {
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, GraphicsManager.DefaultRasterizerState, null, Camera.Transform);
+                //spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, GraphicsManager.DefaultRasterizerState, null, Camera.Transform);
                 DrawECS(spriteBatch);
-                spriteBatch.End();
+                //spriteBatch.End();
             }            
             Sketch.End(spriteBatch);
         }

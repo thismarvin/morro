@@ -1,11 +1,13 @@
 ﻿/.vs
 .vscode/tasks.json
+/packages
 /Morro.Content.Pipeline/obj/Debug
 /Morro.Content.Pipeline/obj/Release
 /Morro.Content.Pipeline/bin/Debug
 /Morro.Content.Pipeline/bin/Release
-/packages
 /Morro.Windows/bin
 /Morro.Windows/obj
 /Morro.DesktopGL/bin
 /Morro.DesktopGL/obj
+/Morro/Content/bin
+/Morro/Content/obj

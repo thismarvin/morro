@@ -9,5 +9,5 @@
 /Morro.Windows/obj
 /Morro.DesktopGL/bin
 /Morro.DesktopGL/obj
-/Morro/Content/bin/*
-/Morro/Content/obj/*
+/Morro/Content/bin
+/Morro/Content/obj

@@ -12,6 +12,7 @@ namespace Morro.Core
         public static Engine Instance { get; private set; }
         public static RenderTarget2D RenderTarget { get { return WindowManager.RenderTarget; } }
         public static float DeltaTime { get; private set; }
+        public static TimeSpan TotalGameTime { get; private set; }
 
         private SpriteBatch spriteBatch;
 
@@ -68,6 +69,7 @@ namespace Morro.Core
         protected override void Update(GameTime gameTime)
         {
             DeltaTime = (float)gameTime?.ElapsedGameTime.TotalSeconds;
+            TotalGameTime = gameTime.TotalGameTime;
 
             InputManager.Update();
             GraphicsManager.Update();

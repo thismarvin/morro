@@ -9,7 +9,7 @@ namespace Morro.Core
         private readonly int capacity;
         private bool divided;
         private int insertionIndex;
-        private MonoObject[] objects;
+        private PartitionEntry[] objects;
         private Quadtree topLeft;
         private Quadtree topRight;
         private Quadtree bottomRight;
@@ -24,12 +24,12 @@ namespace Morro.Core
 
         protected override void Initialize()
         {
-            objects = new MonoObject[capacity];
+            objects = new PartitionEntry[capacity];
         }
 
-        public override List<MonoObject> Query(Rectangle bounds)
+        public override List<PartitionEntry> Query(Rectangle bounds)
         {
-            List<MonoObject> result = new List<MonoObject>();
+            List<PartitionEntry> result = new List<PartitionEntry>();
 
             if (Boundary.EntirelyWithin(bounds))
             {
@@ -66,14 +66,14 @@ namespace Morro.Core
             return result;
         }
 
-        public override bool Insert(MonoObject monoObject)
+        public override bool Insert(PartitionEntry entry)
         {
-            if (!monoObject.Bounds.Intersects(Boundary))
+            if (!entry.Bounds.Intersects(Boundary))
                 return false;
 
             if (insertionIndex < capacity)
             {
-                objects[insertionIndex++] = monoObject;
+                objects[insertionIndex++] = entry;
                 return true;
             }
             else
@@ -81,7 +81,7 @@ namespace Morro.Core
                 if (!divided)
                     Subdivide();
 
-                if (topLeft.Insert(monoObject) || topRight.Insert(monoObject) || bottomRight.Insert(monoObject) || bottomLeft.Insert(monoObject))
+                if (topLeft.Insert(entry) || topRight.Insert(entry) || bottomRight.Insert(entry) || bottomLeft.Insert(entry))
                     return true;
             }
 

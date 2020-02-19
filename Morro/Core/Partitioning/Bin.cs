@@ -6,7 +6,7 @@ namespace Morro.Core
 {
     class Bin : Partitioner
     {
-        private HashSet<MonoObject>[] buckets;
+        private HashSet<PartitionEntry>[] buckets;
         private readonly int powerOfTwo;
         private int columns;
         private int rows;
@@ -23,49 +23,49 @@ namespace Morro.Core
             columns = (int)Math.Ceiling((float)Boundary.Width / powerOfTwo);
             rows = (int)Math.Ceiling((float)Boundary.Height / powerOfTwo);
 
-            buckets = new HashSet<MonoObject>[rows * columns];
+            buckets = new HashSet<PartitionEntry>[rows * columns];
 
             for (int i = 0; i < buckets.Length; i++)
             {
-                buckets[i] = new HashSet<MonoObject>();
+                buckets[i] = new HashSet<PartitionEntry>();
             }
         }
 
-        public override List<MonoObject> Query(Rectangle bounds)
+        public override List<PartitionEntry> Query(Rectangle bounds)
         {
-            List<MonoObject> result = new List<MonoObject>();
-            HashSet<MonoObject> objects = new HashSet<MonoObject>();
+            List<PartitionEntry> result = new List<PartitionEntry>();
+            HashSet<PartitionEntry> entries = new HashSet<PartitionEntry>();
             HashSet<int> ids = HashIDs(bounds);
 
             foreach (int id in ids)
             {
-                foreach (MonoObject monoObject in buckets[id])
+                foreach (PartitionEntry entry in buckets[id])
                 {
-                    objects.Add(monoObject);
+                    entries.Add(entry);
                 }
             }
 
-            foreach (MonoObject monoObject in objects)
+            foreach (PartitionEntry entry in entries)
             {
-                result.Add(monoObject);
+                result.Add(entry);
             }
 
-            objects.Clear();
+            entries.Clear();
             ids.Clear();
 
             return result;
         }
 
-        public override bool Insert(MonoObject monoObject)
+        public override bool Insert(PartitionEntry entry)
         {
-            if (!monoObject.Bounds.Intersects(Boundary))
+            if (!entry.Bounds.Intersects(Boundary))
                 return false;
 
-            HashSet<int> ids = HashIDs(monoObject.Bounds);
+            HashSet<int> ids = HashIDs(entry.Bounds);
 
             foreach (int i in ids)
             {
-                buckets[i].Add(monoObject);
+                buckets[i].Add(entry);
             }
 
             return ids.Count > 0;

@@ -27,16 +27,11 @@ namespace Morro.Core
             Initialize();
         }
 
-        public List<MonoObject> Query(MonoObject monoObject)
-        {
-            return Query(monoObject.Bounds);
-        }
-
         protected abstract void Initialize();
 
-        public abstract List<MonoObject> Query(Rectangle bounds);
+        public abstract List<PartitionEntry> Query(Rectangle bounds);
 
-        public abstract bool Insert(MonoObject monoObject);
+        public abstract bool Insert(PartitionEntry entry);
 
         public abstract void Clear();
     }

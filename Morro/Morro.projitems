@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\MorroSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMapping.cs" />

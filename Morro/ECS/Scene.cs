@@ -12,6 +12,7 @@ namespace Morro.ECS
 {
     abstract class Scene
     {
+        public bool PartitioningEnabled { get; private set; }
         public PartitionerType PartitionerPreference { get; private set; }
         public Partitioner Partitioner { get; private set; }
         public Camera Camera { get; private set; }
@@ -19,8 +20,11 @@ namespace Morro.ECS
         public Transition ExitTransition { get; set; }
         public string Name { get; private set; }
         public Core.Rectangle SceneBounds { get; private set; }
-
         public SparseSet EntitiesInView { get; private set; }
+
+        private SparseSet entityRemovalQueue;
+
+        private readonly int queryBuffer;
 
         private readonly int maximumComponentCount;
         private readonly HashSet<Type> registeredComponents;
@@ -43,8 +47,8 @@ namespace Morro.ECS
             Name = SceneManager.FormatName(name);
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
-            PartitionerPreference = PartitionerType.Quadtree;
-            Partitioner = new Quadtree(SceneBounds, 4);
+            PreferQuadtreePartitioner(4);
+            queryBuffer = 16;
 
             Camera = new Camera(Name);
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
@@ -68,6 +72,8 @@ namespace Morro.ECS
             attachedSystems = new SparseSet[this.maximumEntityCount];
 
             EntitiesInView = new SparseSet(this.maximumEntityCount);
+
+            entityRemovalQueue = new SparseSet(this.maximumEntityCount);
         }
 
         #region ECS Stuff
@@ -96,18 +102,7 @@ namespace Morro.ECS
 
         public void RemoveEntity(int entity)
         {
-            foreach (uint i in attachedComponents[entity])
-            {
-                data[i][entity] = null;
-            }
-
-            foreach (uint i in attachedSystems[entity])
-            {
-                systems[i].RemoveEntity(entity);
-            }
-
-            attachedComponents[entity].Clear();
-            attachedSystems[entity].Clear();
+            entityRemovalQueue.Add((uint)entity);
         }
 
         public bool EntityContains(int entity, params Type[] components)
@@ -165,6 +160,22 @@ namespace Morro.ECS
                     }
                 }
             }
+        }
+
+        private void ClearEntity(uint entity)
+        {
+            foreach (uint i in attachedComponents[entity])
+            {
+                data[i][entity] = null;
+            }
+
+            foreach (uint i in attachedSystems[entity])
+            {
+                systems[i].RemoveEntity((int)entity);
+            }
+
+            attachedComponents[entity].Clear();
+            attachedSystems[entity].Clear();
         }
 
         private int AllocateEntity()
@@ -228,6 +239,9 @@ namespace Morro.ECS
 
         public IComponent GetEntityData(int entity, Type type)
         {
+            if (!componentLookup.ContainsKey(type))
+                return null;
+
             return data[componentLookup[type]][entity];
         }
 
@@ -239,6 +253,15 @@ namespace Morro.ECS
             {
                 systems[i].GrabData(this);
                 systems[i].Update();
+            }
+
+            if (entityRemovalQueue.Count != 0)
+            {
+                foreach (uint entity in entityRemovalQueue)
+                {
+                    ClearEntity(entity);
+                }
+                entityRemovalQueue.Clear();
             }
         }
 
@@ -254,9 +277,21 @@ namespace Morro.ECS
         #endregion
 
         public SparseSet Query(Core.Rectangle bounds)
-        {           
-            List<PartitionEntry> queryResult = Partitioner.Query(bounds);
+        {
             SparseSet result = new SparseSet(maximumEntityCount);
+
+            if (!PartitioningEnabled)
+            {
+                for (int entity = 0; entity < maximumEntityCount; entity++)
+                {
+                    if (EntityContains(entity, typeof(CPosition), typeof(CDimension)) || EntityContains(entity, typeof(CPosition)))
+                    {
+                        result.Add((uint)entity);
+                    }
+                }
+            }
+
+            List<PartitionEntry> queryResult = Partitioner.Query(bounds);
 
             for (int i = 0; i < queryResult.Count; i++)
             {
@@ -266,12 +301,32 @@ namespace Morro.ECS
             return result;
         }
 
+        public bool EntityInView(int entity)
+        {
+            if (!PartitioningEnabled)
+                return true;
+
+            return EntitiesInView.Contains((uint)entity);
+        }
+
+        protected void DisablePartitioning()
+        {
+            if (!PartitioningEnabled)
+                return;
+
+            PartitioningEnabled = false;
+            PartitionerPreference = PartitionerType.None;
+            Partitioner.Clear();
+            Partitioner = null;
+        }
+
         /// <summary>
         /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Quadtree"/>, and initialize a new <see cref="Quadtree"/>.
         /// </summary>
-        /// <param name="capacity">the amount of <see cref="MonoObject"/>'s allowed in each <see cref="Quadtree"/>.</param>
+        /// <param name="capacity">the amount of entiies allowed in each <see cref="Quadtree"/>.</param>
         protected void PreferQuadtreePartitioner(int capacity)
         {
+            PartitioningEnabled = true;
             PartitionerPreference = PartitionerType.Quadtree;
             Partitioner = new Quadtree(SceneBounds, capacity);
         }
@@ -279,9 +334,10 @@ namespace Morro.ECS
         /// <summary>
         /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Bin"/>, and initialize a new <see cref="Bin"/>.
         /// </summary>
-        /// <param name="maximumDimension">the maximum dimension of the <see cref="MonoObject.Bounds"/> expected.</param>
+        /// <param name="maximumDimension">the maximum dimension of the entities expected.</param>
         protected void PreferBinPartitioner(int maximumDimension)
         {
+            PartitioningEnabled = true;
             PartitionerPreference = PartitionerType.Bin;
             int optimalBinSize = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
             Partitioner = new Bin(SceneBounds, optimalBinSize);
@@ -293,13 +349,18 @@ namespace Morro.ECS
                 return;
 
             SceneBounds = new Core.Rectangle(0, 0, width, height);
-            Partitioner.SetBoundary(SceneBounds);
+
+            if (PartitioningEnabled)
+                Partitioner.SetBoundary(SceneBounds);
 
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
         }
 
         protected void SpatialPartitioning()
         {
+            if (!PartitioningEnabled)
+                return;
+
             Partitioner.Clear();
 
             CPosition position;
@@ -324,7 +385,7 @@ namespace Morro.ECS
                 }
             }
 
-            EntitiesInView = Query(Camera.Bounds);
+            EntitiesInView = Query(new Core.Rectangle(Camera.Bounds.X - queryBuffer, Camera.Bounds.Y - queryBuffer, Camera.Bounds.Width + queryBuffer * 2, Camera.Bounds.Height + queryBuffer * 2));
         }
 
         public abstract void LoadScene();

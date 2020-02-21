@@ -6,6 +6,7 @@ namespace Morro.Core
 {
     public enum PartitionerType
     {
+        None,
         Quadtree,
         Bin
     }

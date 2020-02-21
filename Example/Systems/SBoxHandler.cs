@@ -1,5 +1,7 @@
 ﻿using Example.Components;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Morro.Core;
 using Morro.ECS;
 using System;
 using System.Collections.Generic;
@@ -33,6 +35,9 @@ namespace Example.Systems
 
         public override void DrawEntity(int entity, SpriteBatch spriteBatch)
         {
+            if (!scene.EntityInView(entity))
+                return;
+
             CBox box = (CBox)cBoxes[entity];
 
             box.AABB.Draw(spriteBatch, scene.Camera);

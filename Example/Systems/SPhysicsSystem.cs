@@ -15,7 +15,6 @@ namespace Example.Systems
         private IComponent[] transforms;
         private IComponent[] physicsBodies;
 
-        //private double accumulator;
         private readonly float target;
         private readonly Integrator integrator;
 
@@ -25,7 +24,7 @@ namespace Example.Systems
             VelocityVerlet
         }
 
-        public SPhysicsSystem(Scene scene) : base(scene, 4)
+        public SPhysicsSystem(Scene scene) : base(scene, 8)
         {
             Require(typeof(CPosition), typeof(CPhysicsBody));
 
@@ -41,11 +40,27 @@ namespace Example.Systems
 
         public override void UpdateEntity(int entity)
         {
-            //Integrate(entity, integrator, target);
-
-            if (!scene.EntitiesInView.Contains((uint)entity))
+            if (!scene.EntityInView(entity))
                 return;
 
+            CPosition position = (CPosition)transforms[entity];
+
+            if (position.Y > scene.SceneBounds.Height + 16)
+            {
+                scene.RemoveEntity(entity);
+                return;
+            }
+
+            Simultate(entity);
+        }
+
+        public override void DrawEntity(int entity, SpriteBatch spriteBatch)
+        {
+
+        }
+
+        private void Simultate(int entity)
+        {
             CPhysicsBody physicsBody = (CPhysicsBody)physicsBodies[entity];
 
             physicsBody.Accumulator += (float)(Engine.TotalGameTime - physicsBody.LastUpdate).TotalSeconds;
@@ -57,27 +72,6 @@ namespace Example.Systems
                 physicsBody.Accumulator -= target;
             }
         }
-
-        public override void DrawEntity(int entity, SpriteBatch spriteBatch)
-        {
-
-        }
-
-        //public override void Update()
-        //{
-        //    Simultate(Engine.DeltaTime);
-        //}
-
-        //private void Simultate(float elapsedTime)
-        //{
-        //    accumulator += elapsedTime;
-
-        //    while (accumulator >= target)
-        //    {
-        //        ParallelUpdate();
-        //        accumulator -= target;
-        //    }
-        //}
 
         private void Integrate(int entity, Integrator integrator, float deltaTime)
         {
@@ -104,24 +98,12 @@ namespace Example.Systems
                 physicsBody.Velocity.Y + physicsBody.Acceleration.Y * deltaTime
             );
 
-            //position.SetLocation
-            //(
-            //    position.X + physicsBody.Velocity.X * deltaTime,
-            //    position.Y + physicsBody.Velocity.Y * deltaTime
-            //);
-
             position.X += physicsBody.Velocity.X * deltaTime;
             position.Y += physicsBody.Velocity.Y * deltaTime;
         }
 
         private static void VelocityVerletIntegration(float deltaTime, CPosition position, CPhysicsBody physicsBody)
         {
-            //position.SetLocation
-            //(
-            //    position.X + physicsBody.Velocity.X * deltaTime + 0.5f * physicsBody.Acceleration.X * deltaTime * deltaTime,
-            //    position.Y + physicsBody.Velocity.Y * deltaTime + 0.5f * physicsBody.Acceleration.Y * deltaTime * deltaTime
-            //);
-
             position.X += physicsBody.Velocity.X * deltaTime + 0.5f * physicsBody.Acceleration.X * deltaTime * deltaTime;
             position.Y += physicsBody.Velocity.Y * deltaTime + 0.5f * physicsBody.Acceleration.Y * deltaTime * deltaTime;
 

@@ -247,16 +247,13 @@ namespace Morro.Graphics
                 // Scale unit vertices by the polygon's dimensions.
                 Matrix.CreateScale(Width, Height, 1) *
 
-                // Set the origin to the polygon's top left postition instead of the bottom right.
-                Matrix.CreateTranslation(-Width, -Height, 0) *
-
                 // Translate to the polygon's axis of rotaion, rotate the polygon, and then translate back to the top left.
                 Matrix.CreateTranslation(rotationOffset.X, rotationOffset.Y, 0) *
                 Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateTranslation(-rotationOffset.X, -rotationOffset.Y, 0) *
 
-                // Translate the polygon to the inverse of its position.
-                Matrix.CreateTranslation(-X, -Y, 0) *
+                // Translate the polygon to its position.
+                Matrix.CreateTranslation(X, Y, 0) *
                 Matrix.Identity;
 
             transformUpdated = true;

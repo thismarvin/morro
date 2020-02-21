@@ -16,14 +16,16 @@ namespace Morro.Utilities
         public Matrix Projection { get; private set; }
         public Vector3 TopLeft { get; private set; }
         public Core.Rectangle Bounds { get; private set; }
-        public Vector3 TrackingPosition { get; private set; }
+        public Vector2 Center { get { return new Vector2(Bounds.X + Bounds.Width * 0.5f, Bounds.Y + Bounds.Height * 0.5f); } }
         public float SmoothTrackingSpeed { get; set; }
         public float Zoom { get; private set; }
         public float Rotation { get; private set; }
 
         private Vector3 cameraPosition;
         private Vector3 cameraTarget;
-        private Vector3 cameraCenter;
+        private Vector3 cameraCenter; // Not actually the center, really just half the width / height
+
+        private Vector3 trackingPosition;
 
         private float zoomOffset;
 
@@ -53,7 +55,7 @@ namespace Morro.Utilities
         {
             Name = CameraManager.FormatCameraName(name);
             TopLeft = new Vector3(x, y, 0);
-            TrackingPosition = new Vector3(0, 0, 0);
+            trackingPosition = new Vector3(0, 0, 0);
             SmoothTrackingSpeed = 1;
 
             Initialize();
@@ -111,7 +113,7 @@ namespace Morro.Utilities
 
         public void Track(float x, float y)
         {
-            if (TrackingPosition.X == x && TrackingPosition.Y == y)
+            if (AlreadyTrackingPosition(x, y))
                 return;
 
             tracking = true;
@@ -125,7 +127,7 @@ namespace Morro.Utilities
 
         public void SmoothTrack(float x, float y)
         {
-            if (TrackingPosition.X == x && TrackingPosition.Y == y)
+            if (AlreadyTrackingPosition(x, y))
                 return;
 
             smoothTracking = true;
@@ -189,7 +191,7 @@ namespace Morro.Utilities
                 cameraCenter = new Vector3(Bounds.Width / 2, Bounds.Height / 2, 0);
             }
 
-            cameraPosition = new Vector3(-TopLeft.X, -TopLeft.Y, -1);
+            cameraPosition = new Vector3(Center.X, -Center.Y, 1);
             cameraTarget = new Vector3(cameraPosition.X, cameraPosition.Y, 0);
         }
 
@@ -203,31 +205,64 @@ namespace Morro.Utilities
                 Matrix.CreateRotationZ(Rotation) *
                 // Translate the transform matrix to the transform matrix to the inverse of the camera's top left.
                 Matrix.CreateTranslation(-TopLeft) *
+
                 // Scale the transform matrix by the camera's zoom.
                 Matrix.CreateScale(Zoom + zoomOffset) *
+
                 // Anchor the transform matrix to the center of the screen instead of the top left.
-                Matrix.CreateTranslation(new Vector3(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2, 0));
+                Matrix.CreateTranslation(new Vector3(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2, 0)) *
+                Matrix.Identity;
 
             World =
-                // Set the origin of the world matrix to the camera's center.
+                // To be honest, I am not sure why this works. 
+                // Essentially it rotates the World matrix exactly how the Transform matrix works.
+                Matrix.CreateTranslation(-cameraCenter) *
+                Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateTranslation(cameraCenter) *
-                // Rotate the camera relative to the origin.
-                Matrix.CreateRotationZ(Rotation);
 
-            View = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
-            Projection = Matrix.CreateOrthographic(WindowManager.WindowWidth / (Zoom + zoomOffset), WindowManager.WindowHeight / (Zoom + zoomOffset), -1000, 1000);
+                // In a right-handed coordinate system, the y-axis points upwards. By default, positioning a polygon follows this logic.
+                // However, when drawing a sprite using SpriteBatch the y-axis points downwards.
+                // Since SpriteBatch is predominately used, the World matrix is rotated so the y-axis also points downwards.
+                Matrix.CreateRotationX(MathHelper.Pi) *
+                Matrix.Identity;
+
+            View =
+                Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
+
+            Projection =
+                Matrix.CreateOrthographic(WindowManager.WindowWidth / (Zoom + zoomOffset), WindowManager.WindowHeight / (Zoom + zoomOffset), 0, 64);
         }
 
         private void SetupTracking(float x, float y)
         {
             if (WindowManager.WideScreenSupported)
             {
-                TrackingPosition = new Vector3(x - Bounds.Width / 2 + WindowManager.PillarBox, y - Bounds.Height / 2 + WindowManager.LetterBox, TrackingPosition.Z);
+                trackingPosition = new Vector3(x - Bounds.Width / 2 + WindowManager.PillarBox, y - Bounds.Height / 2 + WindowManager.LetterBox, trackingPosition.Z);
             }
             else
             {
-                TrackingPosition = new Vector3(x - Bounds.Width / 2, y - Bounds.Height / 2, TrackingPosition.Z);
+                trackingPosition = new Vector3(x - Bounds.Width / 2, y - Bounds.Height / 2, trackingPosition.Z);
             }
+        }
+
+        private bool AlreadyTrackingPosition(float x, float y)
+        {
+            if (WindowManager.WideScreenSupported)
+            {
+                if (trackingPosition.X == x - Bounds.Width / 2 + WindowManager.PillarBox && trackingPosition.Y == y - Bounds.Height / 2 + WindowManager.LetterBox)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (trackingPosition.X == x - Bounds.Width / 2 && trackingPosition.Y == y - Bounds.Height / 2)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void NormalCollision()
@@ -328,7 +363,7 @@ namespace Morro.Utilities
             if (!tracking)
                 return;
 
-            SetTopLeft(TrackingPosition);
+            SetTopLeft(trackingPosition);
             tracking = false;
         }
 
@@ -337,14 +372,14 @@ namespace Morro.Utilities
             if (!smoothTracking)
                 return;
 
-            SetTopLeft(Vector3.Lerp(TopLeft, TrackingPosition, SmoothTrackingSpeed * Engine.DeltaTime));
+            SetTopLeft(Vector3.Lerp(TopLeft, trackingPosition, SmoothTrackingSpeed * Engine.DeltaTime));
 
-            Vector3 difference = TrackingPosition - TopLeft;
+            Vector3 difference = trackingPosition - TopLeft;
             difference = new Vector3(Math.Abs(difference.X), Math.Abs(difference.Y), Math.Abs(difference.Z));
             float min = 0.5f;
             if (difference.X < min && difference.Y < min && difference.Z < min)
             {
-                SetTopLeft(TrackingPosition);
+                SetTopLeft(trackingPosition);
                 smoothTracking = false;
             }
         }
@@ -379,7 +414,7 @@ namespace Morro.Utilities
             {
                 SetTopLeft(Vector3.Lerp(TopLeft, new Vector3(originalPosition.X, originalPosition.Y, 0), shakeRoughness * 0.25f * Engine.DeltaTime));
 
-                Vector3 difference = TrackingPosition - TopLeft;
+                Vector3 difference = trackingPosition - TopLeft;
                 difference = new Vector3(Math.Abs(difference.X), Math.Abs(difference.Y), Math.Abs(difference.Z));
                 float min = 0.5f;
                 if (difference.X < min && difference.Y < min && difference.Z < min)

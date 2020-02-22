@@ -13,28 +13,13 @@ namespace Morro.Input
         private static KeyboardState currentKeyState;
         private static bool isBeingUpdated;
 
-        private static void VerifyUpdateIsCalled()
-        {
-            if (!isBeingUpdated)
-            {
-                throw new MorroException("Make sure to call Input.Keyboard.Update() in Engine.cs before you use any of the built in methods.", new MethodExpectedException());
-            }
-        }
-
-        public static void Update()
-        {
-            isBeingUpdated = true;
-            previousKeyState = currentKeyState;
-            currentKeyState = Microsoft.Xna.Framework.Input.Keyboard.GetState();            
-        }
-
         public static bool Pressed(Keys key)
         {
             VerifyUpdateIsCalled();
             
             if (!previousKeyState.IsKeyDown(key) && currentKeyState.IsKeyDown(key))
             {
-                InputManager.SetInputMode(InputMode.Keyboard);
+                InputManager.InputMode = InputMode.Keyboard;
                 return true;
             }
 
@@ -47,11 +32,26 @@ namespace Morro.Input
 
             if (currentKeyState.IsKeyDown(key))
             {
-                InputManager.SetInputMode(InputMode.Keyboard);
+                InputManager.InputMode = InputMode.Keyboard;
                 return true;
             }
 
             return false;
+        }
+
+        private static void VerifyUpdateIsCalled()
+        {
+            if (!isBeingUpdated)
+            {
+                throw new MorroException("Make sure to call Input.Keyboard.Update() in Engine.cs before you use any of the built in methods.", new MethodExpectedException());
+            }
+        }
+
+        internal static void Update()
+        {
+            isBeingUpdated = true;
+            previousKeyState = currentKeyState;
+            currentKeyState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
         }
     }
 }

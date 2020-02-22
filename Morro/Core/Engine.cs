@@ -32,28 +32,13 @@ namespace Morro.Core
 
         protected override void Initialize()
         {
-            AssetManager.Initialize();
-            SpriteManager.Initialize();
-            AssetManager.LoadContent();
-
-            GraphicsManager.Initialize();
-            WindowManager.Initialize();
-
-            RandomManager.Initialize();            
-            SketchManager.Initialize();
-            InputManager.Initialize();
-            DebugManager.Initialize();
-            CameraManager.Initialize();
-            SoundManager.Initialize();
-
-            SceneManager.Initialize();
-
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            AssetManager.LoadContent();
         }
 
         protected override void UnloadContent()

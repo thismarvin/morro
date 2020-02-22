@@ -44,7 +44,7 @@ namespace Morro.ECS
 
         public Scene(string name, int maximumEntityCount = 100, int maximumComponentCount = 64, int maximumSystemCount = 64)
         {
-            Name = SceneManager.FormatName(name);
+            Name = ResourceHandler<Scene>.FormatName(name);
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
             PreferQuadtreePartitioner(4);
@@ -251,7 +251,7 @@ namespace Morro.ECS
 
             for (int i = 0; i < systemIndex; i++)
             {
-                systems[i].GrabData(this);
+                systems[i].BeforeUpdate();
                 systems[i].Update();
             }
 
@@ -269,8 +269,8 @@ namespace Morro.ECS
         {
             for (int i = 0; i < systemIndex; i++)
             {
-                systems[i].GrabData(this);
-                systems[i].Draw(spriteBatch);
+                systems[i].BeforeDraw(spriteBatch);
+                systems[i].Draw(spriteBatch, Camera);
             }
         }
 

@@ -44,7 +44,7 @@ namespace Morro.Debug
         /// <param name="format">A composite format string.</param>
         public DebugEntry(string name, string format)
         {
-            Name = DebugManager.FormatName(name);
+            Name = ResourceHandler<DebugEntry>.FormatName(name);
             Format = format;
             Information = new string[] { "" };
 

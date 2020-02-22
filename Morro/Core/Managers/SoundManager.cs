@@ -15,8 +15,8 @@ namespace Morro.Core
             set { SoundEffect.MasterVolume = value; }
         }
 
-        private static AudioEmitter audioEmitter;
-        private static AudioListener audioListener;
+        private static readonly AudioEmitter audioEmitter;
+        private static readonly AudioListener audioListener;
         private static SoundEffectInstance soundEffectInstance;
 
         private static SoundEffectInstance currentSongInstance;
@@ -30,7 +30,7 @@ namespace Morro.Core
         private static float fadeAcceleration;
         private static float fadeVelocity;
 
-        internal static void Initialize()
+        static SoundManager()
         {
             MasterVolume = 0.75f;
 
@@ -41,7 +41,7 @@ namespace Morro.Core
         /// <summary>
         /// Plays a <see cref="SoundEffect"/>.
         /// </summary>
-        /// <param name="sound">The name of <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
+        /// <param name="sound">The name of the <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
         /// <param name="volume">The <see cref="SoundEffect"/>'s unique volume constrained within 0.0f and 1.0f.</param>
         public static void PlaySoundEffect(string sound, float volume)
         {
@@ -51,7 +51,7 @@ namespace Morro.Core
         /// <summary>
         /// Plays a <see cref="SoundEffect"/> that is processed in 3D space.
         /// </summary>
-        /// <param name="sound">The name of <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
+        /// <param name="sound">The name of the <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
         /// <param name="volume">The <see cref="SoundEffect"/>'s unique volume constrained within 0.0f and 1.0f.</param>
         /// <param name="theta">The vertical angle from the z-axis.</param>
         /// <param name="azimuth">The horizontal angle from the x-axis.</param>
@@ -64,7 +64,7 @@ namespace Morro.Core
         /// <summary>
         /// Plays a <see cref="SoundEffect"/> that is processed in 3D space.
         /// </summary>
-        /// <param name="sound">The name of <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
+        /// <param name="sound">The name of the <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
         /// <param name="volume">The <see cref="SoundEffect"/>'s unique volume constrained within 0.0f and 1.0f.</param>
         /// <param name="listenerPosition">The position of the audio listener.</param>
         /// <param name="emitterPosition">The position of the audio emitter.</param>
@@ -85,12 +85,12 @@ namespace Morro.Core
         /// <summary>
         /// Plays a <see cref="SoundEffect"/>, but with additional functionality of a music player.
         /// </summary>
-        /// <param name="song">The name of <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
+        /// <param name="song">The name of the <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
         /// <param name="volume">The <see cref="SoundEffect"/>'s unique volume constrained within 0.0f and 1.0f.</param>
         /// <param name="looped">Whether or not the song should loop or not.</param>
         public static void PlaySong(string song, float volume, bool looped)
         {
-            string formattedName = AssetManager.FormatName(song);
+            string formattedName = ResourceHandler<SoundEffect>.FormatName(song);
 
             if (currentSongName == formattedName && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
                 return;
@@ -110,7 +110,7 @@ namespace Morro.Core
         /// <summary>
         /// Queues a song to be played next. Unlike <see cref="PlaySong(string, float, bool)"/>, the queued song will start playing after the current song finishes fading out.
         /// </summary>
-        /// <param name="song">The name of <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
+        /// <param name="song">The name of the <see cref="SoundEffect"/> that was loaded via <see cref="AssetManager.LoadSoundEffect(string, string)"/>.</param>
         /// <param name="volume">The <see cref="SoundEffect"/>'s unique volume constrained within 0.0f and 1.0f.</param>
         /// <param name="looped">Whether or not the song should loop or not.</param>
         /// <param name="fadeAcceleration">The acceleration of how fast the current song should fade away.</param>
@@ -119,7 +119,7 @@ namespace Morro.Core
             if (songQueued)
                 return;
 
-            string formattedName = AssetManager.FormatName(song);
+            string formattedName = ResourceHandler<SoundEffect>.FormatName(song);
 
             if (currentSongName == formattedName && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
                 return;
@@ -187,7 +187,7 @@ namespace Morro.Core
             }
         }
 
-        public static void Update()
+        internal static void Update()
         {
             UpdateSongTransitions();
         }

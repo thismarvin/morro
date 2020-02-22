@@ -16,52 +16,55 @@ namespace Morro.Core
 
     static class InputManager
     {
-        public static InputMode InputMode { get; private set; }
+        public static InputMode InputMode { get; set; }
         public static InputHandler BasicInputHandler { get; private set; }
 
-        private static Dictionary<string, InputProfile> profiles;
+        private static readonly ResourceHandler<InputProfile> profiles;
 
-        public static void Initialize()
+        static InputManager()
         {
             InputMode = InputMode.Keyboard;
-            profiles = new Dictionary<string, InputProfile>();           
+            profiles = new ResourceHandler<InputProfile>();
 
             LoadProfiles();
 
             BasicInputHandler = new InputHandler(PlayerIndex.One);
-            BasicInputHandler.LoadProfile("Basic");            
+            BasicInputHandler.LoadProfile("Basic");
         }
 
-        public static void SetInputMode(InputMode inputMode)
+        #region Hangle Input Profiles
+        /// <summary>
+        /// Save an <see cref="InputProfile"/> for future reference.
+        /// </summary>
+        /// <param name="profile"> The input profile that should be saved.</param>
+        public static void SaveProfile(InputProfile profile)
         {
-            InputMode = inputMode;
+            profiles.Register(profile.Name, profile);
         }
 
-        public static void RegisterProfile(InputProfile profile)
+        /// <summary>
+        /// Get an <see cref="InputProfile"/> that was previously saved.
+        /// </summary>
+        /// <param name="name">The name of the input profile that was previously saved.</param>
+        /// <returns>The saved input profile with the given name.</returns>
+        public static InputProfile GetProfile(string name)
         {
-            if (profiles.ContainsKey(profile.Name))
-                throw new MorroException("An InputProfile with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            profiles.Add(profile.Name, profile);
+            return profiles.Get(name);
         }
 
-        public static InputProfile GetInputProfile(string name)
+        /// <summary>
+        /// Remove a saved <see cref="InputProfile"/>.
+        /// </summary>
+        /// <param name="name">The name of the input profile that was previously saved.</param>
+        public static void RemoveProfile(string name)
         {
-            string formattedName = FormatName(name);
-            if (!profiles.ContainsKey(formattedName))
-                throw new MorroException("An InputProfile with that name does not exist.", new KeyNotFoundException());
-
-            return profiles[formattedName];
+            profiles.Remove(name);
         }
-
-        internal static string FormatName(string name)
-        {
-            return name.ToLowerInvariant();
-        }
+        #endregion
 
         private static void LoadProfiles()
         {
-            RegisterProfile(BasicInputProfile());
+            SaveProfile(BasicInputProfile());
         }
 
         private static InputProfile BasicInputProfile()
@@ -97,10 +100,11 @@ namespace Morro.Core
             return basic;
         }
 
-        public static void Update()
+        internal static void Update()
         {
             Input.Keyboard.Update();
             Input.Mouse.Update();
+
             BasicInputHandler.Update();
         }
     }

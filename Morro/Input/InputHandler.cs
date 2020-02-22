@@ -18,7 +18,7 @@ namespace Morro.Input
         public InputHandler(PlayerIndex playerIndex)
         {
             PlayerIndex = playerIndex;
-            inputProfile = InputManager.GetInputProfile("Basic");
+            inputProfile = InputManager.GetProfile("Basic");
             gamePad = new GamePad(PlayerIndex);
         }
 
@@ -28,12 +28,12 @@ namespace Morro.Input
                 return;
 
             Profile = profile.ToUpper(CultureInfo.InvariantCulture);
-            inputProfile = InputManager.GetInputProfile(Profile);
+            inputProfile = InputManager.GetProfile(Profile);
         }
 
         public bool Pressing(string name)
         {
-            InputMapping inputMapping = inputProfile.GetInputMapping(name);
+            InputMapping inputMapping = inputProfile.GetMapping(name);
 
             if (PlayerIndex == PlayerIndex.One)
             {
@@ -62,7 +62,7 @@ namespace Morro.Input
 
         public bool Pressed(string name)
         {
-            InputMapping inputMapping = inputProfile.GetInputMapping(name);
+            InputMapping inputMapping = inputProfile.GetMapping(name);
 
             if (PlayerIndex == PlayerIndex.One)
             {

@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 
 namespace Morro.Core
@@ -36,16 +34,17 @@ namespace Morro.Core
         public static IndexBuffer StaticIndexBuffer { get; private set; }
         public static bool BuffersEnabled { get; private set; }
 
-        private static List<VertexPositionColor> vertices;
-        private static List<short> indices;
-        private static Dictionary<string, int> vertexLookup;
-        private static Dictionary<string, int> indexLookup;
+        private static readonly List<VertexPositionColor> vertices;
+        private static readonly List<short> indices;
+        private static readonly Dictionary<string, int> vertexLookup;
+        private static readonly Dictionary<string, int> indexLookup;
+
         private static int verticesIndex;
         private static int indicesIndex;
         private static bool staticVertexBufferChanged;
         private static bool staticIndexBufferChanged;
 
-        public static void Initialize()
+        static GraphicsManager()
         {
             DefaultRasterizerState = new RasterizerState
             {

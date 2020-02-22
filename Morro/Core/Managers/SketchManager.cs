@@ -17,11 +17,11 @@ namespace Morro.Core
 
     static class SketchManager
     {
-        private static List<RenderTarget2D> renderTargets;
+        private static readonly List<RenderTarget2D> renderTargets;
+        private static readonly List<StageType> completedStages;
         private static FX postProcessing;
-        private static List<StageType> completedStages;
 
-        public static void Initialize()
+        static SketchManager()
         {
             renderTargets = new List<RenderTarget2D>();
             completedStages = new List<StageType>();
@@ -29,7 +29,7 @@ namespace Morro.Core
             Sketch.Initialize();
         }
 
-        public static void RegisterStage(StageType stage)
+        internal static void RegisterStage(StageType stage)
         {
             if (!completedStages.Contains(stage))
                 completedStages.Add(stage);
@@ -72,7 +72,7 @@ namespace Morro.Core
             SketchManager.postProcessing = postProcessing;
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw(SpriteBatch spriteBatch)
         {
             if (postProcessing != null)
             {
@@ -110,11 +110,11 @@ namespace Morro.Core
                 {
                     renderTargets[i].Dispose();
                 }
-                renderTargets.Clear();                
+                renderTargets.Clear();
 
                 // Dispose of shader.
                 postProcessing.Dispose();
-                postProcessing = null;                
+                postProcessing = null;
             }
             else
             {

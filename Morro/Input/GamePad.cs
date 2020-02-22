@@ -20,21 +20,6 @@ namespace Morro.Input
             PlayerIndex = playerIndex;
         }
 
-        private void VerifyUpdateIsCalled()
-        {
-            if (!isBeingUpdated)
-            {
-                throw new MorroException("Make sure to call your GamePad's Update() method before you use any of the built in methods.", new MethodExpectedException());
-            }
-        }
-
-        public void Update()
-        {
-            isBeingUpdated = true;
-            previousGamePadState = currentGamePadState;
-            currentGamePadState = Microsoft.Xna.Framework.Input.GamePad.GetState(PlayerIndex);
-        }
-
         public bool IsConnected()
         {
             VerifyUpdateIsCalled();
@@ -55,7 +40,7 @@ namespace Morro.Input
 
             if (!previousGamePadState.IsButtonDown(button) && currentGamePadState.IsButtonDown(button))
             {
-                InputManager.SetInputMode(InputMode.Controller);
+                InputManager.InputMode = InputMode.Controller;
                 return true;
             }
             return false;
@@ -67,10 +52,25 @@ namespace Morro.Input
 
             if (currentGamePadState.IsButtonDown(button))
             {
-                InputManager.SetInputMode(InputMode.Controller);
+                InputManager.InputMode = InputMode.Controller;
                 return true;
             }
             return false;
+        }
+
+        private void VerifyUpdateIsCalled()
+        {
+            if (!isBeingUpdated)
+            {
+                throw new MorroException("Make sure to call your GamePad's Update() method before you use any of the built in methods.", new MethodExpectedException());
+            }
+        }
+
+        public void Update()
+        {
+            isBeingUpdated = true;
+            previousGamePadState = currentGamePadState;
+            currentGamePadState = Microsoft.Xna.Framework.Input.GamePad.GetState(PlayerIndex);
         }
     }
 }

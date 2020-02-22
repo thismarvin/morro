@@ -15,35 +15,51 @@ namespace Morro.Core
         public static Scene CurrentScene { get; private set; }
         public static Scene NextScene { get; private set; }
 
+        private static readonly ResourceHandler<Scene> scenes;
         private static Transition enterTransition;
         private static Transition exitTransition;
         private static bool transitionInProgress;
         private static bool exitCompleted;
 
-        private static Dictionary<string, Scene> scenes;
-
-        public static void Initialize()
+        static SceneManager()
         {
-            scenes = new Dictionary<string, Scene>();
+            scenes = new ResourceHandler<Scene>();
         }
 
+        #region Handle Scenes
+        /// <summary>
+        /// Register a <see cref="Scene"/> to be managed by Morro.
+        /// </summary>
+        /// <param name="scene">The scene you want to be registered.</param>
         public static void RegisterScene(Scene scene)
         {
-            if (scenes.ContainsKey(scene.Name))
-                throw new MorroException("A Scene with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            scenes.Add(scene.Name, scene);
+            scenes.Register(scene.Name, scene);
         }
 
+        /// <summary>
+        /// Get a <see cref="Scene"/> that was previously registered.
+        /// </summary>
+        /// <param name="name">The name given to the scene that was previously registered.</param>
+        /// <returns>The registered scene with the given name.</returns>
         public static Scene GetScene(string name)
         {
-            string formattedName = FormatName(name);
-            if (!scenes.ContainsKey(formattedName))
-                throw new MorroException("A scene with that name has not been registered.", new KeyNotFoundException());
-
-            return scenes[formattedName];
+            return scenes.Get(name);
         }
 
+        /// <summary>
+        /// Remove a registered <see cref="Scene"/>.
+        /// </summary>
+        /// <param name="name">The name given to the scene that was previously registered.</param>
+        public static void RemoveScene(string name)
+        {
+            scenes.Remove(name);
+        }
+        #endregion
+
+        /// <summary>
+        /// Queue a <see cref="Scene"/>, and start the <see cref="Transition"/> between the current scene and the given scene.
+        /// </summary>
+        /// <param name="name">The name given to the scene that was previously registered.</param>
         public static void QueueScene(string name)
         {
             if (transitionInProgress)
@@ -51,11 +67,6 @@ namespace Morro.Core
 
             NextScene = GetScene(name);
             SetupTransitions();
-        }
-
-        internal static string FormatName(string name)
-        {
-            return name.ToLowerInvariant();
         }
 
         private static void SetupTransitions()
@@ -163,7 +174,7 @@ namespace Morro.Core
             Sketch.End(spriteBatch);
         }
 
-        public static void Update()
+        internal static void Update()
         {
             UpdateTransitions();
             UpdateCurrentScene();
@@ -174,7 +185,7 @@ namespace Morro.Core
             }
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw(SpriteBatch spriteBatch)
         {
             CurrentScene?.Draw(spriteBatch);
             DrawTransitions(spriteBatch);

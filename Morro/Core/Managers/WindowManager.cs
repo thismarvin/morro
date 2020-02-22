@@ -37,7 +37,7 @@ namespace Morro.Core
 
         public static float FPS { get; private set; }
 
-        private static Queue<float> sampleFPS;
+        private static readonly Queue<float> sampleFPS;
 
         public static float LetterBox { get; private set; }
         public static float PillarBox { get; private set; }
@@ -56,7 +56,7 @@ namespace Morro.Core
             WindowChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        internal static void Initialize()
+        static WindowManager()
         {
             sampleFPS = new Queue<float>();
             Engine.Instance.Window.ClientSizeChanged += HandleWindowResize;
@@ -320,13 +320,13 @@ namespace Morro.Core
 #endif
         }
 
-        public static void Update()
+        internal static void Update()
         {
             UpdateInput();
             CalculateFPS();
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw(SpriteBatch spriteBatch)
         {
             if (!WideScreenSupported)
             {

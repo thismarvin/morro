@@ -69,7 +69,7 @@ namespace Morro.Utilities
             {
                 characters.Add(id, new BMFontCharacter(id, xOffset, yOffset, xAdvance));
 
-                SpriteManager.AddSpriteData
+                SpriteManager.RegisterSpriteData
                 (
                     string.Format(CultureInfo.InvariantCulture, "{0} {1}", FontFace, id),
                     x,

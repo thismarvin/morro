@@ -8,7 +8,7 @@ namespace Morro.Core
     {
         public static Random RNG { get; private set; }
 
-        public static void Initialize()
+        static RandomManager()
         {
             RNG = new Random(DateTime.Now.Millisecond);
         }

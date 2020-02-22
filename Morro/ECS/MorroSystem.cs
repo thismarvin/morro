@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -107,9 +108,18 @@ namespace Morro.ECS
             }
         }
 
-        public abstract void GrabData(Scene scene);
+        public virtual void BeforeUpdate()
+        {
+
+        }
+
+        public virtual void BeforeDraw(SpriteBatch spriteBatch)
+        {
+
+        }
+
         public abstract void UpdateEntity(int entity);
-        public abstract void DrawEntity(int entity, SpriteBatch spriteBatch);
+        public abstract void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera);
 
         public virtual void Update()
         {
@@ -123,11 +133,11 @@ namespace Morro.ECS
             }
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, Camera camera)
         {
             foreach (int entity in Entities)
             {
-                DrawEntity(entity, spriteBatch);
+                DrawEntity(entity, spriteBatch, camera);
             }
         }
     }

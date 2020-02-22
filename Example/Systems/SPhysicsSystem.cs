@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.ECS;
+using Morro.Utilities;
 
 namespace Example.Systems
 {
@@ -32,7 +33,7 @@ namespace Example.Systems
             integrator = Integrator.SemiImplictEuler;
         }
 
-        public override void GrabData(Scene scene)
+        public override void BeforeUpdate()
         {
             transforms = scene.GetData<CPosition>();
             physicsBodies = scene.GetData<CPhysicsBody>();
@@ -54,7 +55,7 @@ namespace Example.Systems
             Simultate(entity);
         }
 
-        public override void DrawEntity(int entity, SpriteBatch spriteBatch)
+        public override void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera)
         {
 
         }

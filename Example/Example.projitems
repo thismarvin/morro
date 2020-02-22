@@ -9,7 +9,6 @@
     <Import_RootNamespace>Example</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Components\CBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\CPhysicsBody.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Yoman.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Root.cs" />

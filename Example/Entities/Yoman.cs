@@ -12,13 +12,16 @@ namespace Example.Entities
     {
         public static IComponent[] Create(float x, float y, float size)
         {
+            CPosition position = new CPosition(x, y);
+            CDimension dimension = new CDimension(size, size);
+
             return new IComponent[]
             {
-                new CPosition(x, y),
-                new CDimension(size, size),
-                new CPhysicsBody(RandomHelper.RandomVector2(RandomHelper.Range(0, 300)), new Vector2(0, 75)),
-                new CBox(x, y, (int)size)
-        };
+                position,
+                dimension,
+                new CAABB(position, dimension),
+                new CPhysicsBody(RandomHelper.RandomVector2(RandomHelper.Range(0, 300)), new Vector2(0, 75)),                
+            };
         }
     }
 }

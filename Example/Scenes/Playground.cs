@@ -15,19 +15,18 @@ namespace Example.Scenes
 {
     class Playground : Scene
     {
-        public Playground() : base("Playground")
-        {          
+        PolygonBuilder polygonBuilder;
+
+        public Playground() : base("Playground", 10000, 8, 4)
+        {
             RegisterSystem(new SPhysicsSystem(this));
             RegisterSystem(new SBoxHandler(this));
 
-            //for (int i = 0; i < maximumEntityCount; i++)
-            //{
-            //    CreateEntity(Yoman.Create(SceneBounds.Width / 2, SceneBounds.Height / 2, RandomHelper.Range(1, 5)));
-            //}
+            Camera.SmoothTrackingSpeed = 5;
 
-            PreferBinPartitioner(8);
+            polygonBuilder = new PolygonBuilder();
 
-            SetSceneBounds(2000, 500);
+            DisablePartitioning();
         }
 
         public override void LoadScene()
@@ -42,40 +41,50 @@ namespace Example.Scenes
 
         public override void Update()
         {
-            if (Morro.Input.Mouse.PressingLeftClick())
+            if (Morro.Input.Mouse.PressedLeftClick())
             {
-                //for (int i = 0; i < maximumEntityCount; i++)
-                //{
-                //    CreateEntity(Yoman.Create(SceneBounds.Width / 2, SceneBounds.Height / 2, RandomHelper.Range(1, 5)));
-                //}
+                for (int i = 0; i < maximumEntityCount * 0.25; i++)
+                {
+                    CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, RandomHelper.Range(1, 5)));
+                }
 
-                CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, RandomHelper.Range(1, 5)));
-            }
+                //polygonBuilder.AddVertex(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y);
+
+            }            
+
 
             UpdateECS();
 
             if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.D))
             {
-                Camera.Track( 1 * Engine.DeltaTime, Camera.TrackingPosition.Y);
+                Camera.SmoothTrack(Camera.Center.X + 50, Camera.Center.Y);
             }
 
-            Console.WriteLine(Camera.Bounds);
+            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.A))
+            {
+                Camera.SmoothTrack(Camera.Center.X - 50, Camera.Center.Y);
+            }
 
-            //SpatialPartitioning();
-            Console.WriteLine(Query(Camera.Bounds).Count);
+            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.W))
+            {
+                Camera.SmoothTrack(Camera.Center.X, Camera.Center.Y -50);
+            }
+
+            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.S))
+            {
+                Camera.SmoothTrack(Camera.Center.X, Camera.Center.Y + 50);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Sketch.CreateBackgroundLayer(spriteBatch, Color.Blue);
+            Sketch.CreateBackgroundLayer(spriteBatch, Color.CornflowerBlue);
 
-            Sketch.AttachEffect(new Palette());
             Sketch.Begin(spriteBatch);
             {
-                //spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, GraphicsManager.DefaultRasterizerState, null, Camera.Transform);
                 DrawECS(spriteBatch);
-                //spriteBatch.End();
-            }            
+                //polygonBuilder.Draw(spriteBatch, Camera);
+            }
             Sketch.End(spriteBatch);
         }
     }

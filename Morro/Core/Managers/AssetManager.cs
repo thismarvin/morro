@@ -158,6 +158,7 @@ namespace Morro.Core
             LoadEffect("Palette", "Assets/Effects/Palette");
             LoadEffect("Quantize", "Assets/Effects/Quantize");
             LoadEffect("BMFontShader", "Assets/Effects/BMFontShader");
+            LoadEffect("PolygonShader", "Assets/Effects/Polygon");
 
             LoadFont("Probity", "Assets/Fonts/probity");
             LoadFont("Sparge", "Assets/Fonts/sparge");

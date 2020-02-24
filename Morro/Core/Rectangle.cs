@@ -9,15 +9,15 @@ namespace Morro.Core
     {
         public float X { get; private set; }
         public float Y { get; private set; }
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        public float Width { get; private set; }
+        public float Height { get; private set; }
 
         public float Top { get { return Y; } }
         public float Bottom { get { return Y + Height; } }
         public float Left { get { return X; } }
         public float Right { get { return X + Width; } }
 
-        public Rectangle(float x, float y, int width, int height)
+        public Rectangle(float x, float y, float width, float height)
         {
             X = x;
             Y = y;

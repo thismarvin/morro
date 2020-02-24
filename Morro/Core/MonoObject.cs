@@ -13,8 +13,8 @@ namespace Morro.Core
 
         public float X { get { return Position.X; } }
         public float Y { get { return Position.Y; } }
-        public int Width { get { return Bounds.Width; } }
-        public int Height { get { return Bounds.Height; } }
+        public int Width { get { return (int)Bounds.Width; } }
+        public int Height { get { return (int)Bounds.Height; } }
         public Vector2 Center { get { return new Vector2(Position.X + Width / 2, Position.Y + Height / 2); } }
 
         public int Depth { get; set; }

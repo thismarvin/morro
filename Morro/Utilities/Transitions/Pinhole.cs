@@ -34,7 +34,7 @@ namespace Morro.Utilities
 
         protected override void AccommodateToCamera()
         {
-            radius = Camera.Bounds.Width > Camera.Bounds.Height ? Camera.Bounds.Width / 2 : Camera.Bounds.Height / 2;
+            radius = (int)Camera.Bounds.Width > (int)Camera.Bounds.Height ? (int)Camera.Bounds.Width / 2 : (int)Camera.Bounds.Height / 2;
             radius += PADDING;
             pinhole.SetRadius(radius);
             pinhole.SetPosition(Camera.Bounds.X + Camera.Bounds.Width / 2, Camera.Bounds.Y + Camera.Bounds.Height / 2);

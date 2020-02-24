@@ -30,7 +30,7 @@ namespace Morro.Utilities
 
         protected override void AccommodateToCamera()
         {
-            fade.SetDimensions(Camera.Bounds.Width + PADDING * 2, Camera.Bounds.Height + PADDING * 2);
+            fade.SetDimensions((int)Camera.Bounds.Width + PADDING * 2, (int)Camera.Bounds.Height + PADDING * 2);
 
             if (WindowManager.WideScreenSupported)
             {

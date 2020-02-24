@@ -53,7 +53,7 @@ namespace Morro.Utilities
 
         public Camera(float x, float y, string name)
         {
-            Name = ResourceHandler<Camera>.FormatName(name);
+            Name = name;
             TopLeft = new Vector3(x, y, 0);
             trackingPosition = new Vector3(0, 0, 0);
             SmoothTrackingSpeed = 1;

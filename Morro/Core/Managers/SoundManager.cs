@@ -90,15 +90,13 @@ namespace Morro.Core
         /// <param name="looped">Whether or not the song should loop or not.</param>
         public static void PlaySong(string song, float volume, bool looped)
         {
-            string formattedName = ResourceHandler<SoundEffect>.FormatName(song);
-
-            if (currentSongName == formattedName && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
+            if (currentSongName == song.ToLowerInvariant() && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
                 return;
 
-            currentSongName = formattedName;
+            currentSongName = song.ToLowerInvariant();
 
             currentSongInstance?.Pause();
-            currentSongInstance = AssetManager.GetSoundEffect(formattedName).CreateInstance();
+            currentSongInstance = AssetManager.GetSoundEffect(song).CreateInstance();
 
             float constrainedVolume = ConstrainVolume(volume);
 
@@ -119,13 +117,11 @@ namespace Morro.Core
             if (songQueued)
                 return;
 
-            string formattedName = ResourceHandler<SoundEffect>.FormatName(song);
-
-            if (currentSongName == formattedName && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
+            if (currentSongName == song.ToLowerInvariant() && currentSongInstance.Volume == volume && currentSongInstance.IsLooped == looped)
                 return;
 
             songQueued = true;
-            nextSongName = formattedName;
+            nextSongName = song.ToLowerInvariant();
             nextSongVolume = volume;
             nextSongLooped = looped;
 

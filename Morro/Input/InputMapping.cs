@@ -23,7 +23,7 @@ namespace Morro.Input
 
         public InputMapping(string name, Keys[] keys, Buttons[] buttons)
         {
-            Name = ResourceHandler<InputMapping>.FormatName(name);
+            Name = name;
             Keys = keys;
             Buttons = buttons;
         }

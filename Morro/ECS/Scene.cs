@@ -44,7 +44,7 @@ namespace Morro.ECS
 
         public Scene(string name, int maximumEntityCount = 100, int maximumComponentCount = 64, int maximumSystemCount = 64)
         {
-            Name = ResourceHandler<Scene>.FormatName(name);
+            Name = name;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
             PreferQuadtreePartitioner(4);

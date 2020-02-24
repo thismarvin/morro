@@ -19,7 +19,7 @@ namespace Morro.Input
 
         public InputProfile(string name)
         {
-            Name = ResourceHandler<InputProfile>.FormatName(name);
+            Name = name;
             inputMappings = new ResourceHandler<InputMapping>();
         }
 

@@ -39,7 +39,7 @@ namespace Morro.Graphics
         {
             Rotation = 0;
             Visible = true;
-            SpriteDataName = SpriteManager.FormatName(spriteDataName);
+            SpriteDataName = spriteDataName;
             RotationOffset = Vector2.Zero;
             Scale = new Vector2(1, 1);
             BlendState = BlendState.AlphaBlend;

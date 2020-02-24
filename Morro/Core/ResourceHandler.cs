@@ -47,7 +47,7 @@ namespace Morro.Core
             data.Remove(formatedName);
         }
 
-        internal static string FormatName(string name)
+        private string FormatName(string name)
         {
             return name.ToLowerInvariant();
         }

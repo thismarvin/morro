@@ -22,7 +22,7 @@ namespace Morro.ECS
         public Core.Rectangle SceneBounds { get; private set; }
         public SparseSet EntitiesInView { get; private set; }
 
-        private SparseSet entityRemovalQueue;
+        private readonly SparseSet entityRemovalQueue;
 
         private readonly int queryBuffer;
 

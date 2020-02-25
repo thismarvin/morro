@@ -54,12 +54,6 @@ namespace Morro.ECS
 
         protected void NormalUpdate()
         {
-            //List<int> entitiesInView = scene.Query(scene.Camera.Bounds);
-            //for (int i = 0; i < entitiesInView.Count; i++)
-            //{
-            //    UpdateEntity(entitiesInView[i]);
-            //}
-
             foreach (int entity in Entities)
             {
                 UpdateEntity(entity);

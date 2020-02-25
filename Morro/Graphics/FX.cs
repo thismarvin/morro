@@ -13,13 +13,8 @@ namespace Morro.Graphics
 
         public FX(string type)
         {
-            EffectType = type.ToLowerInvariant();
+            EffectType = type;
             Effect = AssetManager.GetEffect(EffectType).Clone();
-        }
-
-        public void Reset()
-        {
-            Initialize();
         }
 
         protected abstract void Initialize();

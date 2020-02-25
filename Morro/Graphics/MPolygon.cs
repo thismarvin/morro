@@ -10,20 +10,78 @@ namespace Morro.Graphics
 {
     class MPolygon
     {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Width { get; set; }
-        public float Height { get; set; }
-        public string Shape { get; private set; }
-
-        public Vector2 Position { get { return new Vector2(X, Y); } }
-        public Core.Rectangle Bounds { get { return new Core.Rectangle(X, Y, Width, Height); } }
+        public float X
+        {
+            get => x;
+            set
+            {
+                x = value;
+                UpdateTransform();
+            }
+        }
+        public float Y
+        {
+            get => y;
+            set
+            {
+                y = value;
+                UpdateTransform();
+            }
+        }
+        public float Width
+        {
+            get => width;
+            set
+            {
+                width = value;
+                UpdateTransform();
+            }
+        }
+        public float Height
+        {
+            get => height;
+            set
+            {
+                height = value;
+                UpdateTransform();
+            }
+        }
+        public Color Color
+        {
+            get => color;
+            set
+            {
+                color = value;
+                UpdateTechnique();
+            }
+        }
+        public string Shape
+        {
+            get => shape;
+            set
+            {
+                shape = value;
+                UpdateShape();
+            }
+        }
 
         public ShapeData ShapeData { get; private set; }
         public Matrix Transform { get; private set; }
 
-        private VertexBuffer transformBuffer;
+        public Vector2 Position { get => new Vector2(X, Y); }
+        public Core.Rectangle Bounds { get => new Core.Rectangle(X, Y, Width, Height); }
+
+        private float x;
+        private float y;
+        private float width;
+        private float height;
+        private Color color;
+        private string shape;
+
+        private bool dataChanged;
+        private DynamicVertexBuffer transformBuffer;
         private VertexBufferBinding[] vertexBufferBindings;
+        private int techniqueIndex;
 
         private static readonly Effect polygonShader;
 
@@ -34,15 +92,16 @@ namespace Morro.Graphics
 
         public MPolygon(float x, float y, float width, float height, string shape)
         {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            Shape = shape;
-
-            ShapeData = Geometry.Shapes.Get(Shape);
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.shape = shape;
+            color = Color.White;
 
             UpdateTransform();
+            UpdateShape();
+            UpdateTechnique();
         }
 
         public MPolygon(float x, float y, float width, float height, ShapeType shape) : this(x, y, width, height, $"Morro_{shape.ToString()}")
@@ -50,17 +109,52 @@ namespace Morro.Graphics
 
         }
 
+        public void SetShape(ShapeType shapeType)
+        {
+            Shape = $"Morro_{shapeType}";
+        }
+
+        private void UpdateShape()
+        {
+            dataChanged = true;
+            ShapeData = Geometry.Shapes.Get(Shape);
+        }
+
         private void UpdateTransform()
         {
+            dataChanged = true;
             Transform =
                 Matrix.CreateScale(Width, Height, 1) *
                 Matrix.CreateTranslation(X, Y, 0) *
                 Matrix.Identity;
+        }
 
-            transformBuffer = new VertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), 1, BufferUsage.WriteOnly);
-            transformBuffer.SetData(new VertexTransform[] { new VertexTransform(Transform) });
+        private void UpdateTechnique()
+        {
+            dataChanged = true;
+            techniqueIndex = Color == Color.White ? 0 : 1;
+            polygonShader.CurrentTechnique = polygonShader.Techniques[techniqueIndex];
+        }
 
-            vertexBufferBindings = new VertexBufferBinding[] {
+        private void UpdateBuffer()
+        {
+            transformBuffer?.Dispose();
+
+            switch (techniqueIndex)
+            {
+                case 0:
+                    transformBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), 1, BufferUsage.WriteOnly);
+                    transformBuffer.SetData(new VertexTransform[] { new VertexTransform(Transform) });
+                    break;
+
+                case 1:
+                    transformBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransformColor), 1, BufferUsage.WriteOnly);
+                    transformBuffer.SetData(new VertexTransformColor[] { new VertexTransformColor(Transform, Color) });
+                    break;
+            }
+
+            vertexBufferBindings = new VertexBufferBinding[]
+            {
                 new VertexBufferBinding(ShapeData.Geometry),
                 new VertexBufferBinding(transformBuffer, 0, 1)
             };
@@ -68,6 +162,12 @@ namespace Morro.Graphics
 
         public void Draw(SpriteBatch spriteBatch, Camera camera)
         {
+            if (dataChanged)
+            {
+                UpdateBuffer();
+                dataChanged = false;
+            }
+
             spriteBatch.GraphicsDevice.SetVertexBuffers(vertexBufferBindings);
             spriteBatch.GraphicsDevice.Indices = ShapeData.Indices;
 

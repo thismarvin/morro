@@ -9,22 +9,28 @@
 
 matrix WorldViewProjection;
 
-struct VertexShaderInput
+struct VSInputTransform
 {
 	float4 Position : POSITION0;
-	//float4 Color : COLOR0;
 	float4x4 Transform: POSITION1;
 };
 
-struct VertexShaderOutput
+struct VSInputTransformColor
+{
+	float4 Position : POSITION0;
+	float4x4 Transform: POSITION1;
+	float4 Color : COLOR5;
+};
+
+struct VSOutput
 {
 	float4 Position : SV_POSITION;
 	float4 Color : COLOR0;
 };
 
-VertexShaderOutput MainVS(in VertexShaderInput input)
+VSOutput VSTransform(in VSInputTransform input)
 {
-	VertexShaderOutput output = (VertexShaderOutput)0;
+	VSOutput output = (VSOutput)0;
 
 	output.Position = mul(mul(input.Position, transpose(input.Transform)), WorldViewProjection);
 	output.Color = float4(1, 1, 1, 1);
@@ -32,16 +38,35 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	return output;
 }
 
-float4 MainPS(VertexShaderOutput input) : COLOR
+VSOutput VSTransformColor(in VSInputTransformColor input)
+{
+	VSOutput output = (VSOutput)0;
+
+	output.Position = mul(mul(input.Position, transpose(input.Transform)), WorldViewProjection);
+	output.Color = input.Color;
+
+	return output;
+}
+
+float4 MainPS(VSOutput input) : COLOR
 {
 	return input.Color;
 }
 
-technique PolygonDrawing
+technique PolygonVertexTransform
 {
 	pass P0
 	{
-		VertexShader = compile VS_SHADERMODEL MainVS();
+		VertexShader = compile VS_SHADERMODEL VSTransform();
+		PixelShader = compile PS_SHADERMODEL MainPS();
+	}
+};
+
+technique PolygonVertexTransformColor
+{
+	pass P0
+	{
+		VertexShader = compile VS_SHADERMODEL VSTransformColor();
 		PixelShader = compile PS_SHADERMODEL MainPS();
 	}
 };

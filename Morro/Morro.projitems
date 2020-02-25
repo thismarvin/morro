@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\ShapeData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTransformColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputProfile.cs" />

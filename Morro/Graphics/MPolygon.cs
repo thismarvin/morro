@@ -162,7 +162,7 @@ namespace Morro.Graphics
         private void UpdateShape()
         {
             dataChanged = true;
-            ShapeData = Geometry.Shapes.Get(Shape);
+            ShapeData = Geometry.GetShapeData(Shape);
         }
 
         private void UpdateTransform()

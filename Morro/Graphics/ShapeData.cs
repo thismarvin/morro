@@ -13,13 +13,13 @@ namespace Morro.Graphics
         public IndexBuffer Indices { get; private set; }
         public int TotalTriangles { get => Indices.IndexCount / 3; }
 
-        public ShapeData(List<Vector3> vertices, List<short> indices)
+        public ShapeData(Vector3[] vertices, short[] indices)
         {
-            Geometry = new VertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexPosition), vertices.Count, BufferUsage.WriteOnly);
-            Geometry.SetData(vertices.ToArray());
+            Geometry = new VertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexPosition), vertices.Length, BufferUsage.WriteOnly);
+            Geometry.SetData(vertices);
 
-            Indices = new IndexBuffer(Engine.Graphics.GraphicsDevice, typeof(short), indices.Count, BufferUsage.WriteOnly);
-            Indices.SetData(indices.ToArray());
+            Indices = new IndexBuffer(Engine.Graphics.GraphicsDevice, typeof(short), indices.Length, BufferUsage.WriteOnly);
+            Indices.SetData(indices);
         }
     }
 }

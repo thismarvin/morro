@@ -17,11 +17,11 @@ namespace Morro.Graphics
 
     static class Geometry
     {
-        public static ResourceHandler<ShapeData> Shapes;
+        private static readonly ResourceHandler<ShapeData> shapes;
 
         static Geometry()
         {
-            Shapes = new ResourceHandler<ShapeData>();
+            shapes = new ResourceHandler<ShapeData>();
 
             RegisterRightTriangle();
             RegisterSquare();
@@ -30,11 +30,52 @@ namespace Morro.Graphics
             RegisterRegularPolygon("Morro_Circle", 90);
         }
 
+        #region Handle Shape Data
         /// <summary>
-        /// 
+        /// Register <see cref="ShapeData"/> to be managed by Morro.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="totalVertices"></param>
+        /// <param name="name">The name that the shape data being registered will be referenced as.</param>
+        /// <param name="shapeData">The shape data you want to be registered.</param>
+        public static void RegisterShapeData(string name, ShapeData shapeData)
+        {
+            shapes.Register(name, shapeData);
+        }
+
+        /// <summary>
+        /// Get <see cref="ShapeData"/> that was previously registered.
+        /// </summary>
+        /// <param name="name">The name given to shape data that was already registered.</param>
+        /// <returns>The registered shape data with the given name.</returns>
+        public static ShapeData GetShapeData(string name)
+        {
+            return shapes.Get(name);
+        }
+
+        /// <summary>
+        /// Get <see cref="ShapeData"/> that was registered by Morro.
+        /// </summary>
+        /// <param name="shapeType">The basic shape data you want to get.</param>
+        /// <returns>The registered shape data with the given name.</returns>
+        public static ShapeData GetShapeData(ShapeType shapeType)
+        {
+            return GetShapeData($"Morro_{shapeType.ToString()}");
+        }
+
+        /// <summary>
+        /// Remove registered <see cref="ShapeData"/>.
+        /// </summary>
+        /// <param name="name">The name given to shape data that was already registered.</param>
+        public static void RemoveShapeData(string name)
+        {
+            shapes.Remove(name);
+        }
+        #endregion
+
+        /// <summary>
+        /// Create a new regular polygon, and register its <see cref="ShapeData"/> to be managed by Morro.
+        /// </summary>
+        /// <param name="name">The name that the shape data being registered will be referenced as.</param>
+        /// <param name="totalVertices">The total amount of vertices the regular polygon should have.</param>
         public static void RegisterRegularPolygon(string name, int totalVertices)
         {
             if (totalVertices <= 2)
@@ -63,47 +104,47 @@ namespace Morro.Graphics
                 j++;
             }
 
-            Shapes.Register(name, new ShapeData(vertices, indices));
+            RegisterShapeData(name, new ShapeData(vertices.ToArray(), indices.ToArray())); ;
         }
 
         private static void RegisterRightTriangle()
         {
             ShapeData rightTriangleData = new ShapeData
             (
-                new List<Vector3>()
+                new Vector3[]
                 {
                     new Vector3(0, 0, 0),
                     new Vector3(1, 1, 0),
                     new Vector3(0, 1, 0),
                 },
-                new List<short>()
+                new short[]
                 {
                     0, 1, 2,
                 }
             );
 
-            Shapes.Register("Morro_RightTriangle", rightTriangleData);
+            RegisterShapeData("Morro_RightTriangle", rightTriangleData);
         }
 
         private static void RegisterSquare()
         {
             ShapeData squareData = new ShapeData
             (
-                new List<Vector3>()
+                new Vector3[]
                 {
                     new Vector3(0, 0, 0),
                     new Vector3(1, 0, 0),
                     new Vector3(1, 1, 0),
                     new Vector3(0, 1, 0),
                 },
-                new List<short>()
+                new short[]
                 {
                     0, 1, 2,
                     0, 2, 3
                 }
             );
 
-            Shapes.Register("Morro_Square", squareData);
+            RegisterShapeData("Morro_Square", squareData);
         }
 
         private static void RegisterStar()
@@ -140,7 +181,7 @@ namespace Morro.Graphics
                 j++;
             }
 
-            Shapes.Register("Morro_Star", new ShapeData(vertices, indices));
+            RegisterShapeData("Morro_Star", new ShapeData(vertices.ToArray(), indices.ToArray()));
         }
     }
 }

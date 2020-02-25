@@ -14,12 +14,18 @@ namespace Example.Entities
         {
             CPosition position = new CPosition(x, y);
             CDimension dimension = new CDimension(size, size);
+            CTransform transform = new CTransform()
+            {
+                Rotation = (float)RandomHelper.Range(0, Math.PI * 2),
+                RotationOffset = new Vector3(size / 2, size / 2, 0),
+            };
 
             return new IComponent[]
             {
                 position,
                 dimension,
-                new CAABB(position, dimension),
+                transform,
+                new CQuad(position, dimension, transform),
                 new CPhysicsBody(RandomHelper.RandomVector2(RandomHelper.Range(0, 300)), new Vector2(0, 75)),                
             };
         }

@@ -9,12 +9,21 @@ namespace Morro.Graphics
 {
     static class Batcher
     {
-        public static void DrawSprites(SpriteBatch spriteBatch, List<Sprite> sprites, Camera camera)
+        public static void DrawSprites(SpriteBatch spriteBatch, Camera camera, List<Sprite> sprites)
         {
             List<SpriteGroup> spriteGroups = OrganizeSprites(sprites);
             for (int i = 0; i < spriteGroups.Count; i++)
             {
                 spriteGroups[i].Draw(spriteBatch, camera);
+            }
+        }
+
+        public static void DrawPolygons(SpriteBatch spriteBatch, Camera camera, List<MPolygon> polygons)
+        {
+            List<PolygonGroup> polygonGroups = OrganizePolygons(polygons);
+            for (int i = 0; i < polygonGroups.Count; i++)
+            {
+                polygonGroups[i].Draw(spriteBatch, camera);
             }
         }
 
@@ -30,7 +39,25 @@ namespace Morro.Graphics
                 {
                     result.Add(new SpriteGroup(sprites[i].BlendState, sprites[i].SamplerState, sprites[i].Effect, spriteGroupCapacity));
                     resultIndex++;
-                    result[resultIndex].Add(sprites[i]);                    
+                    result[resultIndex].Add(sprites[i]);
+                }
+            }
+
+            return result;
+        }
+
+        private static List<PolygonGroup> OrganizePolygons(List<MPolygon> polygons)
+        {
+            List<PolygonGroup> result = new List<PolygonGroup>();
+            int resultIndex = -1;
+
+            for (int i = 0; i < polygons.Count; i++)
+            {
+                if (result.Count == 0 || !result[resultIndex].Add(polygons[i]))
+                {
+                    result.Add(new PolygonGroup(polygons[i].ShapeData));
+                    resultIndex++;
+                    result[resultIndex].Add(polygons[i]);
                 }
             }
 

@@ -9,22 +9,19 @@ using Morro.Graphics;
 using Morro.Maths;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Example.Scenes
 {
     class Playground : Scene
     {
-        PolygonBuilder polygonBuilder;
-
-        public Playground() : base("Playground", 10000, 8, 4)
+        public Playground() : base("Playground", 100000, 8, 4)
         {
             RegisterSystem(new SPhysicsSystem(this));
             RegisterSystem(new SBoxHandler(this));
 
             Camera.SmoothTrackingSpeed = 5;
-
-            polygonBuilder = new PolygonBuilder();
 
             DisablePartitioning();
         }
@@ -47,11 +44,7 @@ namespace Example.Scenes
                 {
                     CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, RandomHelper.Range(1, 5)));
                 }
-
-                //polygonBuilder.AddVertex(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y);
-
             }            
-
 
             UpdateECS();
 
@@ -83,7 +76,6 @@ namespace Example.Scenes
             Sketch.Begin(spriteBatch);
             {
                 DrawECS(spriteBatch);
-                //polygonBuilder.Draw(spriteBatch, Camera);
             }
             Sketch.End(spriteBatch);
         }

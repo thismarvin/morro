@@ -12,6 +12,8 @@ namespace Morro.Graphics
         public VertexBuffer Geometry { get; private set; }
         public IndexBuffer Indices { get; private set; }
 
+        public int TotalTriangles { get => Indices.IndexCount / 3; }
+
         public ShapeData(List<Vector3> vertices, List<short> indices)
         {
             Geometry = new VertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexPosition), vertices.Count, BufferUsage.WriteOnly);

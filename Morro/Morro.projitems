@@ -33,11 +33,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CAABB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CDimension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CPosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CQuad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\MorroSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\ShapeData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTransform.cs" />

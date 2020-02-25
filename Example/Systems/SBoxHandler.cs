@@ -15,31 +15,32 @@ namespace Example.Systems
     {
         private IComponent[] positions;
         private IComponent[] dimensions;
-        private IComponent[] aabbs;
+        private IComponent[] cTransforms;
+        private IComponent[] quads;
 
-        private readonly List<VertexTransform> transforms;
+        private readonly VertexTransform[] transforms;
         private static readonly Effect polygonShader;
-
-        public SBoxHandler(Scene scene) : base(scene)
-        {
-            Require(typeof(CPosition), typeof(CDimension), typeof(CAABB));
-
-            transforms = new List<VertexTransform>();
-        }
+        private static readonly ShapeData squareData;
 
         static SBoxHandler()
         {
-            AssetManager.LoadEffect("PolygonShader", "Assets/Effects/Polygon");
             polygonShader = AssetManager.GetEffect("PolygonShader").Clone();
+            squareData = Geometry.Shapes.Get("Morro_Square");
+        }
+
+        public SBoxHandler(Scene scene) : base(scene, 4)
+        {
+            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CQuad));
+
+            transforms = new VertexTransform[scene.TotalEntities];
         }
 
         public override void BeforeUpdate()
         {
             positions = scene.GetData<CPosition>();
             dimensions = scene.GetData<CDimension>();
-            aabbs = scene.GetData<CAABB>();
-
-            transforms.Clear();
+            cTransforms = scene.GetData<CTransform>();
+            quads = scene.GetData<CQuad>();
         }
 
         public override void UpdateEntity(int entity)
@@ -49,11 +50,12 @@ namespace Example.Systems
 
             CPosition position = (CPosition)positions[entity];
             CDimension dimension = (CDimension)dimensions[entity];
-            CAABB aabb = (CAABB)aabbs[entity];
+            CTransform transform = (CTransform)cTransforms[entity];
+            CQuad aabb = (CQuad)quads[entity];
 
-            aabb.SetTransform(position, dimension);
+            aabb.SetTransform(position, dimension, transform);
 
-            transforms.Add(new VertexTransform(aabb.Transform));
+            transforms[entity] = (new VertexTransform(aabb.Transform));
         }
 
         public override void BeforeDraw(SpriteBatch spriteBatch)
@@ -68,22 +70,22 @@ namespace Example.Systems
 
         public override void Draw(SpriteBatch spriteBatch, Camera camera)
         {
-            if (transforms.Count <= 0)
+            if (transforms.Length <= 0)
                 return;
 
-            using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Count, BufferUsage.WriteOnly))
+            using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))
             {
-                transformsBuffer.SetData(transforms.ToArray());
+                transformsBuffer.SetData(transforms);
 
-                spriteBatch.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(Geometry.Shapes.Get("Square").Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
-                spriteBatch.GraphicsDevice.Indices = Geometry.Shapes.Get("Square").Indices;
+                spriteBatch.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(squareData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
+                spriteBatch.GraphicsDevice.Indices = squareData.Indices;
 
                 polygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
 
                 foreach (EffectPass pass in polygonShader.CurrentTechnique.Passes)
                 {
                     pass.Apply();
-                    spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, 2, transforms.Count);
+                    spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, squareData.TotalTriangles, transforms.Length);
                 }
             }
         }

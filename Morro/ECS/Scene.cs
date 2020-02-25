@@ -42,6 +42,8 @@ namespace Morro.ECS
         private readonly SparseSet[] attachedComponents;
         private readonly SparseSet[] attachedSystems;
 
+        public int TotalEntities { get => maximumEntityCount; }
+
         public Scene(string name, int maximumEntityCount = 100, int maximumComponentCount = 64, int maximumSystemCount = 64)
         {
             Name = name;

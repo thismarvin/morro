@@ -234,7 +234,7 @@ namespace Morro.Utilities
 
         public void Draw(SpriteBatch spriteBatch, Camera camera)
         {
-            Batcher.DrawSprites(spriteBatch, sprites, camera);
+            Batcher.DrawSprites(spriteBatch, camera, sprites);
         }
 
         #region IDisposable Support

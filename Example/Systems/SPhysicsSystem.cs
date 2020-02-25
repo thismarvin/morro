@@ -25,7 +25,7 @@ namespace Example.Systems
             VelocityVerlet
         }
 
-        public SPhysicsSystem(Scene scene) : base(scene, 8)
+        public SPhysicsSystem(Scene scene) : base(scene, 4)
         {
             Require(typeof(CPosition), typeof(CPhysicsBody));
 

@@ -65,6 +65,43 @@ namespace Morro.Graphics
             }
         }
 
+        public float Rotation
+        {
+            get => rotation;
+            set
+            {
+                rotation = value;
+                UpdateTransform();
+            }
+        }
+        public Vector3 RotationOffset
+        {
+            get => rotationOffset;
+            set
+            {
+                rotationOffset = value;
+                UpdateTransform();
+            }
+        }
+        public Vector3 Translation
+        {
+            get => translation;
+            set
+            {
+                translation = value;
+                UpdateTransform();
+            }
+        }
+        public Vector3 Scale
+        {
+            get => scale;
+            set
+            {
+                scale = value;
+                UpdateTransform();
+            }
+        }
+
         public ShapeData ShapeData { get; private set; }
         public Matrix Transform { get; private set; }
 
@@ -77,6 +114,10 @@ namespace Morro.Graphics
         private float height;
         private Color color;
         private string shape;
+        private float rotation;
+        private Vector3 rotationOffset;
+        private Vector3 translation;
+        private Vector3 scale;
 
         private bool dataChanged;
         private DynamicVertexBuffer transformBuffer;
@@ -98,6 +139,10 @@ namespace Morro.Graphics
             this.height = height;
             this.shape = shape;
             color = Color.White;
+            rotation = 0;
+            rotationOffset = Vector3.Zero;
+            translation = Vector3.Zero;
+            scale = new Vector3(1);
 
             UpdateTransform();
             UpdateShape();
@@ -125,7 +170,15 @@ namespace Morro.Graphics
             dataChanged = true;
             Transform =
                 Matrix.CreateScale(Width, Height, 1) *
+                Matrix.CreateScale(Scale) *
+
+                Matrix.CreateTranslation(-rotationOffset) *
+                Matrix.CreateRotationZ(rotation) *
+                Matrix.CreateTranslation(rotationOffset) *
+
                 Matrix.CreateTranslation(X, Y, 0) *
+                Matrix.CreateTranslation(translation) *
+
                 Matrix.Identity;
         }
 

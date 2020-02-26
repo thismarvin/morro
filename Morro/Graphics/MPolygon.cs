@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.Maths;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace Morro.Graphics
 {
     class MPolygon
     {
+        #region Properties
         public float X
         {
             get => x;
@@ -101,9 +103,44 @@ namespace Morro.Graphics
                 UpdateTransform();
             }
         }
+        #endregion
 
-        public ShapeData ShapeData { get; private set; }
+        public ShapeData ShapeData
+        {
+            get => shapeData;
+            set
+            {
+                if (!(bool)shapeData?.Managed)
+                {
+                    shapeData?.Dispose();
+                }
+
+                shapeData = value;
+                dataChanged = true;
+            }
+        }
+
         public Matrix Transform { get; private set; }
+
+        // Hollow stuff
+        public float LineWidth
+        {
+            get => lineWidth;
+            set
+            {
+                lineWidth = value;
+
+                if (lineWidth == 0)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+        }
+        public bool Filled { get => LineWidth == 0; }
 
         public Vector2 Position { get => new Vector2(X, Y); }
         public Core.Rectangle Bounds { get => new Core.Rectangle(X, Y, Width, Height); }
@@ -118,13 +155,15 @@ namespace Morro.Graphics
         private Vector3 rotationOffset;
         private Vector3 translation;
         private Vector3 scale;
+        private ShapeData shapeData;
+        private float lineWidth;
 
         private bool dataChanged;
-        private DynamicVertexBuffer transformBuffer;
-        private VertexBufferBinding[] vertexBufferBindings;
-        private int techniqueIndex;
+        protected DynamicVertexBuffer transformBuffer;
+        protected VertexBufferBinding[] vertexBufferBindings;
+        protected int techniqueIndex;
 
-        private static readonly Effect polygonShader;
+        protected static readonly Effect polygonShader;
 
         static MPolygon()
         {
@@ -144,9 +183,13 @@ namespace Morro.Graphics
             translation = Vector3.Zero;
             scale = new Vector3(1);
 
-            UpdateTransform();
-            UpdateShape();
+            UpdateTransform();            
             UpdateTechnique();
+
+            if (shape != "Morro_Dynamic")
+            {
+                UpdateShape();
+            }
         }
 
         public MPolygon(float x, float y, float width, float height, ShapeType shape) : this(x, y, width, height, $"Morro_{shape.ToString()}")
@@ -162,7 +205,7 @@ namespace Morro.Graphics
         private void UpdateShape()
         {
             dataChanged = true;
-            ShapeData = Geometry.GetShapeData(Shape);
+            shapeData = Geometry.GetShapeData(Shape);
         }
 
         private void UpdateTransform()
@@ -213,7 +256,7 @@ namespace Morro.Graphics
             };
         }
 
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
+        public virtual void Draw(SpriteBatch spriteBatch, Camera camera)
         {
             if (dataChanged)
             {

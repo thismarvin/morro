@@ -23,11 +23,11 @@ namespace Morro.Graphics
         {
             shapes = new ResourceHandler<ShapeData>();
 
+            RegisterTriangle();
             RegisterRightTriangle();
             RegisterSquare();
+            RegisterCircle();
             RegisterStar();
-            RegisterRegularPolygon("Morro_Triangle", 3);
-            RegisterRegularPolygon("Morro_Circle", 90);
         }
 
         #region Handle Shape Data
@@ -71,12 +71,7 @@ namespace Morro.Graphics
         }
         #endregion
 
-        /// <summary>
-        /// Create a new regular polygon, and register its <see cref="ShapeData"/> to be managed by Morro.
-        /// </summary>
-        /// <param name="name">The name that the shape data being registered will be referenced as.</param>
-        /// <param name="totalVertices">The total amount of vertices the regular polygon should have.</param>
-        public static void RegisterRegularPolygon(string name, int totalVertices)
+        public static ShapeData CreateRegularPolygon(int totalVertices)
         {
             if (totalVertices <= 2)
                 throw new MorroException("A polygon must have at least 3 vertices.", new ArgumentException());
@@ -104,7 +99,134 @@ namespace Morro.Graphics
                 j++;
             }
 
-            RegisterShapeData(name, new ShapeData(vertices.ToArray(), indices.ToArray())); ;
+            return new ShapeData(vertices.ToArray(), indices.ToArray());
+        }
+
+        public static ShapeData CreateHollowSquare(float width, float height, float lineWidth)
+        {
+            int initialTotalVertices = 4;
+            int totalVertices = initialTotalVertices * 2;
+            int totalTriangles = initialTotalVertices * 2;
+            int totalIndices = totalTriangles * 3;
+
+            float scaledLineWidthX = lineWidth / width;
+            float scaledLineWidthY = lineWidth / height;
+
+            Vector3[] vertices = new Vector3[]
+            {
+                new Vector3(scaledLineWidthX, scaledLineWidthY, 0),
+                new Vector3(scaledLineWidthX, 1 - scaledLineWidthY, 0),
+                new Vector3(1 - scaledLineWidthX, 1 - scaledLineWidthY, 0),
+                new Vector3(1 - scaledLineWidthX, scaledLineWidthY, 0),
+
+                new Vector3(0, 0, 0),
+                new Vector3(0, 1, 0),
+                new Vector3(1, 1, 0),
+                new Vector3(1, 0, 0),
+            };
+
+            short[] indices = CreateHollowIndices(totalVertices, totalIndices);
+
+            return new ShapeData(vertices, indices);
+        }
+
+        public static ShapeData CreateHollowCircle(float radius, float lineWidth)
+        {
+            return CreateHollowRegularPolygon(90, radius * 2, radius * 2, lineWidth);
+        }
+
+        public static ShapeData CreateHollowRegularPolygon(int totalVertices, float width, float height, float lineWidth)
+        {
+            if (totalVertices <= 2)
+                throw new MorroException("A polygon must have at least 3 vertices.", new ArgumentException());
+
+            int initialTotalVertices = totalVertices;
+            int _totalVertices = initialTotalVertices * 2;
+            int totalTriangles = initialTotalVertices * 2;
+            int totalIndices = totalTriangles * 3;
+
+            Vector3[] vertices = new Vector3[_totalVertices];
+
+            float angleIncrement = MathHelper.TwoPi / totalVertices;
+
+            float theta;
+            if (initialTotalVertices == 3)
+            {
+                theta = (float)Math.PI / 6;
+            }
+            else
+            {
+                theta = MathHelper.TwoPi / initialTotalVertices;
+                theta = MathHelper.Pi - theta;
+                theta /= 2;
+            }
+
+            float scaledLineWidthX = (lineWidth / width) / (float)Math.Sin(theta);
+            float scaledLineWidthY = (lineWidth / height) / (float)Math.Sin(theta);
+            int vertexIndex = 0;
+
+            for (float i = MathHelper.TwoPi; i >= 0; i -= angleIncrement)
+            {
+                vertices[vertexIndex++] = new Vector3(0.5f + (float)Math.Cos(i) * (0.5f - scaledLineWidthX), 0.5f + (float)Math.Sin(i) * (0.5f - scaledLineWidthY), 0);
+
+                if (vertexIndex >= vertices.Length / 2)
+                    break;
+            }
+
+            for (float i = MathHelper.TwoPi; i >= 0; i -= angleIncrement)
+            {
+                vertices[vertexIndex++] = new Vector3(0.5f + (float)Math.Cos(i) * 0.5f, 0.5f + (float)Math.Sin(i) * 0.5f, 0);
+
+                if (vertexIndex >= vertices.Length)
+                    break;
+            }
+
+            short[] indices = CreateHollowIndices(_totalVertices, totalIndices);
+
+            return new ShapeData(vertices, indices);
+        }
+
+        private static short[] CreateHollowIndices(int totalVertices, int totalIndices)
+        {
+            short[] indices = new short[totalIndices];
+            int i = 0;
+            int j = 0;
+            for (; i < totalVertices / 2 - 1; i++)
+            {
+                indices[j] = (short)(i);
+                indices[j + 1] = (short)(i + (totalVertices / 2 + 1));
+                indices[j + 2] = (short)(i + (totalVertices / 2));
+                j += 3;
+            }
+
+            indices[j] = (short)(i);
+            indices[j + 1] = (short)(totalVertices / 2);
+            indices[j + 2] = (short)(i + (totalVertices / 2));
+            j += 3;
+            i++;
+
+            indices[j] = (short)(i);
+            indices[j + 1] = (short)(totalVertices / 2 - 1);
+            indices[j + 2] = (short)(i - (totalVertices / 2));
+            j += 3;
+            i++;
+
+            for (; i < totalVertices; i++)
+            {
+                indices[j] = (short)(i);
+                indices[j + 1] = (short)(i - (totalVertices / 2 + 1));
+                indices[j + 2] = (short)(i - (totalVertices / 2));
+                j += 3;
+            }
+
+            return indices;
+        }
+
+        private static void RegisterTriangle()
+        {
+            ShapeData shapeData = CreateRegularPolygon(3);
+            shapeData.Managed = true;
+            RegisterShapeData("Morro_Triangle", shapeData);
         }
 
         private static void RegisterRightTriangle()
@@ -120,7 +242,8 @@ namespace Morro.Graphics
                 new short[]
                 {
                     0, 1, 2,
-                }
+                },
+                true
             );
 
             RegisterShapeData("Morro_RightTriangle", rightTriangleData);
@@ -141,10 +264,18 @@ namespace Morro.Graphics
                 {
                     0, 1, 2,
                     0, 2, 3
-                }
+                },
+                true
             );
 
             RegisterShapeData("Morro_Square", squareData);
+        }
+
+        private static void RegisterCircle()
+        {
+            ShapeData shapeData = CreateRegularPolygon(90);
+            shapeData.Managed = true;
+            RegisterShapeData("Morro_Circle", shapeData);
         }
 
         private static void RegisterStar()
@@ -181,7 +312,7 @@ namespace Morro.Graphics
                 j++;
             }
 
-            RegisterShapeData("Morro_Star", new ShapeData(vertices.ToArray(), indices.ToArray()));
+            RegisterShapeData("Morro_Star", new ShapeData(vertices.ToArray(), indices.ToArray(), true));
         }
     }
 }

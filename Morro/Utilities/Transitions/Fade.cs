@@ -15,7 +15,7 @@ namespace Morro.Utilities
         private float alpha;
         private Color defaultColor;
         private Color fadeColor;
-        private readonly Quad fade;
+        private readonly MQuad fade;
 
         public Fade(TransitionType type) : this(type, 0.01f, 0.01f, Color.Black)
         {
@@ -25,20 +25,23 @@ namespace Morro.Utilities
         public Fade(TransitionType type, float velocity, float acceleration, Color color) : base(type, velocity, acceleration)
         {
             defaultColor = color;
-            fade = new Quad(-PADDING, -PADDING, 1, 1, Color.Black, VertexInformation.Dynamic);
+            fade = new MQuad(-PADDING, -PADDING, 1, 1) { Color = Color.Black };
         }
 
         protected override void AccommodateToCamera()
         {
-            fade.SetDimensions((int)Camera.Bounds.Width + PADDING * 2, (int)Camera.Bounds.Height + PADDING * 2);
+            fade.Width = Camera.Bounds.Width + PADDING * 2;
+            fade.Height = Camera.Bounds.Height + PADDING * 2;
 
             if (WindowManager.WideScreenSupported)
             {
-                fade.SetPosition(-WindowManager.PillarBox - PADDING, -WindowManager.LetterBox - PADDING);
+                fade.X = -WindowManager.PillarBox - PADDING;
+                fade.Y = -WindowManager.LetterBox - PADDING;
             }
             else
             {
-                fade.SetPosition(-PADDING, -PADDING);
+                fade.X = -PADDING;
+                fade.Y = -PADDING;
             }
         }
 
@@ -46,7 +49,7 @@ namespace Morro.Utilities
         {
             alpha = Type == TransitionType.Enter ? 1 : 0;
             fadeColor = defaultColor * alpha;
-            fade.SetColor(fadeColor);
+            fade.Color = fadeColor;
         }
 
         protected override void UpdateLogic()
@@ -73,12 +76,12 @@ namespace Morro.Utilities
             }
 
             fadeColor = defaultColor * alpha;
-            fade.SetColor(fadeColor);
+            fade.Color = fadeColor;
         }
 
         protected override void DrawTransition(SpriteBatch spriteBatch)
         {
-            fade.Draw(spriteBatch, CameraType.Static);
+            fade.Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
         }
     }
 }

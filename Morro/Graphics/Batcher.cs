@@ -9,31 +9,31 @@ namespace Morro.Graphics
 {
     static class Batcher
     {
-        public static void DrawSprites(SpriteBatch spriteBatch, Camera camera, List<Sprite> sprites)
+        public static void DrawSprites(SpriteBatch spriteBatch, Camera camera, Sprite[] sprites)
         {
-            List<SpriteGroup> spriteGroups = OrganizeSprites(sprites);
-            for (int i = 0; i < spriteGroups.Count; i++)
+            SpriteGroup[] spriteGroups = OrganizeSprites(sprites);
+            for (int i = 0; i < spriteGroups.Length; i++)
             {
                 spriteGroups[i].Draw(spriteBatch, camera);
             }
         }
 
-        public static void DrawPolygons(SpriteBatch spriteBatch, Camera camera, List<MPolygon> polygons)
+        public static void DrawPolygons(SpriteBatch spriteBatch, Camera camera, MPolygon[] polygons)
         {
-            List<PolygonGroup> polygonGroups = OrganizePolygons(polygons);
-            for (int i = 0; i < polygonGroups.Count; i++)
+            PolygonGroup[] polygonGroups = OrganizePolygons(polygons);
+            for (int i = 0; i < polygonGroups.Length; i++)
             {
                 polygonGroups[i].Draw(spriteBatch, camera);
             }
         }
 
-        private static List<SpriteGroup> OrganizeSprites(List<Sprite> sprites)
+        private static SpriteGroup[] OrganizeSprites(Sprite[] sprites)
         {
             List<SpriteGroup> result = new List<SpriteGroup>();
             int resultIndex = -1;
             int spriteGroupCapacity = 2048;
 
-            for (int i = 0; i < sprites.Count; i++)
+            for (int i = 0; i < sprites.Length; i++)
             {
                 if (result.Count == 0 || !result[resultIndex].Add(sprites[i]))
                 {
@@ -43,15 +43,15 @@ namespace Morro.Graphics
                 }
             }
 
-            return result;
+            return result.ToArray();
         }
 
-        private static List<PolygonGroup> OrganizePolygons(List<MPolygon> polygons)
+        private static PolygonGroup[] OrganizePolygons(MPolygon[] polygons)
         {
             List<PolygonGroup> result = new List<PolygonGroup>();
             int resultIndex = -1;
 
-            for (int i = 0; i < polygons.Count; i++)
+            for (int i = 0; i < polygons.Length; i++)
             {
                 if (result.Count == 0 || !result[resultIndex].Add(polygons[i]))
                 {
@@ -61,7 +61,7 @@ namespace Morro.Graphics
                 }
             }
 
-            return result;
+            return result.ToArray();
         }
     }
 }

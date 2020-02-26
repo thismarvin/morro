@@ -296,8 +296,8 @@ namespace Morro.Graphics
 
         public virtual bool Intersects(Polygon polygon)
         {
-            if (!(this is IConvex) || !(polygon is IConvex))
-                return false;
+            //if (!(this is IConvex) || !(polygon is IConvex))
+            //    return false;
 
             SetupForCollisionTesting();
             polygon.SetupForCollisionTesting();

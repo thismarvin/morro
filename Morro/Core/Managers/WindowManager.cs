@@ -44,10 +44,9 @@ namespace Morro.Core
 
         private static int defaultPixelWidth;
         private static int defaultPixelHeight;
-        private static Quad topLetterBox;
-        private static Quad bottomLetterBox;
-        private static Quad leftPillarBox;
-        private static Quad rightPillarBox;
+
+        private static MPolygon[] boxing;
+
         private static bool togglingFullscreen;
 
         public static EventHandler<EventArgs> WindowChanged { get; set; }
@@ -59,10 +58,10 @@ namespace Morro.Core
         static WindowManager()
         {
             sampleFPS = new Queue<float>();
+
             Engine.Instance.Window.ClientSizeChanged += HandleWindowResize;
 
             InitializeWindow();
-
             SetTitle("morroEngine");
         }
 
@@ -185,10 +184,14 @@ namespace Morro.Core
         private static void SetupBoxing()
         {
             int buffer = 1000;
-            topLetterBox = new Quad(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer, Color.Black, VertexInformation.Static);
-            bottomLetterBox = new Quad(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer, Color.Black, VertexInformation.Static);
-            leftPillarBox = new Quad(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2, Color.Black, VertexInformation.Static);
-            rightPillarBox = new Quad(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2, Color.Black, VertexInformation.Static);
+
+            boxing = new MPolygon[]
+            {
+                new MPolygon(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer, ShapeType.Square) { Color = Color.Black },
+                new MPolygon(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer, ShapeType.Square) { Color = Color.Black },
+                new MPolygon(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2, ShapeType.Square) { Color = Color.Black },
+                new MPolygon(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2, ShapeType.Square) { Color = Color.Black }
+            };
         }
 
         private static void CalculateScale()
@@ -330,10 +333,12 @@ namespace Morro.Core
         {
             if (!WideScreenSupported)
             {
-                topLetterBox.Draw(spriteBatch, CameraType.Static);
-                bottomLetterBox.Draw(spriteBatch, CameraType.Static);
-                leftPillarBox.Draw(spriteBatch, CameraType.Static);
-                rightPillarBox.Draw(spriteBatch, CameraType.Static);
+                //Batcher.DrawPolygons(spriteBatch, CameraManager.GetCamera(CameraType.Static), boxing);
+                // TODO: Do not use a batcher for a couple of items....? in this case, just make your own polygongroup;
+                for (int i = 0; i < boxing.Length; i++)
+                {
+                    boxing[i].Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
+                }
             }
         }
     }

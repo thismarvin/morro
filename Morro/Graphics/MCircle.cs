@@ -17,15 +17,22 @@ namespace Morro.Graphics
             }
         }
 
+        public float LineWidth
+        {
+            get => lineWidth;
+            set
+            {
+                lineWidth = value;
+                ShapeData = Geometry.CreateHollowCircle(radius, lineWidth);
+            }
+        }
+
         private float radius;
+        private float lineWidth;
 
         public MCircle(float x, float y, float radius) : base(x, y, radius * 2, radius * 2, ShapeType.Circle)
         {
-        }
-
-        public void SetCenter()
-        {
-
+            this.radius = radius;
         }
     }
 }

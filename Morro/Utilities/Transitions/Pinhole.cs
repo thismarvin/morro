@@ -31,7 +31,9 @@ namespace Morro.Utilities
         protected override void SetupTransition()
         {
             lineWidth = Type == TransitionType.Enter ? radius : 1;
-            pinhole.ShapeData = Geometry.CreateHollowCircle(pinhole.Radius, lineWidth);
+            //pinhole.ShapeData = Geometry.CreateHollowCircle(pinhole.Radius, lineWidth);
+            pinhole.LineWidth = lineWidth;
+            
         }
 
         protected override void AccommodateToCamera()
@@ -39,8 +41,7 @@ namespace Morro.Utilities
             radius = (int)Camera.Bounds.Width > (int)Camera.Bounds.Height ? (int)Camera.Bounds.Width / 2 : (int)Camera.Bounds.Height / 2;
             radius += PADDING;
             pinhole.Radius = radius;
-            pinhole.X = 0;
-            pinhole.Y = 0;
+            pinhole.SetCenter(Camera.Center.X, Camera.Center.Y);
         }
 
         protected override void UpdateLogic()
@@ -66,7 +67,8 @@ namespace Morro.Utilities
                     break;
             }
 
-            pinhole.ShapeData = Geometry.CreateHollowCircle(pinhole.Radius, lineWidth);
+            //pinhole.ShapeData = Geometry.CreateHollowCircle(pinhole.Radius, lineWidth);
+            pinhole.LineWidth = lineWidth;
         }
 
         protected override void DrawTransition(SpriteBatch spriteBatch)

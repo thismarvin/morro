@@ -67,7 +67,7 @@ namespace Morro.Graphics
             }
         }
 
-        public float Rotation
+        public virtual float Rotation
         {
             get => rotation;
             set
@@ -76,6 +76,7 @@ namespace Morro.Graphics
                 UpdateTransform();
             }
         }
+
         public Vector3 RotationOffset
         {
             get => rotationOffset;
@@ -85,6 +86,7 @@ namespace Morro.Graphics
                 UpdateTransform();
             }
         }
+
         public Vector3 Translation
         {
             get => translation;
@@ -94,6 +96,7 @@ namespace Morro.Graphics
                 UpdateTransform();
             }
         }
+
         public Vector3 Scale
         {
             get => scale;
@@ -103,7 +106,6 @@ namespace Morro.Graphics
                 UpdateTransform();
             }
         }
-        #endregion
 
         public ShapeData ShapeData
         {
@@ -119,30 +121,12 @@ namespace Morro.Graphics
                 dataChanged = true;
             }
         }
+        #endregion
 
         public Matrix Transform { get; private set; }
 
-        // Hollow stuff
-        public float LineWidth
-        {
-            get => lineWidth;
-            set
-            {
-                lineWidth = value;
-
-                if (lineWidth == 0)
-                {
-
-                }
-                else
-                {
-
-                }
-            }
-        }
-        public bool Filled { get => LineWidth == 0; }
-
         public Vector2 Position { get => new Vector2(X, Y); }
+        public Vector2 Center { get => new Vector2(X + Width / 2, Y + Height / 2); }
         public Core.Rectangle Bounds { get => new Core.Rectangle(X, Y, Width, Height); }
 
         private float x;
@@ -156,7 +140,6 @@ namespace Morro.Graphics
         private Vector3 translation;
         private Vector3 scale;
         private ShapeData shapeData;
-        private float lineWidth;
 
         private bool dataChanged;
         protected DynamicVertexBuffer transformBuffer;
@@ -183,18 +166,35 @@ namespace Morro.Graphics
             translation = Vector3.Zero;
             scale = new Vector3(1);
 
-            UpdateTransform();            
+            UpdateTransform();
             UpdateTechnique();
-
-            if (shape != "Morro_Dynamic")
-            {
-                UpdateShape();
-            }
+            UpdateShape();
         }
 
         public MPolygon(float x, float y, float width, float height, ShapeType shape) : this(x, y, width, height, $"Morro_{shape.ToString()}")
         {
 
+        }
+
+        public virtual void SetPosition(float x, float y)
+        {
+            this.x = x;
+            this.y = y;
+            UpdateTransform();
+        }
+
+        public virtual void SetCenter(float x, float y)
+        {
+            SetPosition(x - Width / 2, y - Height / 2);
+        }
+
+        public virtual void SetBounds(float x, float y, float width, float height)
+        {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            UpdateTransform();
         }
 
         public void SetShape(ShapeType shapeType)
@@ -266,6 +266,9 @@ namespace Morro.Graphics
 
             spriteBatch.GraphicsDevice.SetVertexBuffers(vertexBufferBindings);
             spriteBatch.GraphicsDevice.Indices = ShapeData.Indices;
+
+            spriteBatch.GraphicsDevice.RasterizerState = DebugManager.ShowWireFrame ? GraphicsManager.DebugRasterizerState : GraphicsManager.DefaultRasterizerState;
+            spriteBatch.GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
             polygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
 

@@ -7,29 +7,13 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class MAABB
+    class MAABB : MQuad
     {
-        private readonly MPolygon aabb;
+        public override float Rotation { get => base.Rotation; set => base.Rotation = 0; }
 
-        public MAABB(float x, float y, float width, float height, Color color)
+        public MAABB(float x, float y, float width, float height) : base(x, y, width, height)
         {
-            aabb = new MPolygon(x, y, width, height, ShapeType.Square)
-            {
-                Color = color
-            };
-        }
 
-        public void SetBounds(float x, float y, float width, float height)
-        {
-            aabb.X = x;
-            aabb.Y = y;
-            aabb.Width = width;
-            aabb.Height = height;
-        }
-
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
-        {
-            aabb.Draw(spriteBatch, camera);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Morro.Utilities
         private Matrix transform;
 
         private readonly MAABB literalBounds;
-        private readonly MPolygon exactBounds;
+        private readonly MQuad exactBounds;
         private readonly MAABB broadBounds;
 
         public Text(float x, float y, string content, string fontName) : base(x, y, 1, 1)
@@ -35,9 +35,9 @@ namespace Morro.Utilities
             sprites = new List<Sprite>();
             shader = new BMFontShader(Color.White, Color.Black, Color.Transparent);
 
-            literalBounds = new MAABB(X, Y, Width, Height, PICO8.GrassGreen);
-            exactBounds = new MPolygon(X, Y, Width, Height, ShapeType.Square) { Color = PICO8.BloodRed };
-            broadBounds = new MAABB(X, Y, Width, Height, PICO8.FleshPink);
+            literalBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.GrassGreen };
+            exactBounds = new MQuad(X, Y, Width, Height) { Color = PICO8.BloodRed };
+            broadBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.FleshPink };
 
             CreateText();
         }
@@ -123,11 +123,7 @@ namespace Morro.Utilities
 
             SetDimensions((int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
 
-            exactBounds.X = X;
-            exactBounds.Y = Y;
-            exactBounds.Width = Width;
-            exactBounds.Height = Height;
-
+            exactBounds.SetBounds(X, Y, Width, Height);
             literalBounds.SetBounds(X, Y, Width, Height);
         }
 
@@ -158,11 +154,7 @@ namespace Morro.Utilities
 
             SetDimensions((int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
 
-            exactBounds.X = X;
-            exactBounds.Y = Y;
-            exactBounds.Width = Width;
-            exactBounds.Height = Height;
-
+            exactBounds.SetBounds(X, Y, Width, Height);
             literalBounds.SetBounds(X, Y, Width, Height);
 
             HandleRotation();
@@ -185,7 +177,7 @@ namespace Morro.Utilities
             float width = xMax - xMin;
             float height = yMax - yMin;
 
-            broadBounds.SetBounds(xMin, yMin, (int)Math.Ceiling(width), (int)Math.Ceiling(height));
+            broadBounds.SetBounds(xMin, yMin, width, height);
         }
 
         private float VertexFinder(Vector2[] vertices, string dimension, string qualifier)

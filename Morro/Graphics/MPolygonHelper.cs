@@ -31,14 +31,6 @@ namespace Morro.Graphics
 
         private static LineSegment[] CalculateTransformedLineSegments(MPolygon polygon, Vector2[] transformedVertices)
         {
-            if (!polygon.Filled)
-                return CalculateHollowLineSegments(polygon, transformedVertices);
-
-            return CalculateFilledLineSegments(polygon, transformedVertices);
-        }
-
-        private static LineSegment[] CalculateFilledLineSegments(MPolygon polygon, Vector2[] transformedVertices)
-        {
             int totalVertices = polygon.ShapeData.TotalVertices;
             LineSegment[] result = new LineSegment[totalVertices];
 
@@ -47,21 +39,6 @@ namespace Morro.Graphics
             for (int i = 1; i < totalVertices; i++)
             {
                 result[i] = new LineSegment(transformedVertices[i - 1].X, transformedVertices[i - 1].Y, transformedVertices[i].X, transformedVertices[i].Y);
-            }
-
-            return result;
-        }
-
-        private static LineSegment[] CalculateHollowLineSegments(MPolygon polygon, Vector2[] transformedVertices)
-        {
-            int totalVertices = polygon.ShapeData.TotalVertices / 2;
-            LineSegment[] result = new LineSegment[totalVertices];
-
-            result[0] = new LineSegment(transformedVertices[totalVertices - 1].X, transformedVertices[totalVertices - 1].Y, transformedVertices[totalVertices].X, transformedVertices[totalVertices].Y);
-
-            for (int i = 1; i < totalVertices; i++)
-            {
-                result[i] = new LineSegment(transformedVertices[(totalVertices + i) - 1].X, transformedVertices[(totalVertices + i) - 1].Y, transformedVertices[totalVertices + i].X, transformedVertices[totalVertices + i].Y);
             }
 
             return result;

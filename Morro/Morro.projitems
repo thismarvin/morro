@@ -40,7 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MCircle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\MDynamicPolygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MAABB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygonHelper.cs" />

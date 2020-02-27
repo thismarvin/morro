@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Morro.Core
 {
-    abstract class MonoObject : IComparable
+    abstract class MonoObject : IComparable<MonoObject>
     {
         public float X { get; set; }
         public float Y { get; set; }
@@ -41,9 +41,9 @@ namespace Morro.Core
             Height = height;
         }
 
-        public int CompareTo(object obj)
+        public int CompareTo(MonoObject monoObject)
         {
-            return Depth.CompareTo(((MonoObject)obj).Depth);
+            return Depth.CompareTo(monoObject.Depth);
         }
 
         public override string ToString()

@@ -78,9 +78,9 @@ namespace Morro.Debug
             entryText.SetContent(string.Format(CultureInfo.InvariantCulture, Format, Information));
         }
 
-        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        public void Draw(Camera camera)
         {
-            entryText.Draw(spriteBatch, cameraType);
+            entryText.Draw(camera);
         }
 
         #region IDisposable Support

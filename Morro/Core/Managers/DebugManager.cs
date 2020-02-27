@@ -95,29 +95,29 @@ namespace Morro.Core
             //GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture));
         }
 
-        private static void DrawDebugLayer(SpriteBatch spriteBatch)
-        {
-            if (!ShowDebugLayer)
-                return;
+        //private static void DrawDebugLayer(SpriteBatch spriteBatch)
+        //{
+        //    if (!ShowDebugLayer)
+        //        return;
 
-            //List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
-            //for (int i = 0; i < queryResult.Count; i++)
-            //{
-            //    if (queryResult[i] is IDebugable)
-            //    {
-            //        ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
-            //    }
-            //}
-        }
+        //    //List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
+        //    //for (int i = 0; i < queryResult.Count; i++)
+        //    //{
+        //    //    if (queryResult[i] is IDebugable)
+        //    //    {
+        //    //        ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
+        //    //    }
+        //    //}
+        //}
 
-        private static void DrawDebugEntries(SpriteBatch spriteBatch)
+        private static void DrawDebugEntries()
         {
             if (!Debugging)
                 return;
 
             foreach (DebugEntry debugEntry in debugEntries)
             {
-                debugEntry.Draw(spriteBatch, CameraType.TopLeftAlign);
+                debugEntry.Draw(CameraManager.GetCamera(CameraType.TopLeftAlign));
             }
         }
 
@@ -129,8 +129,8 @@ namespace Morro.Core
 
         internal static void Draw(SpriteBatch spriteBatch)
         {
-            DrawDebugLayer(spriteBatch);
-            DrawDebugEntries(spriteBatch);
+            //DrawDebugLayer(spriteBatch);
+            DrawDebugEntries();
         }
     }
 }

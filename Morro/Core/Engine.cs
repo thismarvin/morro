@@ -55,7 +55,7 @@ namespace Morro.Core
         {
             DeltaTime = (float)gameTime?.ElapsedGameTime.TotalSeconds;
             TotalGameTime = gameTime.TotalGameTime;
-
+            
             InputManager.Update();
             WindowManager.Update();
             CameraManager.Update();
@@ -71,7 +71,7 @@ namespace Morro.Core
             SceneManager.Draw(spriteBatch);
             SketchManager.Draw(spriteBatch);
             DebugManager.Draw(spriteBatch);
-            WindowManager.Draw(spriteBatch);
+            WindowManager.Draw();
 
             base.Draw(gameTime);
         }

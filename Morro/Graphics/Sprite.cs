@@ -106,9 +106,9 @@ namespace Morro.Graphics
 
         }
 
-        internal virtual void ManagedDraw(SpriteBatch spriteBatch)
+        internal virtual void ManagedDraw()
         {
-            spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+            SpriteManager.SpriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
         }
 
         public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
@@ -121,7 +121,7 @@ namespace Morro.Graphics
             if (!Visible)
                 return;
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState, null, GraphicsManager.DefaultRasterizerState, Effect, camera.Transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, null, GraphicsManager.DefaultRasterizerState, Effect, camera.Transform);
             {
                 if (customScissorRectangle)
                     spriteBatch.GraphicsDevice.ScissorRectangle = scissorRectangle;

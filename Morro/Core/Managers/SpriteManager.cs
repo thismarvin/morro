@@ -1,4 +1,5 @@
-﻿using Morro.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Morro.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,10 +8,13 @@ namespace Morro.Core
 {
     static class SpriteManager
     {
+        public static SpriteBatch SpriteBatch { get; private set; }
+
         private static readonly ResourceHandler<SpriteData> spriteDataLookup;
 
         static SpriteManager()
         {
+            SpriteBatch = new SpriteBatch(Engine.Graphics.GraphicsDevice);
             spriteDataLookup = new ResourceHandler<SpriteData>();
 
             RegisterSpriteData("Probity", 0, 0, 8, 8, "Probity");

@@ -146,13 +146,6 @@ namespace Morro.Graphics
         protected VertexBufferBinding[] vertexBufferBindings;
         protected int techniqueIndex;
 
-        protected static readonly Effect polygonShader;
-
-        static MPolygon()
-        {
-            polygonShader = AssetManager.GetEffect("PolygonShader").Clone();
-        }
-
         public MPolygon(float x, float y, float width, float height, string shape)
         {
             this.x = x;
@@ -233,7 +226,6 @@ namespace Morro.Graphics
         {
             dataChanged = true;
             techniqueIndex = Color == Color.White ? 0 : 1;
-            polygonShader.CurrentTechnique = polygonShader.Techniques[techniqueIndex];
         }
 
         private void UpdateBuffer()
@@ -272,11 +264,10 @@ namespace Morro.Graphics
             spriteBatch.GraphicsDevice.Indices = ShapeData.Indices;
 
             spriteBatch.GraphicsDevice.RasterizerState = DebugManager.ShowWireFrame ? GraphicsManager.DebugRasterizerState : GraphicsManager.DefaultRasterizerState;
-            spriteBatch.GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            polygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
+            GeometryManager.PolygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
 
-            foreach (EffectPass pass in polygonShader.Techniques[techniqueIndex].Passes)
+            foreach (EffectPass pass in GeometryManager.PolygonShader.Techniques[techniqueIndex].Passes)
             {
                 pass.Apply();
                 spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, ShapeData.TotalTriangles, 1);

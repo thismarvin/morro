@@ -7,54 +7,37 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class SpriteGroup
+    class SpriteGroup : DrawGroup<Sprite>
     {
-        public const int MaximumCapacity = 2048;
+        private readonly BlendState sharedBlendState;
+        private readonly SamplerState sharedSamplerState;
+        private readonly Effect sharedEffect;
 
-        public BlendState SharedBlendState { get; private set; }
-        public SamplerState SharedSamplerState { get; private set; }
-        public Effect SharedEffect { get; private set; }
-        public Sprite[] Sprites { get; private set; }
-        public int Capacity { get; private set; }
-
-        private int spriteIndex;
-
-        public SpriteGroup(BlendState sharedBlendState, SamplerState sharedSamplerState, Effect sharedEffect, int capacity)
+        static readonly SpriteBatch spriteBatch;
+        static SpriteGroup()
         {
-            SharedBlendState = sharedBlendState;
-            SharedSamplerState = sharedSamplerState;
-            SharedEffect = sharedEffect;
-            Capacity = capacity;
-            Sprites = new Sprite[Capacity];
+            spriteBatch = SpriteManager.SpriteBatch;
         }
 
-        public bool Add(Sprite sprite)
+        public SpriteGroup(BlendState sharedBlendState, SamplerState sharedSamplerState, Effect sharedEffect, int capacity) : base(capacity)
         {
-            if (spriteIndex >= Capacity)
-                return false;
+            this.sharedBlendState = sharedBlendState;
+            this.sharedSamplerState = sharedSamplerState;
+            this.sharedEffect = sharedEffect;
+        }
 
-            if (sprite.BlendState == SharedBlendState && sprite.SamplerState == SharedSamplerState && sprite.Effect == SharedEffect)
+        protected override bool ConditionToAdd(Sprite sprite)
+        {
+            return sprite.BlendState == sharedBlendState && sprite.SamplerState == sharedSamplerState && sprite.Effect == sharedEffect;
+        }
+
+        public override void Draw(Camera camera)
+        {
+            spriteBatch.Begin(SpriteSortMode.Deferred, sharedBlendState, sharedSamplerState, null, GraphicsManager.DefaultRasterizerState, sharedEffect, camera.Transform);
             {
-                Sprites[spriteIndex++] = sprite;
-                return true;
-            }
-
-            return false;
-        }
-
-        public void Clear()
-        {
-            Array.Clear(Sprites, 0, Sprites.Length);
-        }
-
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
-        {
-            spriteBatch.Begin(SpriteSortMode.Deferred, SharedBlendState, SharedSamplerState, null, GraphicsManager.DefaultRasterizerState, SharedEffect, camera.Transform);
-            for (int i = 0; i < Capacity; i++)
-            {
-                if (Sprites[i] != null)
+                for (int i = 0; i < groupIndex; i++)
                 {
-                    Sprites[i].ManagedDraw(spriteBatch);
+                    group[i]?.ManagedDraw();
                 }
             }
             spriteBatch.End();

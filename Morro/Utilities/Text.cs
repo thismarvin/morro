@@ -18,12 +18,15 @@ namespace Morro.Utilities
 
         private readonly BMFont font;
         private readonly BMFontShader shader;
-        private readonly List<Sprite> sprites;
+        private Sprite[] sprites;
+        private int spriteIndex;
         private Matrix transform;
 
         private readonly MAABB literalBounds;
         private readonly MQuad exactBounds;
         private readonly MAABB broadBounds;
+
+        private readonly SpriteCollection spriteCollection;
 
         public Text(float x, float y, string content, string fontName) : base(x, y, 1, 1)
         {
@@ -32,12 +35,13 @@ namespace Morro.Utilities
             Scale = new Vector2(1, 1);
             transform = Matrix.Identity;
 
-            sprites = new List<Sprite>();
             shader = new BMFontShader(Color.White, Color.Black, Color.Transparent);
 
             literalBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.GrassGreen };
             exactBounds = new MQuad(X, Y, Width, Height) { Color = PICO8.BloodRed };
             broadBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.FleshPink };
+
+            spriteCollection = new SpriteCollection();
 
             CreateText();
         }
@@ -97,30 +101,32 @@ namespace Morro.Utilities
 
         private void CreateText()
         {
-            sprites.Clear();
+            if (Content.Length <= 0)
+                return;
+
+            sprites = new Sprite[Content.Length];
+            spriteIndex = 0;
 
             float xFinal = X;
             char character;
             BMFontCharacter characterData;
-            Sprite sprite;
 
             for (int i = 0; i < Content.Length; i++)
             {
                 character = Content.Substring(i, 1).ToCharArray()[0];
                 characterData = font.GetCharacterData(character);
 
-                sprite = new Sprite(xFinal + characterData.XOffset * Scale.X, Y + characterData.YOffset * Scale.Y, font.FontFace + " " + (int)character)
+                sprites[spriteIndex++] = new Sprite(xFinal + characterData.XOffset * Scale.X, Y + characterData.YOffset * Scale.Y, font.FontFace + " " + (int)character)
                 {
                     Effect = shader.Effect,
                     Scale = Scale,
                     Rotation = Rotation
                 };
 
-                sprites.Add(sprite);
-
                 xFinal += characterData.XAdvance * Scale.X;
             }
 
+            spriteCollection.SetCollection(sprites);
             SetBounds(X, Y, (int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
 
             exactBounds.SetBounds(X, Y, Width, Height);
@@ -129,6 +135,9 @@ namespace Morro.Utilities
 
         private void UpdateText()
         {
+            if (Content.Length <= 0)
+                return;
+
             float xFinal = X;
             char character;
             BMFontCharacter characterData;
@@ -152,6 +161,7 @@ namespace Morro.Utilities
                 xFinal += characterData.XAdvance * Scale.X;
             }
 
+            spriteCollection.SetCollection(sprites);
             SetBounds(X, Y, (int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
 
             exactBounds.SetBounds(X, Y, Width, Height);
@@ -231,14 +241,9 @@ namespace Morro.Utilities
             literalBounds.Draw(spriteBatch, camera);
         }
 
-        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        public void Draw(Camera camera)
         {
-            Draw(spriteBatch, CameraManager.GetCamera(cameraType));
-        }
-
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
-        {
-            Batcher.DrawSprites(spriteBatch, camera, sprites.ToArray());
+            spriteCollection.Draw(camera);
         }
 
         #region IDisposable Support

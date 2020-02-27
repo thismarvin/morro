@@ -36,6 +36,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\MorroSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\GeometryManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\MCircle.cs" />
@@ -45,8 +47,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygonHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\MQuad.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\ShapeData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\VertexTransformColor.cs" />

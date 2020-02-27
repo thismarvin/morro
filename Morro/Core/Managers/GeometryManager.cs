@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,13 @@ namespace Morro.Graphics
 
     static class GeometryManager
     {
+        public static Effect PolygonShader { get; private set; }
+
         private static readonly ResourceHandler<ShapeData> shapes;
 
         static GeometryManager()
         {
+            PolygonShader = AssetManager.GetEffect("PolygonShader").Clone();
             shapes = new ResourceHandler<ShapeData>();
 
             RegisterTriangle();

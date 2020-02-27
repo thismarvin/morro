@@ -45,7 +45,8 @@ namespace Morro.Core
         private static int defaultPixelWidth;
         private static int defaultPixelHeight;
 
-        private static MPolygon[] boxing;
+        private static MAABB[] boxing;
+        private static readonly PolygonCollection polygonCollection;
 
         private static bool togglingFullscreen;
 
@@ -58,6 +59,7 @@ namespace Morro.Core
         static WindowManager()
         {
             sampleFPS = new Queue<float>();
+            polygonCollection = new PolygonCollection();
 
             Engine.Instance.Window.ClientSizeChanged += HandleWindowResize;
 
@@ -185,13 +187,15 @@ namespace Morro.Core
         {
             int buffer = 1000;
 
-            boxing = new MPolygon[]
+            boxing = new MAABB[]
             {
-                new MPolygon(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer, ShapeType.Square) { Color = Color.Black },
-                new MPolygon(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer, ShapeType.Square) { Color = Color.Black },
-                new MPolygon(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2, ShapeType.Square) { Color = Color.Black },
-                new MPolygon(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2, ShapeType.Square) { Color = Color.Black }
+                new MAABB(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black },
+                new MAABB(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black }
             };
+
+            polygonCollection.SetCollection(boxing);
         }
 
         private static void CalculateScale()
@@ -329,16 +333,16 @@ namespace Morro.Core
             CalculateFPS();
         }
 
-        internal static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw()
         {
             if (!WideScreenSupported)
             {
-                //Batcher.DrawPolygons(spriteBatch, CameraManager.GetCamera(CameraType.Static), boxing);
+                polygonCollection.Draw(CameraManager.GetCamera(CameraType.Static));
                 // TODO: Do not use a batcher for a couple of items....? in this case, just make your own polygongroup;
-                for (int i = 0; i < boxing.Length; i++)
-                {
-                    boxing[i].Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
-                }
+                //for (int i = 0; i < boxing.Length; i++)
+                //{
+                //    boxing[i].Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
+                //}
             }
         }
     }

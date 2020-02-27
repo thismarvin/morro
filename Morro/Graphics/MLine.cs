@@ -64,6 +64,14 @@ namespace Morro.Graphics
             };
         }
 
+        public MLine(Vector2[] points)
+        {
+            lineWidth = 1;
+            line = new MPolygon(x, y, width, height, "Morro_None");
+
+            SetPoints(points);
+        }
+
         public void SetPoints(Vector2[] points)
         {
             if (points.Length < 2)
@@ -149,7 +157,7 @@ namespace Morro.Graphics
 
             Vector2[] CreateSloppyVertices()
             {
-                Vector2[] _sloppyVertices = new Vector2[TotalVertices];
+                Vector2[] _sloppyVertices = new Vector2[4 + (TotalPoints - 2) * 4];
                 int vertexIndex = 0;
 
                 float theta;

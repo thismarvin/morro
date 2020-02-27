@@ -15,6 +15,7 @@ namespace Morro.Graphics
             for (int i = 0; i < spriteGroups.Length; i++)
             {
                 spriteGroups[i].Draw(spriteBatch, camera);
+                spriteGroups[i].Clear();
             }
         }
 
@@ -24,44 +25,56 @@ namespace Morro.Graphics
             for (int i = 0; i < polygonGroups.Length; i++)
             {
                 polygonGroups[i].Draw(spriteBatch, camera);
+                polygonGroups[i].Clear();
             }
         }
 
         private static SpriteGroup[] OrganizeSprites(Sprite[] sprites)
         {
-            List<SpriteGroup> result = new List<SpriteGroup>();
-            int resultIndex = -1;
-            int spriteGroupCapacity = 2048;
+            int totalGroups = (int)Math.Ceiling((float)sprites.Length / SpriteGroup.MaximumCapacity);
+            SpriteGroup[] groups = new SpriteGroup[totalGroups];
+            int groupIndex = -1;
+            int remaining = sprites.Length;
 
+            int capacity;
             for (int i = 0; i < sprites.Length; i++)
             {
-                if (result.Count == 0 || !result[resultIndex].Add(sprites[i]))
+                if (groupIndex == -1 || !groups[groupIndex].Add(sprites[i]))
                 {
-                    result.Add(new SpriteGroup(sprites[i].BlendState, sprites[i].SamplerState, sprites[i].Effect, spriteGroupCapacity));
-                    resultIndex++;
-                    result[resultIndex].Add(sprites[i]);
+                    capacity = remaining / SpriteGroup.MaximumCapacity > 0 ? SpriteGroup.MaximumCapacity : remaining % SpriteGroup.MaximumCapacity;
+                    remaining -= SpriteGroup.MaximumCapacity;
+
+                    groupIndex++;
+                    groups[groupIndex] = new SpriteGroup(sprites[i].BlendState, sprites[i].SamplerState, sprites[i].Effect, capacity);                   
+                    groups[groupIndex].Add(sprites[i]);
                 }
             }
 
-            return result.ToArray();
+            return groups;
         }
 
         private static PolygonGroup[] OrganizePolygons(MPolygon[] polygons)
         {
-            List<PolygonGroup> result = new List<PolygonGroup>();
-            int resultIndex = -1;
+            int totalGroups = (int)Math.Ceiling((float)polygons.Length / PolygonGroup.MaximumCapacity);
+            PolygonGroup[] groups = new PolygonGroup[totalGroups];
+            int groupIndex = -1;
+            int remaining = polygons.Length;
 
+            int capacity;
             for (int i = 0; i < polygons.Length; i++)
             {
-                if (result.Count == 0 || !result[resultIndex].Add(polygons[i]))
+                if (groupIndex == -1 || !groups[groupIndex].Add(polygons[i]))
                 {
-                    result.Add(new PolygonGroup(polygons[i].ShapeData));
-                    resultIndex++;
-                    result[resultIndex].Add(polygons[i]);
+                    capacity = remaining / PolygonGroup.MaximumCapacity > 0 ? PolygonGroup.MaximumCapacity : remaining % PolygonGroup.MaximumCapacity;
+                    remaining -= PolygonGroup.MaximumCapacity;
+
+                    groupIndex++;
+                    groups[groupIndex] = new PolygonGroup(polygons[i].ShapeData, capacity);
+                    groups[groupIndex].Add(polygons[i]);
                 }
             }
 
-            return result.ToArray();
+            return groups;
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Morro.Graphics
 {
     class SpriteGroup
     {
+        public const int MaximumCapacity = 2048;
+
         public BlendState SharedBlendState { get; private set; }
         public SamplerState SharedSamplerState { get; private set; }
         public Effect SharedEffect { get; private set; }
@@ -38,6 +40,11 @@ namespace Morro.Graphics
             }
 
             return false;
+        }
+
+        public void Clear()
+        {
+            Array.Clear(Sprites, 0, Sprites.Length);
         }
 
         public void Draw(SpriteBatch spriteBatch, Camera camera)

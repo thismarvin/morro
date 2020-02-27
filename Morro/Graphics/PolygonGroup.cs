@@ -9,31 +9,34 @@ namespace Morro.Graphics
 {
     class PolygonGroup
     {
-        private readonly ShapeData sharedShapeData;
+        public const int MaximumCapacity = 100000;
+
+        public ShapeData SharedShapeData { get; private set; }
+        public int Capacity { get; private set; }
+
         private readonly VertexTransform[] transforms;
         private int polygonIndex;
 
-        private static readonly int capacity;
         private static readonly Effect polygonShader;
 
         static PolygonGroup()
         {
             polygonShader = AssetManager.GetEffect("PolygonShader").Clone();
-            capacity = 100000;
         }
 
-        public PolygonGroup(ShapeData sharedShapeData)
+        public PolygonGroup(ShapeData sharedShapeData, int capacity)
         {
-            this.sharedShapeData = sharedShapeData;
-            transforms = new VertexTransform[capacity];
+            SharedShapeData = sharedShapeData;
+            Capacity = capacity > MaximumCapacity ? MaximumCapacity : capacity;
+            transforms = new VertexTransform[Capacity];
         }
 
         public bool Add(MPolygon polygon)
         {
-            if (polygonIndex >= capacity)
+            if (polygonIndex >= Capacity)
                 return false;
 
-            if (polygon.ShapeData == sharedShapeData)
+            if (polygon.ShapeData == SharedShapeData)
             {
                 transforms[polygonIndex++] = new VertexTransform(polygon.Transform);
                 return true;
@@ -42,21 +45,26 @@ namespace Morro.Graphics
             return false;
         }
 
+        public void Clear()
+        {
+            Array.Clear(transforms, 0, transforms.Length);
+        }
+
         public void Draw(SpriteBatch spriteBatch, Camera camera)
         {
             using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(spriteBatch.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))
             {
                 transformsBuffer.SetData(transforms);
 
-                spriteBatch.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(sharedShapeData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
-                spriteBatch.GraphicsDevice.Indices = sharedShapeData.Indices;
+                spriteBatch.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(SharedShapeData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
+                spriteBatch.GraphicsDevice.Indices = SharedShapeData.Indices;
 
                 polygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
 
                 foreach (EffectPass pass in polygonShader.CurrentTechnique.Passes)
                 {
                     pass.Apply();
-                    spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, sharedShapeData.TotalTriangles, transforms.Length);
+                    spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, SharedShapeData.TotalTriangles, transforms.Length);
                 }
             }
         }

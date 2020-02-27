@@ -209,7 +209,7 @@ namespace Morro.Graphics
         private void UpdateShape()
         {
             dataChanged = true;
-            shapeData = Geometry.GetShapeData(Shape);
+            shapeData = GeometryManager.GetShapeData(Shape);
         }
 
         private void UpdateTransform()

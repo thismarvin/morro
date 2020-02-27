@@ -15,11 +15,11 @@ namespace Morro.Graphics
         Circle
     }
 
-    static class Geometry
+    static class GeometryManager
     {
         private static readonly ResourceHandler<ShapeData> shapes;
 
-        static Geometry()
+        static GeometryManager()
         {
             shapes = new ResourceHandler<ShapeData>();
 

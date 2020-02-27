@@ -23,7 +23,7 @@ namespace Morro.Graphics
             set
             {
                 lineWidth = value;
-                ShapeData = Geometry.CreateHollowCircle(radius, lineWidth);
+                ShapeData = GeometryManager.CreateHollowCircle(radius, lineWidth);
             }
         }
 

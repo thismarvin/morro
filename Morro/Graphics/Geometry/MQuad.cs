@@ -12,7 +12,7 @@ namespace Morro.Graphics
             set
             {
                 lineWidth = value;
-                ShapeData = Geometry.CreateHollowSquare(Width, Height, lineWidth);
+                ShapeData = GeometryManager.CreateHollowSquare(Width, Height, lineWidth);
             }
         }
 

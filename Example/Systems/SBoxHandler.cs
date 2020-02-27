@@ -25,7 +25,7 @@ namespace Example.Systems
         static SBoxHandler()
         {
             polygonShader = AssetManager.GetEffect("PolygonShader").Clone();
-            squareData = Geometry.GetShapeData(ShapeType.Square);
+            squareData = GeometryManager.GetShapeData(ShapeType.Square);
         }
 
         public SBoxHandler(Scene scene) : base(scene, 4)

@@ -338,11 +338,6 @@ namespace Morro.Core
             if (!WideScreenSupported)
             {
                 polygonCollection.Draw(CameraManager.GetCamera(CameraType.Static));
-                // TODO: Do not use a batcher for a couple of items....? in this case, just make your own polygongroup;
-                //for (int i = 0; i < boxing.Length; i++)
-                //{
-                //    boxing[i].Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
-                //}
             }
         }
     }

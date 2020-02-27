@@ -10,12 +10,16 @@ namespace Morro.Graphics
     class PolygonGroup : DrawGroup<MPolygon>
     {
         private readonly ShapeData sharedShapeData;
-        private readonly VertexTransform[] transforms;
+        private readonly VertexTransformColor[] transforms;
+
+        private DynamicVertexBuffer transformBuffer;
+        private VertexBufferBinding[] vertexBufferBindings;
+        private bool dataChanged;
 
         public PolygonGroup(ShapeData sharedShapeData, int capacity) : base(capacity)
         {
             this.sharedShapeData = sharedShapeData;
-            transforms = new VertexTransform[capacity];
+            transforms = new VertexTransformColor[capacity];
             group = null;
         }
 
@@ -31,29 +35,45 @@ namespace Morro.Graphics
 
             if (ConditionToAdd(entry))
             {
-                transforms[groupIndex++] = new VertexTransform(entry.Transform);
+                transforms[groupIndex++] = new VertexTransformColor(entry.Transform, entry.Color);
+                dataChanged = true;
                 return true;
             }
 
             return false;
         }
 
+        private void UpdateBuffer()
+        {
+            transformBuffer?.Dispose();
+
+            transformBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransformColor), transforms.Length, BufferUsage.WriteOnly);
+            transformBuffer.SetData(transforms);
+
+            vertexBufferBindings = new VertexBufferBinding[]
+            {
+                new VertexBufferBinding(sharedShapeData.Geometry),
+                new VertexBufferBinding(transformBuffer, 0, 1)
+            };
+        }
+
         public override void Draw(Camera camera)
         {
-            using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))
+            if (dataChanged)
             {
-                transformsBuffer.SetData(transforms);
+                UpdateBuffer();
+                dataChanged = false;
+            }
 
-                Engine.Graphics.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(sharedShapeData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
-                Engine.Graphics.GraphicsDevice.Indices = sharedShapeData.Indices;
+            Engine.Graphics.GraphicsDevice.SetVertexBuffers(vertexBufferBindings);
+            Engine.Graphics.GraphicsDevice.Indices = sharedShapeData.Indices;
 
-                GeometryManager.PolygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
+            GeometryManager.PolygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
 
-                foreach (EffectPass pass in GeometryManager.PolygonShader.CurrentTechnique.Passes)
-                {
-                    pass.Apply();
-                    Engine.Graphics.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, sharedShapeData.TotalTriangles, transforms.Length);
-                }
+            foreach (EffectPass pass in GeometryManager.PolygonShader.Techniques[1].Passes)
+            {
+                pass.Apply();
+                Engine.Graphics.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, sharedShapeData.TotalTriangles, transforms.Length);
             }
         }
     }

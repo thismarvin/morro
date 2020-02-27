@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Graphics\OldGeometry\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Palettes\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\Transitions\" />
   </ItemGroup>
@@ -40,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MCircle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\MLine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MAABB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygonHelper.cs" />
@@ -64,6 +64,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Maths\IntersectionInformation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\LineSegment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\MonoObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreMath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MTV.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Quadtree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\RandomHelper.cs" />
@@ -84,7 +85,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\Grayscale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\HSV.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\Invert.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\OldGeometry\Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\Outline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\Palette.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Palettes\PICO8.cs" />

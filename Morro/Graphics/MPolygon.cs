@@ -112,9 +112,9 @@ namespace Morro.Graphics
             get => shapeData;
             set
             {
-                if (!(bool)shapeData?.Managed)
+                if (shapeData != null && !shapeData.Managed)
                 {
-                    shapeData?.Dispose();
+                    shapeData.Dispose();
                 }
 
                 shapeData = value;
@@ -168,7 +168,11 @@ namespace Morro.Graphics
 
             UpdateTransform();
             UpdateTechnique();
-            UpdateShape();
+
+            if (shape != "Morro_None")
+            {
+                UpdateShape();
+            }
         }
 
         public MPolygon(float x, float y, float width, float height, ShapeType shape) : this(x, y, width, height, $"Morro_{shape.ToString()}")
@@ -272,7 +276,7 @@ namespace Morro.Graphics
 
             polygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
 
-            foreach (EffectPass pass in polygonShader.CurrentTechnique.Passes)
+            foreach (EffectPass pass in polygonShader.Techniques[techniqueIndex].Passes)
             {
                 pass.Apply();
                 spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, ShapeData.TotalTriangles, 1);

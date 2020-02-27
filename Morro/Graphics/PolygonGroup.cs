@@ -68,7 +68,7 @@ namespace Morro.Graphics
             Engine.Graphics.GraphicsDevice.SetVertexBuffers(vertexBufferBindings);
             Engine.Graphics.GraphicsDevice.Indices = sharedShapeData.Indices;
 
-            GeometryManager.PolygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
+            GeometryManager.SetupPolygonShader(camera);
 
             foreach (EffectPass pass in GeometryManager.PolygonShader.Techniques[1].Passes)
             {

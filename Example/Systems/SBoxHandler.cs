@@ -19,12 +19,10 @@ namespace Example.Systems
         private IComponent[] quads;
 
         private readonly VertexTransform[] transforms;
-        private static readonly Effect polygonShader;
         private static readonly ShapeData squareData;
 
         static SBoxHandler()
         {
-            polygonShader = AssetManager.GetEffect("PolygonShader").Clone();
             squareData = GeometryManager.GetShapeData(ShapeType.Square);
         }
 
@@ -60,7 +58,7 @@ namespace Example.Systems
 
         public override void BeforeDraw(SpriteBatch spriteBatch)
         {
-                        
+
         }
 
         public override void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera)
@@ -80,9 +78,9 @@ namespace Example.Systems
                 spriteBatch.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(squareData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
                 spriteBatch.GraphicsDevice.Indices = squareData.Indices;
 
-                polygonShader.Parameters["WorldViewProjection"].SetValue(camera.World * camera.View * camera.Projection);
+                GeometryManager.SetupPolygonShader(camera);
 
-                foreach (EffectPass pass in polygonShader.CurrentTechnique.Passes)
+                foreach (EffectPass pass in GeometryManager.PolygonShader.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                     spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, squareData.TotalTriangles, transforms.Length);

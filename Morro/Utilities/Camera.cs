@@ -14,6 +14,7 @@ namespace Morro.Utilities
         public Matrix World { get; private set; }
         public Matrix View { get; private set; }
         public Matrix Projection { get; private set; }
+        public Matrix WorldViewProjection { get; private set; }
         public Vector3 TopLeft { get; private set; }
         public Core.Rectangle Bounds { get; private set; }
         public Vector2 Center { get { return new Vector2(Bounds.X + Bounds.Width * 0.5f, Bounds.Y + Bounds.Height * 0.5f); } }
@@ -231,6 +232,8 @@ namespace Morro.Utilities
 
             Projection =
                 Matrix.CreateOrthographic(WindowManager.WindowWidth / (Zoom + zoomOffset), WindowManager.WindowHeight / (Zoom + zoomOffset), 0, 64);
+
+            WorldViewProjection = World * View * Projection;
         }
 
         private void SetupTracking(float x, float y)

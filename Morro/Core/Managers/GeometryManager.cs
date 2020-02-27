@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -74,6 +75,15 @@ namespace Morro.Graphics
             shapes.Remove(name);
         }
         #endregion
+
+        /// <summary>
+        /// Sets <see cref="PolygonShader"/>'s "WorldViewProjection" parameter to the camera's <see cref="Camera.WorldViewProjection"/>.
+        /// </summary>
+        /// <param name="camera">The target camera.</param>
+        public static void SetupPolygonShader(Camera camera)
+        {
+            PolygonShader.Parameters["WorldViewProjection"].SetValue(camera.WorldViewProjection);
+        }
 
         public static ShapeData CreateRegularPolygon(int totalVertices)
         {

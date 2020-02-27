@@ -17,7 +17,7 @@ namespace Morro.Graphics
 
         private readonly List<VertexPositionColor> rawVertices;
         private VertexPositionColor[] vertices;
-                
+
         public PolygonBuilder()
         {
             rawVertices = new List<VertexPositionColor>();
@@ -35,7 +35,7 @@ namespace Morro.Graphics
 
         public void AddVertex(float x, float y, Color color)
         {
-            rawVertices.Add(new VertexPositionColor(new Vector3(x, y, 0), color));            
+            rawVertices.Add(new VertexPositionColor(new Vector3(x, y, 0), color));
 
             if (TotalPrimitives <= 0)
                 return;

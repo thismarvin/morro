@@ -37,7 +37,7 @@ namespace Morro.Core
 
         public override string ToString()
         {
-            return base.ToString() + " " + string.Format(CultureInfo.InvariantCulture, "- [ {0}, {1} ], {2}x{3}", X, Y, Width, Height);
+            return base.ToString() + " " +  $": Position:(X:{X}, Y:{Y}), Dimensions:(W:{Width}, H:{Height})";
         }
     }
 }

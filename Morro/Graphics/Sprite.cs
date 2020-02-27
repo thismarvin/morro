@@ -62,28 +62,28 @@ namespace Morro.Graphics
             originalFrameX = frameX;
             originalFrameY = frameY;
 
-            SetDimensions(spriteData.Width, spriteData.Height);
+            SetBounds(X, Y, spriteData.Width, spriteData.Height);
 
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void IncrementFrameX(int pixels)
         {
             frameX += pixels;
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void IncrementFrameY(int pixels)
         {
             frameY += pixels;
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void SetFrame(int frame, int columns)
         {
-            frameX = originalFrameX + frame % columns * Width;
-            frameY = originalFrameY + frame / columns * Height;
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            frameX = originalFrameX + frame % columns * (int)Width;
+            frameY = originalFrameY + frame / columns * (int)Height;
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void SetSprite(string spriteDataName)

@@ -8,50 +8,37 @@ namespace Morro.Core
 {
     abstract class MonoObject : IComparable
     {
-        public Vector2 Position { get; private set; }
-        public Rectangle Bounds { get; private set; }
-
-        public float X { get { return Position.X; } }
-        public float Y { get { return Position.Y; } }
-        public int Width { get { return (int)Bounds.Width; } }
-        public int Height { get { return (int)Bounds.Height; } }
-        public Vector2 Center { get { return new Vector2(Position.X + Width / 2, Position.Y + Height / 2); } }
-
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
         public int Depth { get; set; }
+
+        public Vector2 Position { get => new Vector2(X, Y); }
+        public Vector2 Center { get => new Vector2(X + Width / 2, X + Height / 2); }
+        public Rectangle Bounds { get => new Rectangle(X, Y, Width, Height); }
 
         public MonoObject(float x, float y, int width, int height)
         {
-            Position = new Vector2(x, y);
-            Bounds = new Rectangle(X, Y, width, height);
-
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
             Depth = 1;
         }
 
         public virtual void SetPosition(float x, float y)
         {
-            Position = new Vector2(x, y);
-            Bounds = new Rectangle(X, Y, Width, Height);
+            X = x;
+            Y = y;
         }
 
         public virtual void SetBounds(float x, float y, int width, int height)
         {
-            Position = new Vector2(x, y);
-            Bounds = new Rectangle(X, Y, width, height);
-        }
-
-        public void SetWidth(int width)
-        {
-            SetDimensions(width, Height);
-        }
-
-        public void SetHeight(int height)
-        {
-            SetDimensions(Width, height);
-        }
-
-        public virtual void SetDimensions(int width, int height)
-        {
-            Bounds = new Rectangle(X, Y, width, height);
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
         }
 
         public int CompareTo(object obj)
@@ -61,7 +48,7 @@ namespace Morro.Core
 
         public override string ToString()
         {
-            return base.ToString() + string.Format(CultureInfo.InvariantCulture, ": Position:(X:{0}, Y:{1}), Dimensions:(W:{2}, H:{3})", X, Y, Width, Height);
+            return base.ToString() + $": Position:(X:{X}, Y:{Y}), Dimensions:(W:{Width}, H:{Height}), Depth:{Depth}";
         }
     }
 }

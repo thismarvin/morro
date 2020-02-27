@@ -121,7 +121,7 @@ namespace Morro.Utilities
                 xFinal += characterData.XAdvance * Scale.X;
             }
 
-            SetDimensions((int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
+            SetBounds(X, Y, (int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
 
             exactBounds.SetBounds(X, Y, Width, Height);
             literalBounds.SetBounds(X, Y, Width, Height);
@@ -152,7 +152,7 @@ namespace Morro.Utilities
                 xFinal += characterData.XAdvance * Scale.X;
             }
 
-            SetDimensions((int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
+            SetBounds(X, Y, (int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
 
             exactBounds.SetBounds(X, Y, Width, Height);
             literalBounds.SetBounds(X, Y, Width, Height);

@@ -398,8 +398,8 @@ namespace Morro.Utilities
                 {
                     //float xOffset = (float)RandomHelper.Range(-shakeDistance, shakeDistance);
                     //float yOffset = (float)RandomHelper.Range(-shakeDistance, shakeDistance);
-                    float xOffset = (float)RandomHelper.Gaussian(0, shakeDistance * 0.75);
-                    float yOffset = (float)RandomHelper.Gaussian(0, shakeDistance * 0.75);
+                    float xOffset = (float)Maths.Random.Gaussian(0, shakeDistance * 0.75);
+                    float yOffset = (float)Maths.Random.Gaussian(0, shakeDistance * 0.75);
                     shakePosition = TopLeft + new Vector3(xOffset, yOffset, 0);
                 }
 

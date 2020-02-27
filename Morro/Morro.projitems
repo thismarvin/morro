@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodOrderException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\AssetManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\InputManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\RandomManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SpriteManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\PartitionEntry.cs" />
@@ -68,7 +67,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreMath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MTV.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Quadtree.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Maths\RandomHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Maths\Random.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Rectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SceneManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SketchManager.cs" />

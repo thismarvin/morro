@@ -57,7 +57,6 @@ namespace Morro.Core
             TotalGameTime = gameTime.TotalGameTime;
 
             InputManager.Update();
-            GraphicsManager.Update();
             WindowManager.Update();
             CameraManager.Update();
             SceneManager.Update();

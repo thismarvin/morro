@@ -9,7 +9,7 @@ namespace Morro.Graphics
     abstract class DrawCollection<T>
     {
         private readonly int maximumGroupCapacity;
-        private DrawGroup<T>[] groups;
+        protected DrawGroup<T>[] groups;
 
         public DrawCollection(int maximumGroupCapacity)
         {

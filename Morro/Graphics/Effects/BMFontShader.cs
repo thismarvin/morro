@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class BMFontShader : FX
+    internal class BMFontShader : FX
     {
         public Color TextColor { get; private set; }
         public Color OutlineColor { get; private set; }

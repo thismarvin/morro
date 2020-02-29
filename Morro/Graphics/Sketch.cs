@@ -9,16 +9,16 @@ namespace Morro.Graphics
 {
     static class Sketch
     {
+        private static readonly Queue<Effect> shaders;
         private static RenderTarget2D accumulation;
-        private static RenderTarget2D result;
-        private static Queue<FX> shaders;
+        private static RenderTarget2D result;        
         private static Color clearColor;
         private static bool disableRelay;
         private static bool preventFumbledRelay;
 
-        internal static void Initialize()
+        static Sketch()
         {
-            shaders = new Queue<FX>();
+            shaders = new Queue<Effect>();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Morro.Graphics
 
         /// <summary>
         /// Sets the upcoming layer's background to a specified color.
-        /// This method should be called before Begin(spriteBatch).
+        /// This method should be called before <see cref="Begin(SpriteBatch)"/>.
         /// </summary>
         /// <param name="color">The color used to fill the background of the upcoming layer.</param>
         public static void SetBackgroundColor(Color color)
@@ -67,13 +67,26 @@ namespace Morro.Graphics
         }
 
         /// <summary>
+        /// Attaches an effect that will be applied to the entire upcoming layer
+        /// (refer to <see cref="EffectType"/> for all implementations of <see cref="FX"/> by Morro).
+        /// More than one effect can be attached to a Sketch at a time.
+        /// Effects are applied in the same order as they are attached.
+        /// This method should be called before <see cref="Begin(SpriteBatch)"/>.
+        /// </summary>
+        /// <param name="fx">The shader that will be applied to the entire upcoming layer.</param>
+        public static void AttachEffect(FX fx)
+        {
+            AttachEffect(fx.Effect);
+        }
+
+        /// <summary>
         /// Attaches an effect that will be applied to the entire upcoming layer.
         /// More than one effect can be attached to a Sketch at a time.
         /// Effects are applied in the same order as they are attached.
-        /// This method should be called before Begin(spriteBatch).
+        /// This method should be called before <see cref="Begin(SpriteBatch)"/>.
         /// </summary>
         /// <param name="effect">The shader that will be applied to the entire upcoming layer.</param>
-        public static void AttachEffect(FX effect)
+        public static void AttachEffect(Effect effect)
         {
             PreventFumble();
 
@@ -89,8 +102,8 @@ namespace Morro.Graphics
         /// <summary>
         /// This will disable the upcoming layer from being drawn.
         /// This is useful for any effects that require additional passes.
-        /// Note that if this method is called, you must call InterceptRelay() after End(spriteBatch).
-        /// This method should be called before Begin(spriteBatch).
+        /// Note that if this method is called, you must call <see cref="InterceptRelay"/> after <see cref="End(SpriteBatch)"/>.
+        /// This method should be called before <see cref="Begin(SpriteBatch)"/>.
         /// </summary>
         public static void DisableRelay()
         {
@@ -105,7 +118,7 @@ namespace Morro.Graphics
 
         /// <summary>
         /// Creates a layer to accumulate all upcoming spriteBatch calls.
-        /// This method should be called before End(spriteBatch).
+        /// This method should be called before <see cref="End(SpriteBatch)"/>.
         /// </summary>
         /// <param name="spriteBatch">The default Game's SpriteBatch object.</param>
         public static void Begin(SpriteBatch spriteBatch)
@@ -132,7 +145,7 @@ namespace Morro.Graphics
 
         /// <summary>
         /// Applies any attached effects to the current layer, and passes the layer to the SketchManager to be drawn.
-        /// This method should be called after Begin(spriteBatch).
+        /// This method should be called after <see cref="Begin(SpriteBatch)"/>.
         /// </summary>
         /// <param name="spriteBatch">The default Game's SpriteBatch object.</param>
         public static void End(SpriteBatch spriteBatch)
@@ -156,7 +169,7 @@ namespace Morro.Graphics
                 }
 
                 int totalShaders = shaders.Count;
-                FX shader;
+                Effect shader;
 
                 // Iterate through all the shaders in the queue.
                 for (int i = 0; i < totalShaders; i++)
@@ -168,7 +181,7 @@ namespace Morro.Graphics
                     spriteBatch.GraphicsDevice.Clear(Color.Transparent);
 
                     // Apply the shader.
-                    spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, shader.Effect, null);
+                    spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, shader, null);
                     {
                         spriteBatch.Draw(i == 0 ? accumulation : renderTargets[i - 1], Vector2.Zero, Color.White);
                     }
@@ -219,7 +232,7 @@ namespace Morro.Graphics
         /// <summary>
         /// Passes the entire layer to the user. The SketchManager is no longer managing the life cycle of the layer.
         /// Failure to properly manage the layer will result in a memory leak, among other problems.
-        /// This method should be called after End(spriteBatch).
+        /// This method should be called after <see cref="End(SpriteBatch)"/>.
         /// </summary>
         /// <returns>Returns the entire layer that was just created.</returns>
         public static RenderTarget2D InterceptRelay()

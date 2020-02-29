@@ -13,7 +13,7 @@ namespace Morro.Graphics
         public Vector2 Direction { get; private set; }
         public float Offset { get; private set; }
 
-        public Blur(Texture2D texture) : this(texture, new Vector2(1, 0), 0)
+        public Blur(Texture2D texture) : this(texture, new Vector2(1, 0), 1)
         {
 
         }
@@ -22,7 +22,7 @@ namespace Morro.Graphics
         {
             Texture = texture;
             Direction = direction;
-            Offset = offset;
+            Offset = offset * WindowManager.Scale;
 
             Initialize();
         }

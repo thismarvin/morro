@@ -4,9 +4,11 @@ using Example.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.Debug;
 using Morro.ECS;
 using Morro.Graphics;
 using Morro.Maths;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,40 +18,12 @@ namespace Example.Scenes
 {
     class Playground : Scene
     {
-        readonly MPolygon polygon;
-        readonly MLine test;
-
-        public Playground() : base("Playground", 100, 8, 4)
+        public Playground() : base("Playground", 20000, 8, 4)
         {
             RegisterSystem(new SPhysicsSystem(this));
             RegisterSystem(new SBoxHandler(this));
 
             Camera.SmoothTrackingSpeed = 5;
-
-            polygon = new MAABB(16, 16, 32, 32)
-            {
-                LineWidth = 8,
-                Rotation = MathHelper.PiOver4,
-                RotationOffset = new Vector3(16, 16, 0),
-                Color = Color.Red
-            };
-
-            test = new MLine
-            (
-                new Vector2[]
-                {
-                    new Vector2(16 * 1, 16 * 1),
-                    new Vector2(16 * 2, 16 * 3),
-                    new Vector2(16 * 3, 16 * 1),
-                    new Vector2(16 * 4, 16 * 2),
-                    new Vector2(16 * 5, 16 * 2),
-                    new Vector2(16 * 6, 16 * 4),
-                    new Vector2(16 * 6, 16 * 8),
-                }
-            )
-            {
-                LineWidth = 4
-            };
 
             DisablePartitioning();
         }
@@ -74,13 +48,6 @@ namespace Example.Scenes
                 }
             }
 
-            UpdateECS();
-
-            polygon.X = Morro.Input.Mouse.SceneLocation.X;
-            polygon.Y = Morro.Input.Mouse.SceneLocation.Y;
-
-            //test.SetEndPoint(polygon.X, polygon.Y);
-
             if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.D))
             {
                 Camera.SmoothTrack(Camera.Center.X + 50, Camera.Center.Y);
@@ -100,19 +67,18 @@ namespace Example.Scenes
             {
                 Camera.SmoothTrack(Camera.Center.X, Camera.Center.Y + 50);
             }
+
+            UpdateECS();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             Sketch.CreateBackgroundLayer(spriteBatch, Color.CornflowerBlue);
 
+            Sketch.AttachEffect(new ChromaticAberration(Engine.RenderTarget, 2));
             Sketch.Begin(spriteBatch);
             {
                 DrawECS(spriteBatch);
-
-                polygon.Draw(spriteBatch, Camera);
-
-                test.Draw(spriteBatch, Camera);
             }
             Sketch.End(spriteBatch);
         }

@@ -25,8 +25,6 @@ namespace Morro.Core
         {
             renderTargets = new List<RenderTarget2D>();
             completedStages = new List<StageType>();
-
-            Sketch.Initialize();
         }
 
         internal static void RegisterStage(StageType stage)

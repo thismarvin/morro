@@ -26,7 +26,7 @@ namespace Morro.Graphics
             RedShift = redShift;
             GreenShift = greenShift;
             BlueShift = blueShift;
-            Offset = offset;
+            Offset = offset * WindowManager.Scale;
 
             Initialize();
         }

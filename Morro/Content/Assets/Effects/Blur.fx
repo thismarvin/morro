@@ -28,7 +28,7 @@ float TextureHeight;
 
 float4 Blur(VertexShaderOutput input) : COLOR
 {
-	float2 scaledSize = float2((1 + Offset) / TextureWidth, (1 + Offset) / TextureHeight);
+	float2 scaledSize = float2(Offset / TextureWidth, Offset / TextureHeight);
 	float2 center = scaledSize * 0.5;
 	float4 color = float4(0, 0, 0, 0);
 

@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.Graphics;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Graphics
+namespace Morro.Core
 {
     public enum ShapeType
     {

@@ -65,6 +65,10 @@ namespace Morro.Core
 
             InitializeWindow();
             SetTitle("morroEngine");
+
+            /// When a MonoGame Windows Project application is fullscreen and the game's window has not been moved since startup, 
+            /// Microsoft.Xna.Framework.Input.Mouse.GetState().Y is offset unless the following line of code is included.
+            Engine.Instance.Window.Position = Engine.Instance.Window.Position;
         }
 
         public static void SetPixelDimensions(int pixelWidth, int pixelHeight)
@@ -285,9 +289,13 @@ namespace Morro.Core
             togglingFullscreen = true;
 
             if (Fullscreen)
+            {
                 DeactivateFullScreen();
+            }
             else
+            {
                 ActivateFullScreenMode();
+            }
 
             Engine.Graphics.ToggleFullScreen();
             Engine.Graphics.ApplyChanges();

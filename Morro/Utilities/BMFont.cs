@@ -6,12 +6,12 @@ using System.Text;
 
 namespace Morro.Utilities
 {
-    class BMFont
+    internal class BMFont
     {
-        public string FontFace { get; set; }
-        public int Size { get; set; }
-        public bool Bold { get; set; }
-        public bool Italic { get; set; }
+        public string FontFace { get; private set; }
+        public int Size { get; private set; }
+        public bool Bold { get; private set; }
+        public bool Italic { get; private set; }
 
         private readonly Dictionary<int, string> pages;
         private readonly Dictionary<int, BMFontCharacter> characters;

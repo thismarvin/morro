@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Morro.Utilities.Readers
 {
-    class BMFontReader : ContentTypeReader<BMFont>
+    internal class BMFontReader : ContentTypeReader<BMFont>
     {
         protected override BMFont Read(ContentReader input, BMFont existingInstance)
         {

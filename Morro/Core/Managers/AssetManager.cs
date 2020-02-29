@@ -137,6 +137,16 @@ namespace Morro.Core
         }
 
         /// <summary>
+        /// Get a <see cref="BMFont"/> that was already loaded into memory.
+        /// </summary>
+        /// <param name="fontType">The basic font type you want to get.</param>
+        /// <returns>The loaded <see cref="BMFont"/> associated with the given name.</returns>
+        public static BMFont GetFont(FontType fontType)
+        {
+            return fonts.Get($"Morro_{fontType}");
+        }
+
+        /// <summary>
         /// Unload an already loaded <see cref="BMFont"/> from memory.
         /// </summary>
         /// <param name="name">The name assigned to a previously loaded font.</param>
@@ -160,8 +170,8 @@ namespace Morro.Core
             LoadEffect("BMFontShader", "Assets/Effects/BMFontShader");
             LoadEffect("PolygonShader", "Assets/Effects/Polygon");
 
-            LoadFont("Probity", "Assets/Fonts/probity");
-            LoadFont("Sparge", "Assets/Fonts/sparge");
+            LoadFont("Morro_Probity", "Assets/Fonts/probity");
+            LoadFont("Morro_Sparge", "Assets/Fonts/sparge");
         }
 
         internal static void UnloadContent()

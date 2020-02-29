@@ -10,6 +10,21 @@ using System.Text;
 
 namespace Morro.Utilities
 {
+    /// <summary>
+    /// A handful of default <see cref="BMFont"/>'s included with Morro.
+    /// </summary>
+    public enum FontType
+    {
+        /// <summary>
+        /// An 8px tall bitmap font.
+        /// </summary>
+        Probity,
+        /// <summary>
+        /// A 16px tall bitmap font.
+        /// </summary>
+        Sparge,        
+    }
+
     class Text : MonoObject, IDisposable, IDebugable
     {
         public string Content { get; private set; }
@@ -44,6 +59,11 @@ namespace Morro.Utilities
             spriteCollection = new SpriteCollection();
 
             CreateText();
+        }
+
+        public Text(float x, float y, string content, FontType fontType) : this(x, y, content, $"Morro_{fontType.ToString()}")
+        {
+
         }
 
         public override void SetPosition(float x, float y)

@@ -16,16 +16,13 @@ namespace Morro.ECS
 
         public void SetTransform(CPosition position, CDimension dimension, CTransform transform)
         {
-            Transform =               
-                Matrix.CreateScale(dimension.Width , dimension.Height, 1) *
-                Matrix.CreateScale(transform.Scale) *
-                
+            Transform =
+                Matrix.CreateScale(dimension.Width * transform.Scale.X, dimension.Height * transform.Scale.Y, 1 * transform.Scale.Z) *
+
                 Matrix.CreateTranslation(-transform.RotationOffset) *
                 Matrix.CreateRotationZ(transform.Rotation) *
-                Matrix.CreateTranslation(transform.RotationOffset) *
 
-                Matrix.CreateTranslation(position.X, position.Y, 0) *
-                Matrix.CreateTranslation(transform.Translation) *
+                Matrix.CreateTranslation(position.X + transform.Translation.X + transform.RotationOffset.X, position.Y + transform.Translation.Y + transform.RotationOffset.Y, 0 + transform.Translation.Z + transform.RotationOffset.Z) *
 
                 Matrix.Identity;
         }

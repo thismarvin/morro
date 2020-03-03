@@ -16,6 +16,9 @@ namespace Example.Systems
         private readonly float target;
         private readonly Integrator integrator;
 
+        private IComponent[] positions;
+        private IComponent[] physicsBodies;
+
         private enum Integrator
         {
             SemiImplictEuler,
@@ -35,36 +38,34 @@ namespace Example.Systems
             if (!scene.EntityInView(entity))
                 return;
 
-            CPosition position = scene.GetData<CPosition>(entity);
-
-            if (position.Y > scene.SceneBounds.Height + 16)
-            {
-                scene.RemoveEntity(entity);
-                return;
-            }
-
             Simultate(entity);
+        }
+
+        public override void Update()
+        {
+            positions = scene.GetData<CPosition>();
+            physicsBodies = scene.GetData<CPhysicsBody>();
+
+            base.Update();
         }
 
         private void Simultate(int entity)
         {
-            CPhysicsBody physicsBody = scene.GetData<CPhysicsBody>(entity);
+            CPosition position = (CPosition)positions[entity];
+            CPhysicsBody physicsBody = (CPhysicsBody)physicsBodies[entity];
 
             physicsBody.Accumulator += (float)(Engine.TotalGameTime - physicsBody.LastUpdate).TotalSeconds;
             physicsBody.LastUpdate = new TimeSpan(Engine.TotalGameTime.Ticks);
 
             while (physicsBody.Accumulator >= target)
             {
-                Integrate(entity, integrator, target);
+                Integrate(position, physicsBody, integrator, target);
                 physicsBody.Accumulator -= target;
             }
         }
 
-        private void Integrate(int entity, Integrator integrator, float deltaTime)
+        private void Integrate(CPosition position, CPhysicsBody physicsBody, Integrator integrator, float deltaTime)
         {
-            CPosition position = scene.GetData<CPosition>(entity);
-            CPhysicsBody physicsBody = scene.GetData<CPhysicsBody>(entity);
-
             switch (integrator)
             {
                 case Integrator.SemiImplictEuler:

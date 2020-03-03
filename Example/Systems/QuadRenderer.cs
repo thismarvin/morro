@@ -34,7 +34,7 @@ namespace Example.Systems
             if (Entities.Count <= 0)
                 return;
 
-            VertexTransform[] transforms = scene.GetSystem<QuadUpdater>().Transforms;
+            VertexTransform[] transforms = scene.GetSystem<QuadUpdater>().VertexTransforms;
 
             using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))
             {

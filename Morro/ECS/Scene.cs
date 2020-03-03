@@ -276,10 +276,10 @@ namespace Morro.ECS
 
             for (int i = 0; i < systemIndex; i++)
             {
-                if (systems[i] is UpdateSystem)
+                if (systems[i].Enabled && systems[i] is UpdateSystem)
                 {
                     ((UpdateSystem)systems[i]).Update();
-                }                
+                }
             }
 
             if (entityRemovalQueue.Count != 0)
@@ -296,10 +296,10 @@ namespace Morro.ECS
         {
             for (int i = 0; i < systemIndex; i++)
             {
-                if (systems[i] is DrawSystem)
+                if (systems[i].Enabled && systems[i] is DrawSystem)
                 {
                     ((DrawSystem)systems[i]).Draw(spriteBatch, Camera);
-                }                
+                }
             }
         }
         #endregion

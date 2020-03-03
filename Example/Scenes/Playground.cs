@@ -49,6 +49,11 @@ namespace Example.Scenes
                 }
             }
 
+            if (Morro.Input.Keyboard.Pressed(Microsoft.Xna.Framework.Input.Keys.Space))
+            {
+                GetSystem<PhysicsEngine>().Enabled = !GetSystem<PhysicsEngine>().Enabled;
+            }
+
             if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.D))
             {
                 Camera.SmoothTrack(Camera.Center.X + 50, Camera.Center.Y);

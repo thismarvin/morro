@@ -9,6 +9,7 @@ namespace Morro.ECS
 {
     abstract class MorroSystem
     {
+        public bool Enabled { get; set; }
         public HashSet<Type> RequiredComponents { get; private set; }
         public HashSet<int> Entities { get; private set; }
 
@@ -21,6 +22,7 @@ namespace Morro.ECS
             RequiredComponents = new HashSet<Type>();
             Entities = new HashSet<int>();
             entitiesAsList = new List<int>();
+            Enabled = true;
 
             this.scene = scene;
         }

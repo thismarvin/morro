@@ -8,9 +8,12 @@ namespace Example.Systems
 {
     class QuadUpdater : UpdateSystem
     {
+        public VertexTransform[] Transforms { get; private set; }
+
         public QuadUpdater(Scene scene) : base(scene, 4)
         {
             Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CQuad));
+            Transforms = new VertexTransform[scene.TotalEntities];
         }
 
         public override void UpdateEntity(int entity)
@@ -21,6 +24,7 @@ namespace Example.Systems
             CQuad quad = scene.GetData<CQuad>(entity);
 
             quad.SetTransform(position, dimension, transform);
+            Transforms[entity] = new VertexTransform(quad.Transform);
         }
     }
 }

@@ -33,7 +33,8 @@ namespace Morro.ECS
         private readonly IComponent[][] data;
 
         private readonly int maximumSystemCount;
-        private readonly HashSet<Type> registeredSystems;        
+        private readonly HashSet<Type> registeredSystems;
+        private readonly Dictionary<Type, int> systemLookup;
         private readonly MorroSystem[] systems;
         private int systemIndex;
 
@@ -68,6 +69,7 @@ namespace Morro.ECS
             data = new IComponent[this.maximumComponentCount][];
 
             registeredSystems = new HashSet<Type>();
+            systemLookup = new Dictionary<Type, int>();
             systems = new MorroSystem[this.maximumSystemCount];
 
             attachedComponents = new SparseSet[this.maximumEntityCount];
@@ -87,7 +89,9 @@ namespace Morro.ECS
             if (registeredSystems.Contains(system.GetType()))
                 return;
 
-            registeredSystems.Add(system.GetType());
+            Type systemType = system.GetType();
+            registeredSystems.Add(systemType);
+            systemLookup.Add(systemType, systemIndex);
             systems[systemIndex] = system;
             systemIndex++;
         }
@@ -255,6 +259,15 @@ namespace Morro.ECS
                 return default;
 
             return (T)data[componentLookup[componentType]][entity];
+        }
+
+        public T GetSystem<T>() where T : MorroSystem
+        {
+            Type systemType = typeof(T);
+            if (!registeredSystems.Contains(systemType))
+                return default;
+
+            return (T)systems[systemLookup[systemType]];
         }
 
         protected void UpdateECS()

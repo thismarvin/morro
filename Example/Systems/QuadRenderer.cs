@@ -34,12 +34,7 @@ namespace Example.Systems
             if (Entities.Count <= 0)
                 return;
 
-            VertexTransform[] transforms = new VertexTransform[Entities.Count];
-            int transformIndex = 0;
-            foreach (int entity in Entities)
-            {
-                transforms[transformIndex++] = new VertexTransform(scene.GetData<CQuad>(entity).Transform);
-            }
+            VertexTransform[] transforms = scene.GetSystem<QuadUpdater>().Transforms;
 
             using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))
             {

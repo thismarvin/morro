@@ -13,9 +13,6 @@ namespace Example.Systems
 {
     class SPhysicsSystem : MorroSystem
     {
-        private IComponent[] transforms;
-        private IComponent[] physicsBodies;
-
         private readonly float target;
         private readonly Integrator integrator;
 
@@ -33,18 +30,12 @@ namespace Example.Systems
             integrator = Integrator.SemiImplictEuler;
         }
 
-        public override void BeforeUpdate()
-        {
-            transforms = scene.GetData<CPosition>();
-            physicsBodies = scene.GetData<CPhysicsBody>();
-        }
-
         public override void UpdateEntity(int entity)
         {
             if (!scene.EntityInView(entity))
                 return;
 
-            CPosition position = (CPosition)transforms[entity];
+            CPosition position = scene.GetData<CPosition>(entity);
 
             if (position.Y > scene.SceneBounds.Height + 16)
             {
@@ -62,7 +53,7 @@ namespace Example.Systems
 
         private void Simultate(int entity)
         {
-            CPhysicsBody physicsBody = (CPhysicsBody)physicsBodies[entity];
+            CPhysicsBody physicsBody = scene.GetData<CPhysicsBody>(entity);
 
             physicsBody.Accumulator += (float)(Engine.TotalGameTime - physicsBody.LastUpdate).TotalSeconds;
             physicsBody.LastUpdate = new TimeSpan(Engine.TotalGameTime.Ticks);
@@ -76,8 +67,8 @@ namespace Example.Systems
 
         private void Integrate(int entity, Integrator integrator, float deltaTime)
         {
-            CPosition position = (CPosition)transforms[entity];
-            CPhysicsBody physicsBody = (CPhysicsBody)physicsBodies[entity];
+            CPosition position = scene.GetData<CPosition>(entity);
+            CPhysicsBody physicsBody = scene.GetData<CPhysicsBody>(entity);
 
             switch (integrator)
             {

@@ -13,11 +13,6 @@ namespace Example.Systems
 {
     class SBoxHandler : MorroSystem
     {
-        private IComponent[] positions;
-        private IComponent[] dimensions;
-        private IComponent[] cTransforms;
-        private IComponent[] quads;
-
         private readonly VertexTransform[] transforms;
         private static readonly ShapeData squareData;
 
@@ -33,32 +28,19 @@ namespace Example.Systems
             transforms = new VertexTransform[scene.TotalEntities];
         }
 
-        public override void BeforeUpdate()
-        {
-            positions = scene.GetData<CPosition>();
-            dimensions = scene.GetData<CDimension>();
-            cTransforms = scene.GetData<CTransform>();
-            quads = scene.GetData<CQuad>();
-        }
-
         public override void UpdateEntity(int entity)
         {
             if (!scene.EntityInView(entity))
                 return;
 
-            CPosition position = (CPosition)positions[entity];
-            CDimension dimension = (CDimension)dimensions[entity];
-            CTransform transform = (CTransform)cTransforms[entity];
-            CQuad aabb = (CQuad)quads[entity];
+            CPosition position = scene.GetData<CPosition>(entity);
+            CDimension dimension = scene.GetData<CDimension>(entity);
+            CTransform transform = scene.GetData<CTransform>(entity);
+            CQuad aabb = scene.GetData<CQuad>(entity);
 
             aabb.SetTransform(position, dimension, transform);
 
             transforms[entity] = (new VertexTransform(aabb.Transform));
-        }
-
-        public override void BeforeDraw(SpriteBatch spriteBatch)
-        {
-
         }
 
         public override void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera)
@@ -68,7 +50,7 @@ namespace Example.Systems
 
         public override void Draw(SpriteBatch spriteBatch, Camera camera)
         {
-            if (transforms.Length <= 0)
+            if (Entities.Count <= 0)
                 return;
 
             using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))

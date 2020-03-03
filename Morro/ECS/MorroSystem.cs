@@ -102,16 +102,6 @@ namespace Morro.ECS
             }
         }
 
-        public virtual void BeforeUpdate()
-        {
-
-        }
-
-        public virtual void BeforeDraw(SpriteBatch spriteBatch)
-        {
-
-        }
-
         public abstract void UpdateEntity(int entity);
         public abstract void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera);
 

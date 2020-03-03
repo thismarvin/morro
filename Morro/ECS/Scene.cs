@@ -79,7 +79,6 @@ namespace Morro.ECS
         }
 
         #region ECS Stuff
-
         public void RegisterSystem(MorroSystem system)
         {
             if (systemIndex > maximumSystemCount)
@@ -229,31 +228,41 @@ namespace Morro.ECS
             componentIndex++;
         }
 
-        public ECS.IComponent[] GetData<IComponent>()
+        /// <summary>
+        /// Get an array of all of the data of a particular <see cref="IComponent"/> type.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IComponent"/> data that you want to retrieve.</typeparam>
+        /// <returns>An array of all of the data of a particular <see cref="IComponent"/> type.</returns>
+        public IComponent[] GetData<T>() where T : IComponent
         {
-            Type componentType = typeof(IComponent);
-
+            Type componentType = typeof(T);
             if (!registeredComponents.Contains(componentType))
-                return new ECS.IComponent[0];
+                return new IComponent[0];
 
             return data[componentLookup[componentType]];
         }
 
-        public IComponent GetEntityData(int entity, Type type)
+        /// <summary>
+        /// Get the <see cref="IComponent"/> data of a particular entity.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IComponent"/> data that you want to retrieve from the entity.</typeparam>
+        /// <param name="entity">The target entity you want to retrieve data from.</param>
+        /// <returns>The <see cref="IComponent"/> data of a particular entity.</returns>
+        public T GetData<T>(int entity) where T : IComponent
         {
-            if (!componentLookup.ContainsKey(type))
-                return null;
+            Type componentType = typeof(T);
+            if (!componentLookup.ContainsKey(componentType))
+                return default;
 
-            return data[componentLookup[type]][entity];
+            return (T)data[componentLookup[componentType]][entity];
         }
 
-        public void UpdateECS()
+        protected void UpdateECS()
         {
             SpatialPartitioning();
 
             for (int i = 0; i < systemIndex; i++)
             {
-                systems[i].BeforeUpdate();
                 systems[i].Update();
             }
 
@@ -267,15 +276,13 @@ namespace Morro.ECS
             }
         }
 
-        public void DrawECS(SpriteBatch spriteBatch)
+        protected void DrawECS(SpriteBatch spriteBatch)
         {
             for (int i = 0; i < systemIndex; i++)
             {
-                systems[i].BeforeDraw(spriteBatch);
                 systems[i].Draw(spriteBatch, Camera);
             }
         }
-
         #endregion
 
         public SparseSet Query(Core.Rectangle bounds)
@@ -374,14 +381,14 @@ namespace Morro.ECS
 
                 if (EntityContains(entity, typeof(CPosition), typeof(CDimension)))
                 {
-                    position = (CPosition)GetEntityData(entity, typeof(CPosition));
-                    dimension = (CDimension)GetEntityData(entity, typeof(CDimension));
+                    position = GetData<CPosition>(entity);
+                    dimension = GetData<CDimension>(entity);
 
                     Partitioner.Insert(new PartitionEntry(entity, new Core.Rectangle(position.X, position.Y, (int)dimension.Width, (int)dimension.Height)));
                 }
                 else if (EntityContains(entity, typeof(CPosition)))
                 {
-                    position = (CPosition)GetEntityData(entity, typeof(CPosition));
+                    position = GetData<CPosition>(entity);
 
                     Partitioner.Insert(new PartitionEntry(entity, new Core.Rectangle(position.X, position.Y, 1, 1)));
                 }

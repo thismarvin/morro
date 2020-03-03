@@ -13,7 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Yoman.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Root.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Playground.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\SBoxHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\SPhysicsSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\QuadRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\QuadUpdater.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\PhysicsEngine.cs" />
   </ItemGroup>
 </Project>

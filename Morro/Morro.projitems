@@ -34,8 +34,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CQuad.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\MorroSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />

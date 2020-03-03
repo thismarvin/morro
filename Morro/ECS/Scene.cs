@@ -33,7 +33,7 @@ namespace Morro.ECS
         private readonly IComponent[][] data;
 
         private readonly int maximumSystemCount;
-        private readonly HashSet<Type> registeredSystems;
+        private readonly HashSet<Type> registeredSystems;        
         private readonly MorroSystem[] systems;
         private int systemIndex;
 
@@ -263,7 +263,10 @@ namespace Morro.ECS
 
             for (int i = 0; i < systemIndex; i++)
             {
-                systems[i].Update();
+                if (systems[i] is UpdateSystem)
+                {
+                    ((UpdateSystem)systems[i]).Update();
+                }                
             }
 
             if (entityRemovalQueue.Count != 0)
@@ -280,7 +283,10 @@ namespace Morro.ECS
         {
             for (int i = 0; i < systemIndex; i++)
             {
-                systems[i].Draw(spriteBatch, Camera);
+                if (systems[i] is DrawSystem)
+                {
+                    ((DrawSystem)systems[i]).Draw(spriteBatch, Camera);
+                }                
             }
         }
         #endregion

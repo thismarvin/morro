@@ -1,6 +1,4 @@
-﻿using Example.Components;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.ECS;
 using Morro.Graphics;
@@ -8,50 +6,40 @@ using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Example.Systems
 {
-    class SBoxHandler : MorroSystem
+    class QuadRenderer : DrawSystem
     {
-        private readonly VertexTransform[] transforms;
         private static readonly ShapeData squareData;
 
-        static SBoxHandler()
+        static QuadRenderer()
         {
             squareData = GeometryManager.GetShapeData(ShapeType.Square);
         }
 
-        public SBoxHandler(Scene scene) : base(scene, 4)
+        public QuadRenderer(Scene scene) : base(scene)
         {
-            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CQuad));
-
-            transforms = new VertexTransform[scene.TotalEntities];
-        }
-
-        public override void UpdateEntity(int entity)
-        {
-            if (!scene.EntityInView(entity))
-                return;
-
-            CPosition position = scene.GetData<CPosition>(entity);
-            CDimension dimension = scene.GetData<CDimension>(entity);
-            CTransform transform = scene.GetData<CTransform>(entity);
-            CQuad aabb = scene.GetData<CQuad>(entity);
-
-            aabb.SetTransform(position, dimension, transform);
-
-            transforms[entity] = (new VertexTransform(aabb.Transform));
+            Require(typeof(CQuad));
         }
 
         public override void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera)
         {
-
+            throw new NotImplementedException();
         }
 
         public override void Draw(SpriteBatch spriteBatch, Camera camera)
         {
             if (Entities.Count <= 0)
                 return;
+
+            VertexTransform[] transforms = new VertexTransform[Entities.Count];
+            int transformIndex = 0;
+            foreach (int entity in Entities)
+            {
+                transforms[transformIndex++] = new VertexTransform(scene.GetData<CQuad>(entity).Transform);
+            }
 
             using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))
             {

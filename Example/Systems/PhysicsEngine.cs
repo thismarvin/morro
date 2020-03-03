@@ -11,7 +11,7 @@ using Morro.Utilities;
 
 namespace Example.Systems
 {
-    class SPhysicsSystem : MorroSystem
+    class PhysicsEngine : UpdateSystem
     {
         private readonly float target;
         private readonly Integrator integrator;
@@ -22,7 +22,7 @@ namespace Example.Systems
             VelocityVerlet
         }
 
-        public SPhysicsSystem(Scene scene) : base(scene, 4)
+        public PhysicsEngine(Scene scene) : base(scene, 4)
         {
             Require(typeof(CPosition), typeof(CPhysicsBody));
 
@@ -44,11 +44,6 @@ namespace Example.Systems
             }
 
             Simultate(entity);
-        }
-
-        public override void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera)
-        {
-
         }
 
         private void Simultate(int entity)

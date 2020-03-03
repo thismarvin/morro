@@ -20,8 +20,9 @@ namespace Example.Scenes
     {
         public Playground() : base("Playground", 20000, 8, 4)
         {
-            RegisterSystem(new SPhysicsSystem(this));
-            RegisterSystem(new SBoxHandler(this));
+            RegisterSystem(new PhysicsEngine(this));
+            RegisterSystem(new QuadUpdater(this));
+            RegisterSystem(new QuadRenderer(this));
 
             Camera.SmoothTrackingSpeed = 5;
 

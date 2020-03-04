@@ -1,4 +1,5 @@
-﻿using Morro.ECS;
+﻿using Microsoft.Xna.Framework;
+using Morro.ECS;
 using Morro.Graphics;
 using System;
 using System.Collections.Generic;
@@ -8,17 +9,17 @@ namespace Example.Systems
 {
     class QuadUpdater : UpdateSystem
     {
-        public VertexTransform[] VertexTransforms { get; private set; }
+        public VertexTransformColor[] VertexTransforms { get; private set; }
 
         private IComponent[] positions;
         private IComponent[] dimensions;
         private IComponent[] transforms;
-        private IComponent[] quads;
+        private IComponent[] colors;
 
         public QuadUpdater(Scene scene) : base(scene, 4)
         {
-            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CQuad));
-            VertexTransforms = new VertexTransform[scene.TotalEntities];
+            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CQuad), typeof(CColor));
+            VertexTransforms = new VertexTransformColor[scene.TotalEntities];
         }
 
         public override void UpdateEntity(int entity)
@@ -26,10 +27,9 @@ namespace Example.Systems
             CPosition position = (CPosition)positions[entity];
             CDimension dimension = (CDimension)dimensions[entity];
             CTransform transform = (CTransform)transforms[entity];
-            CQuad quad = (CQuad)quads[entity];
+            CColor color = (CColor)colors[entity];
 
-            quad.SetTransform(position, dimension, transform);
-            VertexTransforms[entity] = new VertexTransform(quad.Transform);
+            VertexTransforms[entity] = new VertexTransformColor(position, dimension, transform, color);
         }
 
         public override void Update()
@@ -37,7 +37,7 @@ namespace Example.Systems
             positions = scene.GetData<CPosition>();
             dimensions = scene.GetData<CDimension>();
             transforms = scene.GetData<CTransform>();
-            quads = scene.GetData<CQuad>();
+            colors = scene.GetData<CColor>();
 
             base.Update();
         }

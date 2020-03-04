@@ -9,6 +9,11 @@ namespace Morro.ECS
         public float Width { get; set; }
         public float Height { get; set; }
 
+        public CDimension()
+        {
+
+        }
+
         public CDimension(float width, float height)
         {
             Width = width;

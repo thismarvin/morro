@@ -8,6 +8,12 @@ namespace Morro.ECS
     {
         public float X { get; set; }
         public float Y { get; set; }
+        public float Z { get; set; }
+
+        public CPosition()
+        {
+
+        }
 
         public CPosition(float x, float y)
         {

@@ -195,7 +195,7 @@ namespace Morro.Utilities
             if (Rotation == 0)
                 return;
 
-            exactBounds.RotationOffset = new Vector3(Width / 2, Height / 2, 0);
+            exactBounds.RotationOffset = new Vector2(Width / 2, Height / 2);
             exactBounds.Rotation = Rotation;
 
             CollisionInformation collisionInformation = exactBounds.GetCollisionInformation();

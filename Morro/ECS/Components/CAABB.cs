@@ -9,22 +9,9 @@ namespace Morro.ECS
 {
     class CAABB : IComponent
     {
-        public Matrix Transform { get; private set; }
-
-        public CAABB(CPosition position, CDimension dimension)
+        public CAABB()
         {
-            Transform =                 
-                Matrix.CreateScale(dimension.Width, dimension.Height, 1) *
-                Matrix.CreateTranslation(position.X, position.Y, 0) *
-                Matrix.Identity;
-        }
 
-        public void SetTransform(CPosition position, CDimension dimension)
-        {
-            Transform =
-                Matrix.CreateScale(dimension.Width, dimension.Height, 1) *
-                Matrix.CreateTranslation(position.X, position.Y, 0) *
-                Matrix.Identity;
         }
     }
 }

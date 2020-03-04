@@ -28,14 +28,14 @@ namespace Morro.Graphics
             return polygon.ShapeData == sharedShapeData;
         }
 
-        public override bool Add(MPolygon entry)
+        public override bool Add(MPolygon polygon)
         {
             if (groupIndex >= capacity)
                 return false;
 
-            if (ConditionToAdd(entry))
+            if (ConditionToAdd(polygon))
             {
-                transforms[groupIndex++] = new VertexTransformColor(entry.Transform, entry.Color);
+                transforms[groupIndex++] = polygon.GetVertexTransformColor();
                 dataChanged = true;
                 return true;
             }

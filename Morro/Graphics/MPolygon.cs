@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
-using Morro.Maths;
+using Morro.ECS;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
@@ -77,7 +77,7 @@ namespace Morro.Graphics
             }
         }
 
-        public Vector3 RotationOffset
+        public Vector2 RotationOffset
         {
             get => rotationOffset;
             set
@@ -136,7 +136,7 @@ namespace Morro.Graphics
         private Color color;
         private string shape;
         private float rotation;
-        private Vector3 rotationOffset;
+        private Vector2 rotationOffset;
         private Vector3 translation;
         private Vector3 scale;
         private ShapeData shapeData;
@@ -155,7 +155,7 @@ namespace Morro.Graphics
             this.shape = shape;
             color = Color.White;
             rotation = 0;
-            rotationOffset = Vector3.Zero;
+            rotationOffset = Vector2.Zero;
             translation = Vector3.Zero;
             scale = new Vector3(1);
 
@@ -199,6 +199,16 @@ namespace Morro.Graphics
             Shape = $"Morro_{shapeType}";
         }
 
+        public VertexTransform GetVertexTransform()
+        {
+            return new VertexTransform(new CPosition(X, Y), new CDimension(Width, Height), new CTransform(Scale, Rotation, RotationOffset, Translation));
+        }
+
+        public VertexTransformColor GetVertexTransformColor()
+        {
+            return new VertexTransformColor(new CPosition(X, Y), new CDimension(Width, Height), new CTransform(Scale, Rotation, RotationOffset, Translation), new CColor(Color));
+        }
+
         private void UpdateShape()
         {
             dataChanged = true;
@@ -209,15 +219,12 @@ namespace Morro.Graphics
         {
             dataChanged = true;
             Transform =
-                Matrix.CreateScale(Width, Height, 1) *
-                Matrix.CreateScale(Scale) *
+                Matrix.CreateScale(Width * Scale.X, Height * Scale.Y, 1 * Scale.Z) *
 
-                Matrix.CreateTranslation(-rotationOffset) *
-                Matrix.CreateRotationZ(rotation) *
-                Matrix.CreateTranslation(rotationOffset) *
+                Matrix.CreateTranslation(-new Vector3(RotationOffset.X, RotationOffset.Y, 0)) *
+                Matrix.CreateRotationZ(Rotation) *
 
-                Matrix.CreateTranslation(X, Y, 0) *
-                Matrix.CreateTranslation(translation) *
+                Matrix.CreateTranslation(X + Translation.X + RotationOffset.X, Y + Translation.Y + RotationOffset.Y, Translation.Z) *
 
                 Matrix.Identity;
         }
@@ -236,12 +243,12 @@ namespace Morro.Graphics
             {
                 case 0:
                     transformBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), 1, BufferUsage.WriteOnly);
-                    transformBuffer.SetData(new VertexTransform[] { new VertexTransform(Transform) });
+                    transformBuffer.SetData(new VertexTransform[] { GetVertexTransform() });
                     break;
 
                 case 1:
                     transformBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransformColor), 1, BufferUsage.WriteOnly);
-                    transformBuffer.SetData(new VertexTransformColor[] { new VertexTransformColor(Transform, Color) });
+                    transformBuffer.SetData(new VertexTransformColor[] { GetVertexTransformColor() });
                     break;
             }
 

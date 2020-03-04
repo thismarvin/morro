@@ -34,9 +34,9 @@ namespace Example.Systems
             if (Entities.Count <= 0)
                 return;
 
-            VertexTransform[] transforms = scene.GetSystem<QuadUpdater>().VertexTransforms;
+            VertexTransformColor[] transforms = scene.GetSystem<QuadUpdater>().VertexTransforms;
 
-            using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransform), transforms.Length, BufferUsage.WriteOnly))
+            using (DynamicVertexBuffer transformsBuffer = new DynamicVertexBuffer(Engine.Graphics.GraphicsDevice, typeof(VertexTransformColor), transforms.Length, BufferUsage.WriteOnly))
             {
                 transformsBuffer.SetData(transforms);
 
@@ -45,7 +45,7 @@ namespace Example.Systems
 
                 GeometryManager.SetupPolygonShader(camera);
 
-                foreach (EffectPass pass in GeometryManager.PolygonShader.CurrentTechnique.Passes)
+                foreach (EffectPass pass in GeometryManager.PolygonShader.Techniques[1].Passes)
                 {
                     pass.Apply();
                     spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, squareData.TotalTriangles, transforms.Length);

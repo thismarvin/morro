@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Morro.ECS;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,13 +9,28 @@ namespace Morro.Graphics
 {
     struct VertexTransformColor : IVertexType
     {
-        public Matrix Transform { get; private set; }
+        public Vector3 Scale { get; private set; }
+        public Vector3 RotationOffset { get; private set; }
+        public Vector3 Translation { get; private set; }
+        public float Rotation { get; private set; }
         public Color Color { get; private set; }
 
-        public VertexTransformColor(Matrix transform, Color color)
+        public VertexTransformColor(Vector3 scale, Vector2 rotationOffset, float rotation, Vector3 translation, Color color)
         {
-            Transform = transform;
+            Scale = scale;
+            RotationOffset = new Vector3(rotationOffset.X, rotationOffset.Y, 0);
+            Rotation = rotation;
+            Translation = translation;
             Color = color;
+        }
+
+        public VertexTransformColor(CPosition position, CDimension dimension, CTransform transform, CColor color)
+        {
+            Scale = new Vector3(dimension.Width * transform.Scale.X, dimension.Height * transform.Scale.Y, transform.Scale.Z);
+            RotationOffset = new Vector3(transform.RotationOffset.X, transform.RotationOffset.Y, 0);
+            Rotation = transform.Rotation;
+            Translation = new Vector3(position.X + transform.Translation.X, position.Y + transform.Translation.Y, position.Z + transform.Translation.Z);
+            Color = color.Color;
         }
 
         public VertexDeclaration VertexDeclaration { get { return vertexDeclaration; } }
@@ -24,11 +40,11 @@ namespace Morro.Graphics
         {
             vertexDeclaration = new VertexDeclaration
             (
-                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
-                new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.Position, 2),
-                new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.Position, 3),
-                new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.Position, 4),
-                new VertexElement(64, VertexElementFormat.Color, VertexElementUsage.Color, 5)
+                new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 1),
+                new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.Position, 2),
+                new VertexElement(24, VertexElementFormat.Vector3, VertexElementUsage.Position, 3),
+                new VertexElement(36, VertexElementFormat.Single, VertexElementUsage.Position, 4),
+                new VertexElement(40, VertexElementFormat.Color, VertexElementUsage.Color, 5)
             );
         }
     }

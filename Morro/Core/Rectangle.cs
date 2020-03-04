@@ -12,10 +12,10 @@ namespace Morro.Core
         public float Width { get; private set; }
         public float Height { get; private set; }
 
-        public float Top { get { return Y; } }
-        public float Bottom { get { return Y + Height; } }
-        public float Left { get { return X; } }
-        public float Right { get { return X + Width; } }
+        public float Top { get => Y; }
+        public float Bottom { get => Y + Height; }
+        public float Left { get => X; }
+        public float Right { get => X + Width; }
 
         public Rectangle(float x, float y, float width, float height)
         {
@@ -37,7 +37,7 @@ namespace Morro.Core
 
         public override string ToString()
         {
-            return base.ToString() + " " +  $": Position:(X:{X}, Y:{Y}), Dimensions:(W:{Width}, H:{Height})";
+            return base.ToString() + " " + $": Position:(X:{X}, Y:{Y}), Dimensions:(W:{Width}, H:{Height})";
         }
     }
 }

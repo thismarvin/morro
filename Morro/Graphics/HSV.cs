@@ -49,7 +49,7 @@ namespace Morro.Graphics
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "(H:{0}, S:{1}, V:{2})", H, S, V);
+            return string.Format(CultureInfo.InvariantCulture, $"(H:{H}, S:{S}, V:{V})");
         }
     }
 }

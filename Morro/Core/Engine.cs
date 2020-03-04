@@ -10,7 +10,7 @@ namespace Morro.Core
     {
         public static GraphicsDeviceManager Graphics { get; private set; }
         public static Engine Instance { get; private set; }
-        public static RenderTarget2D RenderTarget { get { return WindowManager.RenderTarget; } }
+        public static RenderTarget2D RenderTarget { get => WindowManager.RenderTarget; }
         public static float DeltaTime { get; private set; }
         public static TimeSpan TotalGameTime { get; private set; }
 
@@ -55,7 +55,7 @@ namespace Morro.Core
         {
             DeltaTime = (float)gameTime?.ElapsedGameTime.TotalSeconds;
             TotalGameTime = gameTime.TotalGameTime;
-            
+
             InputManager.Update();
             WindowManager.Update();
             CameraManager.Update();

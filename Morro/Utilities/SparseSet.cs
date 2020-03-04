@@ -7,7 +7,7 @@ namespace Morro.Utilities
 {
     class SparseSet : IEnumerable<uint>
     {
-        public int Count { get { return (int)n; } }
+        public int Count { get => (int)n; }
 
         private readonly uint[] dense;
         private readonly uint[] sparse;

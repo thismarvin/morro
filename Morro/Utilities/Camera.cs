@@ -17,7 +17,7 @@ namespace Morro.Utilities
         public Matrix WorldViewProjection { get; private set; }
         public Vector3 TopLeft { get; private set; }
         public Core.Rectangle Bounds { get; private set; }
-        public Vector2 Center { get { return new Vector2(Bounds.X + Bounds.Width * 0.5f, Bounds.Y + Bounds.Height * 0.5f); } }
+        public Vector2 Center { get => new Vector2(Bounds.X + Bounds.Width * 0.5f, Bounds.Y + Bounds.Height * 0.5f); }
         public float SmoothTrackingSpeed { get; set; }
         public float Zoom { get; private set; }
         public float Rotation { get; private set; }

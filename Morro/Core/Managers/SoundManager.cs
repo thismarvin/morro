@@ -11,7 +11,7 @@ namespace Morro.Core
     {
         public static float MasterVolume
         {
-            get { return SoundEffect.MasterVolume; }
+            get => SoundEffect.MasterVolume;
             set { SoundEffect.MasterVolume = value; }
         }
 

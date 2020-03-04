@@ -9,9 +9,6 @@ namespace Morro.ECS
 {
     class CAABB : IComponent
     {
-        public CAABB()
-        {
 
-        }
     }
 }

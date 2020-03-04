@@ -26,8 +26,8 @@ namespace Morro.Core
         public static int DisplayHeight { get; private set; }
         public static int DefaultWindowWidth { get; private set; }
         public static int DefaultWindowHeight { get; private set; }
-        public static int WindowWidth { get { return Engine.Graphics.PreferredBackBufferWidth; } }
-        public static int WindowHeight { get { return Engine.Graphics.PreferredBackBufferHeight; } }
+        public static int WindowWidth { get => Engine.Graphics.PreferredBackBufferWidth; }
+        public static int WindowHeight { get => Engine.Graphics.PreferredBackBufferHeight; }
         public static RenderTarget2D RenderTarget { get; private set; }
         public static OrientationType Orientation { get; private set; }
         public static string Title { get; set; }

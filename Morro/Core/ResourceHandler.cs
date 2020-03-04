@@ -7,7 +7,7 @@ namespace Morro.Core
 {
     class ResourceHandler<T> : IDisposable, IEnumerable<T>
     {
-        public int Count { get { return data.Count; } }
+        public int Count { get => data.Count; }
 
         private readonly Dictionary<string, T> data;
 
@@ -107,7 +107,7 @@ namespace Morro.Core
         public IEnumerator<T> GetEnumerator()
         {
             return new ResourceHandlerEnumerator(data);
-        }        
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -128,7 +128,7 @@ namespace Morro.Core
                 this.data = new T[data.Count];
 
                 int i = 0;
-                foreach (KeyValuePair<string,T> entry in data)
+                foreach (KeyValuePair<string, T> entry in data)
                 {
                     this.data[i++] = entry.Value;
                 }

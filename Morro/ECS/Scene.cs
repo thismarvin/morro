@@ -112,6 +112,9 @@ namespace Morro.ECS
 
         public bool EntityContains(int entity, params Type[] components)
         {
+            if (components.Length == 0)
+                return false;
+
             uint componentID;
             for (int i = 0; i < components.Length; i++)
             {
@@ -121,6 +124,29 @@ namespace Morro.ECS
                 }
 
                 componentID = (uint)componentLookup[components[i]];
+                if (!attachedComponents[entity].Contains(componentID))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool EntityContains(int entity, HashSet<Type> components)
+        {
+            if (components.Count == 0)
+                return false;
+
+            uint componentID;
+            foreach (Type component in components)
+            {
+                if (!registeredComponents.Contains(component))
+                {
+                    return false;
+                }
+
+                componentID = (uint)componentLookup[component];
                 if (!attachedComponents[entity].Contains(componentID))
                 {
                     return false;
@@ -207,7 +233,9 @@ namespace Morro.ECS
         {
             for (int i = 0; i < systemIndex; i++)
             {
-                if (EntityContains(entity, systems[i].RequiredComponents.ToArray()))
+                systems[i].RemoveEntity(entity);
+
+                if (EntityContains(entity, systems[i].RequiredComponents) && !EntityContains(entity, systems[i].BlacklistedComponents))
                 {
                     systems[i].AddEntity(entity);
                     attachedSystems[entity].Add((uint)i);

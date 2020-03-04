@@ -7,9 +7,6 @@ namespace Morro.ECS
 {
     class CQuad : IComponent
     {
-        public CQuad()
-        {
 
-        }
     }
 }

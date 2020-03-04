@@ -29,7 +29,7 @@ namespace Morro.ECS
             Task.WaitAll(DivideUpdateIntoTasks(tasks));
 
             Task[] DivideUpdateIntoTasks(uint totalTasks)
-            {
+            {                
                 Task[] result = new Task[totalTasks];
 
                 int increment = Entities.Count / (int)totalTasks;
@@ -60,7 +60,7 @@ namespace Morro.ECS
                 {
                     for (int entity = startingIndex; entity < endingIndex; entity++)
                     {
-                        UpdateEntity(entitiesAsList[entity]);
+                        UpdateEntity(EntitiesAsArray[entity]);
                     }
                 });
             }

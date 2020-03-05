@@ -26,10 +26,11 @@ namespace Morro.ECS
 
         private void ParallelUpdate()
         {
+            int[] entities = EntitiesAsArray;
             Task.WaitAll(DivideUpdateIntoTasks(tasks));
 
             Task[] DivideUpdateIntoTasks(uint totalTasks)
-            {                
+            {
                 Task[] result = new Task[totalTasks];
 
                 int increment = Entities.Count / (int)totalTasks;
@@ -58,9 +59,9 @@ namespace Morro.ECS
             {
                 return Task.Run(() =>
                 {
-                    for (int entity = startingIndex; entity < endingIndex; entity++)
+                    for (int i = startingIndex; i < endingIndex; i++)
                     {
-                        UpdateEntity(EntitiesAsArray[entity]);
+                        UpdateEntity(entities[i]);
                     }
                 });
             }

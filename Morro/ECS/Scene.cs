@@ -20,32 +20,21 @@ namespace Morro.ECS
         public Transition ExitTransition { get; set; }
         public string Name { get; private set; }
         public Core.Rectangle SceneBounds { get; private set; }
-        public SparseSet EntitiesInView { get; private set; }
+
+        public int SystemCapacity { get => systemManager.Capacity; }
+        public int ComponentCapacity { get => componentManager.Capacity; }
+        public int EntityCapacity { get => entityManager.Capacity; }
+
+        private readonly SystemManager systemManager;
+        private readonly ComponentManager componentManager;
+        private readonly EntityManager entityManager;
 
         private readonly SparseSet entityRemovalQueue;
+        private SparseSet entitiesInView;
 
         private readonly int queryBuffer;
 
-        private readonly int maximumComponentCount;
-        private readonly HashSet<Type> registeredComponents;
-        private readonly Dictionary<Type, int> componentLookup;
-        private int componentIndex;
-        private readonly IComponent[][] data;
-
-        private readonly int maximumSystemCount;
-        private readonly HashSet<Type> registeredSystems;
-        private readonly Dictionary<Type, int> systemLookup;
-        private readonly MorroSystem[] systems;
-        private int systemIndex;
-
-        protected readonly int maximumEntityCount;
-        private int nextEntity;
-        private readonly SparseSet[] attachedComponents;
-        private readonly SparseSet[] attachedSystems;
-
-        public int TotalEntities { get => maximumEntityCount; }
-
-        public Scene(string name, int maximumEntityCount = 100, int maximumComponentCount = 64, int maximumSystemCount = 64)
+        public Scene(string name, int entityCapacity = 100, int componentCapacity = 64, int systemCapacity = 64)
         {
             Name = name;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
@@ -60,47 +49,24 @@ namespace Morro.ECS
             EnterTransition = new Pinhole(TransitionType.Enter);
             ExitTransition = new Fade(TransitionType.Exit);
 
-            this.maximumSystemCount = maximumSystemCount;
-            this.maximumComponentCount = maximumComponentCount;
-            this.maximumEntityCount = maximumEntityCount;
+            systemManager = new SystemManager(systemCapacity);
+            componentManager = new ComponentManager(componentCapacity, entityCapacity);
+            entityManager = new EntityManager(entityCapacity, systemManager, componentManager);
 
-            registeredComponents = new HashSet<Type>();
-            componentLookup = new Dictionary<Type, int>();
-            data = new IComponent[this.maximumComponentCount][];
-
-            registeredSystems = new HashSet<Type>();
-            systemLookup = new Dictionary<Type, int>();
-            systems = new MorroSystem[this.maximumSystemCount];
-
-            attachedComponents = new SparseSet[this.maximumEntityCount];
-            attachedSystems = new SparseSet[this.maximumEntityCount];
-
-            EntitiesInView = new SparseSet(this.maximumEntityCount);
-
-            entityRemovalQueue = new SparseSet(this.maximumEntityCount);
+            entitiesInView = new SparseSet(EntityCapacity);
+            entityRemovalQueue = new SparseSet(EntityCapacity);
         }
 
         #region ECS Stuff
-        public void RegisterSystem(MorroSystem system)
+        public void RegisterSystem(MorroSystem morroSystem)
         {
-            if (systemIndex > maximumSystemCount)
-                throw new MorroException("Too many systems have been registered. Consider raising the maximum amount of systems allowed.", new IndexOutOfRangeException());
-
-            if (registeredSystems.Contains(system.GetType()))
-                return;
-
-            Type systemType = system.GetType();
-            registeredSystems.Add(systemType);
-            systemLookup.Add(systemType, systemIndex);
-            systems[systemIndex] = system;
-            systemIndex++;
+            systemManager.RegisterSystem(morroSystem);
         }
 
         public int CreateEntity(IComponent[] components)
         {
-            int entity = AllocateEntity();
-
-            AddComponent(entity, components);
+            int entity = entityManager.AllocateEntity(ComponentCapacity, SystemCapacity);
+            entityManager.AddComponent(entity, components);
 
             return entity;
         }
@@ -112,233 +78,63 @@ namespace Morro.ECS
 
         public bool EntityContains(int entity, params Type[] components)
         {
-            if (components.Length == 0)
-                return false;
-
-            uint componentID;
-            for (int i = 0; i < components.Length; i++)
-            {
-                if (!registeredComponents.Contains(components[i]))
-                {
-                    return false;
-                }
-
-                componentID = (uint)componentLookup[components[i]];
-                if (!attachedComponents[entity].Contains(componentID))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private bool EntityContains(int entity, HashSet<Type> components)
-        {
-            if (components.Count == 0)
-                return false;
-
-            uint componentID;
-            foreach (Type component in components)
-            {
-                if (!registeredComponents.Contains(component))
-                {
-                    return false;
-                }
-
-                componentID = (uint)componentLookup[component];
-                if (!attachedComponents[entity].Contains(componentID))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public void AddComponent(int entity, params IComponent[] components)
-        {
-            Type componentType;
-            for (int i = 0; i < components.Length; i++)
-            {
-                componentType = components[i].GetType();
-                if (!registeredComponents.Contains(componentType))
-                {
-                    RegisterComponent(componentType);
-                }
-
-                AssignComponent(entity, components[i]);
-            }
-
-            AssignSystems(entity);
+            return entityManager.EntityContains(entity, components);
         }
 
         public void RemoveComponent(int entity, params Type[] componentTypes)
         {
-            for (int i = 0; i < componentTypes.Length; i++)
-            {
-                if (!registeredComponents.Contains(componentTypes[i]))
-                    continue;
-
-                data[componentLookup[componentTypes[i]]][entity] = null;
-                attachedComponents[entity].Remove((uint)componentLookup[componentTypes[i]]);
-
-                foreach (uint j in attachedSystems[entity])
-                {
-                    if (systems[j].RequiredComponents.Contains(componentTypes[i]))
-                    {
-                        systems[j].RemoveEntity(entity);
-                    }
-                }
-            }
+            entityManager.RemoveComponent(entity, componentTypes);
         }
 
-        private void ClearEntity(uint entity)
+        private void ClearEntity(int entity)
         {
-            foreach (uint i in attachedComponents[entity])
-            {
-                data[i][entity] = null;
-            }
-
-            foreach (uint i in attachedSystems[entity])
-            {
-                systems[i].RemoveEntity((int)entity);
-            }
-
-            attachedComponents[entity].Clear();
-            attachedSystems[entity].Clear();
+            entityManager.ClearEntity(entity);
         }
 
-        private int AllocateEntity()
-        {
-            int entity = nextEntity;
-
-            if (attachedComponents[entity] == null)
-            {
-                attachedComponents[entity] = new SparseSet(maximumComponentCount);
-                attachedSystems[entity] = new SparseSet(maximumSystemCount);
-            }
-            else
-            {
-                attachedComponents[entity].Clear();
-                attachedSystems[entity].Clear();
-            }
-
-            nextEntity = nextEntity + 1 >= maximumEntityCount ? 0 : ++nextEntity;
-
-            return entity;
-        }
-
-        private void AssignSystems(int entity)
-        {
-            for (int i = 0; i < systemIndex; i++)
-            {
-                systems[i].RemoveEntity(entity);
-
-                if (EntityContains(entity, systems[i].RequiredComponents) && !EntityContains(entity, systems[i].BlacklistedComponents))
-                {
-                    systems[i].AddEntity(entity);
-                    attachedSystems[entity].Add((uint)i);
-                }
-            }
-        }
-
-        private void AssignComponent(int entity, IComponent component)
-        {
-            Type componentType = component.GetType();
-
-            data[componentLookup[componentType]][entity] = component;
-            attachedComponents[entity].Add((uint)componentLookup[componentType]);
-        }
-
-        private void RegisterComponent(Type componentType)
-        {
-            registeredComponents.Add(componentType);
-            componentLookup.Add(componentType, componentIndex);
-            data[componentIndex] = new IComponent[maximumEntityCount];
-
-            componentIndex++;
-        }
-
-        /// <summary>
-        /// Get an array of all of the data of a particular <see cref="IComponent"/> type.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="IComponent"/> data that you want to retrieve.</typeparam>
-        /// <returns>An array of all of the data of a particular <see cref="IComponent"/> type.</returns>
         public IComponent[] GetData<T>() where T : IComponent
         {
-            Type componentType = typeof(T);
-            if (!registeredComponents.Contains(componentType))
-                return new IComponent[0];
-
-            return data[componentLookup[componentType]];
+            return componentManager.GetData<T>();
         }
 
-        /// <summary>
-        /// Get the <see cref="IComponent"/> data of a particular entity.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="IComponent"/> data that you want to retrieve from the entity.</typeparam>
-        /// <param name="entity">The target entity you want to retrieve data from.</param>
-        /// <returns>The <see cref="IComponent"/> data of a particular entity.</returns>
         public T GetData<T>(int entity) where T : IComponent
         {
-            Type componentType = typeof(T);
-            if (!componentLookup.ContainsKey(componentType))
-                return default;
-
-            return (T)data[componentLookup[componentType]][entity];
+            return componentManager.GetData<T>(entity);
         }
 
         public T GetSystem<T>() where T : MorroSystem
         {
-            Type systemType = typeof(T);
-            if (!registeredSystems.Contains(systemType))
-                return default;
-
-            return (T)systems[systemLookup[systemType]];
+            return systemManager.GetSystem<T>();
         }
 
         protected void UpdateECS()
         {
             SpatialPartitioning();
 
-            for (int i = 0; i < systemIndex; i++)
-            {
-                if (systems[i].Enabled && systems[i] is UpdateSystem)
-                {
-                    ((UpdateSystem)systems[i]).Update();
-                }
-            }
+            systemManager.Update();
 
             if (entityRemovalQueue.Count != 0)
             {
                 foreach (uint entity in entityRemovalQueue)
                 {
-                    ClearEntity(entity);
+                    ClearEntity((int)entity);
                 }
                 entityRemovalQueue.Clear();
             }
         }
 
-        protected void DrawECS(SpriteBatch spriteBatch)
+        protected void DrawECS()
         {
-            for (int i = 0; i < systemIndex; i++)
-            {
-                if (systems[i].Enabled && systems[i] is DrawSystem)
-                {
-                    ((DrawSystem)systems[i]).Draw(spriteBatch, Camera);
-                }
-            }
+            systemManager.Draw(Camera);
         }
         #endregion
 
         public SparseSet Query(Core.Rectangle bounds)
         {
-            SparseSet result = new SparseSet(maximumEntityCount);
+            SparseSet result = new SparseSet(EntityCapacity);
 
             if (!PartitioningEnabled)
             {
-                for (int entity = 0; entity < maximumEntityCount; entity++)
+                for (int entity = 0; entity < EntityCapacity; entity++)
                 {
                     if (EntityContains(entity, typeof(CPosition), typeof(CDimension)) || EntityContains(entity, typeof(CPosition)))
                     {
@@ -362,7 +158,7 @@ namespace Morro.ECS
             if (!PartitioningEnabled)
                 return true;
 
-            return EntitiesInView.Contains((uint)entity);
+            return entitiesInView.Contains((uint)entity);
         }
 
         protected void DisablePartitioning()
@@ -421,11 +217,8 @@ namespace Morro.ECS
 
             CPosition position;
             CDimension dimension;
-            for (int entity = 0; entity < maximumEntityCount; entity++)
+            for (int entity = 0; entity < EntityCapacity; entity++)
             {
-                if (attachedComponents[entity] == null)
-                    continue;
-
                 if (EntityContains(entity, typeof(CPosition), typeof(CDimension)))
                 {
                     position = GetData<CPosition>(entity);
@@ -441,7 +234,7 @@ namespace Morro.ECS
                 }
             }
 
-            EntitiesInView = Query(new Core.Rectangle(Camera.Bounds.X - queryBuffer, Camera.Bounds.Y - queryBuffer, Camera.Bounds.Width + queryBuffer * 2, Camera.Bounds.Height + queryBuffer * 2));
+            entitiesInView = Query(new Core.Rectangle(Camera.Bounds.X - queryBuffer, Camera.Bounds.Y - queryBuffer, Camera.Bounds.Width + queryBuffer * 2, Camera.Bounds.Height + queryBuffer * 2));
         }
 
         public abstract void LoadScene();

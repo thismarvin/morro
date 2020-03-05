@@ -18,11 +18,12 @@ namespace Example.Scenes
 {
     class Playground : Scene
     {
-        public Playground() : base("Playground", 20000, 8, 4)
+        public Playground() : base("Playground", 50000, 8, 4)
         {
             RegisterSystem(new PhysicsEngine(this));
             RegisterSystem(new QuadUpdater(this));
             RegisterSystem(new QuadRenderer(this));
+            RegisterSystem(new Cleaner(this));
 
             Camera.SmoothTrackingSpeed = 5;
 
@@ -43,7 +44,7 @@ namespace Example.Scenes
         {
             if (Morro.Input.Mouse.PressedLeftClick())
             {
-                for (int i = 0; i < maximumEntityCount * 0.25; i++)
+                for (int i = 0; i < EntityCapacity * 0.25; i++)
                 {
                     CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, Morro.Maths.Random.Range(1, 5)));
                 }
@@ -84,7 +85,7 @@ namespace Example.Scenes
             Sketch.AttachEffect(new ChromaticAberration(Engine.RenderTarget, 2));
             Sketch.Begin(spriteBatch);
             {
-                DrawECS(spriteBatch);
+                DrawECS();
             }
             Sketch.End(spriteBatch);
         }

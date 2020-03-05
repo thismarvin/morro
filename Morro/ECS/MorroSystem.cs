@@ -26,6 +26,7 @@ namespace Morro.ECS
                     entityDataChanged = false;
 
                     int entityIndex = 0;
+
                     foreach (int entity in Entities)
                     {
                         entitiesAsArray[entityIndex++] = entity;
@@ -38,15 +39,15 @@ namespace Morro.ECS
 
         protected Scene scene;
 
-        private readonly int[] entitiesAsArray;
+        private int[] entitiesAsArray;
         private bool entityDataChanged;
 
-        public MorroSystem(Scene scene)
+        internal MorroSystem(Scene scene)
         {
             RequiredComponents = new HashSet<Type>();
             BlacklistedComponents = new HashSet<Type>();
             Entities = new HashSet<int>();
-            entitiesAsArray = new int[scene.TotalEntities];
+            entitiesAsArray = new int[scene.EntityCapacity];
 
             Enabled = true;
             this.scene = scene;

@@ -18,8 +18,8 @@ namespace Example.Systems
 
         public QuadUpdater(Scene scene) : base(scene, 4)
         {
-            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CQuad), typeof(CColor));
-            VertexTransforms = new VertexTransformColor[scene.TotalEntities];
+            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CColor), typeof(CQuad));
+            VertexTransforms = new VertexTransformColor[scene.EntityCapacity];
         }
 
         public override void UpdateEntity(int entity)

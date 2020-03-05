@@ -92,7 +92,7 @@ namespace Morro.Core
         {
             GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture));
             GetDebugEntry("Scene").SetInformation(SceneManager.CurrentScene.Name);
-            //GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture));
+            //GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.TotalEntities.ToString(CultureInfo.InvariantCulture));
         }
 
         //private static void DrawDebugLayer(SpriteBatch spriteBatch)

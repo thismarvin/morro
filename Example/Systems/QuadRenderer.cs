@@ -24,12 +24,12 @@ namespace Example.Systems
             Require(typeof(CQuad));
         }
 
-        public override void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera)
+        public override void DrawEntity(int entity, Camera camera)
         {
             throw new NotImplementedException();
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Camera camera)
+        public override void Draw(Camera camera)
         {
             if (Entities.Count <= 0)
                 return;
@@ -40,15 +40,15 @@ namespace Example.Systems
             {
                 transformsBuffer.SetData(transforms);
 
-                spriteBatch.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(squareData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
-                spriteBatch.GraphicsDevice.Indices = squareData.Indices;
+                Engine.Graphics.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(squareData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
+                Engine.Graphics.GraphicsDevice.Indices = squareData.Indices;
 
                 GeometryManager.SetupPolygonShader(camera);
 
                 foreach (EffectPass pass in GeometryManager.PolygonShader.Techniques[1].Passes)
                 {
                     pass.Apply();
-                    spriteBatch.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, squareData.TotalTriangles, transforms.Length);
+                    Engine.Graphics.GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, squareData.TotalTriangles, transforms.Length);
                 }
             }
         }

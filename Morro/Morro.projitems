@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
+    <Folder Include="$(MSBuildThisFileDirectory)ECS\Managers\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Geometry\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Palettes\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\Transitions\" />
@@ -29,6 +30,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\ResourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\EntityManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\ComponentManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CAABB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CDimension.cs" />
@@ -38,6 +41,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\MorroSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\SystemManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawGroup.cs" />

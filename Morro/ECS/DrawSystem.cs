@@ -12,13 +12,13 @@ namespace Morro.ECS
         {
         }
 
-        public abstract void DrawEntity(int entity, SpriteBatch spriteBatch, Camera camera);
+        public abstract void DrawEntity(int entity, Camera camera);
 
-        public virtual void Draw(SpriteBatch spriteBatch, Camera camera)
+        public virtual void Draw(Camera camera)
         {
             foreach (int entity in Entities)
             {
-                DrawEntity(entity, spriteBatch, camera);
+                DrawEntity(entity, camera);
             }
         }
     }

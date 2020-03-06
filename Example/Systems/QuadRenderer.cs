@@ -40,6 +40,7 @@ namespace Example.Systems
             {
                 transformsBuffer.SetData(transforms);
 
+                Engine.Graphics.GraphicsDevice.RasterizerState = GraphicsManager.RasterizerState;
                 Engine.Graphics.GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(squareData.Geometry), new VertexBufferBinding(transformsBuffer, 0, 1));
                 Engine.Graphics.GraphicsDevice.Indices = squareData.Indices;
 

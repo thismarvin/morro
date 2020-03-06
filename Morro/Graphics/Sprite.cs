@@ -121,14 +121,23 @@ namespace Morro.Graphics
             if (!Visible)
                 return;
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, null, GraphicsManager.DefaultRasterizerState, Effect, camera.Transform);
+            if (customScissorRectangle)
             {
-                if (customScissorRectangle)
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, null, GraphicsManager.ScissorRasterizerState, Effect, camera.Transform);
+                {
                     spriteBatch.GraphicsDevice.ScissorRectangle = scissorRectangle;
-
-                spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+                    spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+                }
+                spriteBatch.End();
             }
-            spriteBatch.End();
+            else
+            {
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, null, null, Effect, camera.Transform);
+                {
+                    spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+                }
+                spriteBatch.End();
+            }
         }
     }
 }

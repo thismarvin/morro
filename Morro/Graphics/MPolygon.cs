@@ -267,11 +267,10 @@ namespace Morro.Graphics
                 dataChanged = false;
             }
 
+            spriteBatch.GraphicsDevice.RasterizerState = GraphicsManager.RasterizerState;
             spriteBatch.GraphicsDevice.SetVertexBuffers(vertexBufferBindings);
             spriteBatch.GraphicsDevice.Indices = ShapeData.Indices;
-
-            spriteBatch.GraphicsDevice.RasterizerState = DebugManager.ShowWireFrame ? GraphicsManager.DebugRasterizerState : GraphicsManager.DefaultRasterizerState;
-
+            
             GeometryManager.SetupPolygonShader(camera);
 
             foreach (EffectPass pass in GeometryManager.PolygonShader.Techniques[techniqueIndex].Passes)

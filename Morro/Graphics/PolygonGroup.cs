@@ -65,6 +65,7 @@ namespace Morro.Graphics
                 dataChanged = false;
             }
 
+            Engine.Graphics.GraphicsDevice.RasterizerState = GraphicsManager.RasterizerState;
             Engine.Graphics.GraphicsDevice.SetVertexBuffers(vertexBufferBindings);
             Engine.Graphics.GraphicsDevice.Indices = sharedShapeData.Indices;
 

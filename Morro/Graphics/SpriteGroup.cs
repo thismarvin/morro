@@ -33,7 +33,7 @@ namespace Morro.Graphics
 
         public override void Draw(Camera camera)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred, sharedBlendState, sharedSamplerState, null, GraphicsManager.DefaultRasterizerState, sharedEffect, camera.Transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, sharedBlendState, sharedSamplerState, null, null, sharedEffect, camera.Transform);
             {
                 for (int i = 0; i < groupIndex; i++)
                 {

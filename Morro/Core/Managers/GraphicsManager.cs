@@ -9,21 +9,21 @@ namespace Morro.Core
     static class GraphicsManager
     {
         public static RasterizerState DefaultRasterizerState { get; private set; }
+        public static RasterizerState ScissorRasterizerState { get; private set; }
         public static RasterizerState DebugRasterizerState { get; private set; }
         public static Texture2D SimpleTexture { get; private set; }
         public static BasicEffect BasicEffect { get; private set; }
 
+        public static RasterizerState RasterizerState { get => DebugManager.ShowWireFrame ? DebugRasterizerState : DefaultRasterizerState; }
+
         static GraphicsManager()
         {
-            DefaultRasterizerState = new RasterizerState
-            {
-                FillMode = FillMode.Solid,
-                ScissorTestEnable = true
-            };
+            DefaultRasterizerState = new RasterizerState();
+            ScissorRasterizerState = new RasterizerState() { ScissorTestEnable = true };
             DebugRasterizerState = new RasterizerState
             {
                 FillMode = FillMode.WireFrame,
-                ScissorTestEnable = true
+                CullMode = CullMode.None
             };
 
             SimpleTexture = new Texture2D(Engine.Graphics.GraphicsDevice, 1, 1);
@@ -39,6 +39,9 @@ namespace Morro.Core
         {
             SimpleTexture.Dispose();
             BasicEffect.Dispose();
+            DefaultRasterizerState.Dispose();
+            ScissorRasterizerState.Dispose();
+            DebugRasterizerState.Dispose();
         }
     }
 }

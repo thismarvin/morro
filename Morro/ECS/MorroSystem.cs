@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +11,7 @@ namespace Morro.ECS
         public bool Enabled { get; set; }
         public HashSet<Type> RequiredComponents { get; private set; }
         public HashSet<Type> BlacklistedComponents { get; private set; }
+        public HashSet<Type> Dependencies { get; private set; }
         protected HashSet<int> Entities { get; private set; }
         protected int[] EntitiesAsArray
         {
@@ -39,13 +39,14 @@ namespace Morro.ECS
 
         protected Scene scene;
 
-        private int[] entitiesAsArray;
+        private readonly int[] entitiesAsArray;
         private bool entityDataChanged;
 
         internal MorroSystem(Scene scene)
         {
             RequiredComponents = new HashSet<Type>();
             BlacklistedComponents = new HashSet<Type>();
+            Dependencies = new HashSet<Type>();
             Entities = new HashSet<int>();
             entitiesAsArray = new int[scene.EntityCapacity];
 
@@ -56,7 +57,7 @@ namespace Morro.ECS
         /// <summary>
         /// Initialize a set of <see cref="IComponent"/> types that all entities associated with this system must have.
         /// </summary>
-        /// <param name="components"></param>
+        /// <param name="components">The types of <see cref="IComponent"/> this system will require before associating with an entity.</param>
         public void Require(params Type[] components)
         {
             RequiredComponents.Clear();
@@ -68,9 +69,9 @@ namespace Morro.ECS
         }
 
         /// <summary>
-        /// Initialize a set of <see cref="IComponent"/> types this system should avoid before associating itself with an entity.
+        /// Initialize a set of <see cref="IComponent"/> types this system must avoid before associating itself with an entity.
         /// </summary>
-        /// <param name="components"></param>
+        /// <param name="components">The types of <see cref="IComponent"/> this system will avoid during initialization.</param>
         public void Avoid(params Type[] components)
         {
             BlacklistedComponents.Clear();
@@ -78,6 +79,20 @@ namespace Morro.ECS
             for (int i = 0; i < components.Length; i++)
             {
                 BlacklistedComponents.Add(components[i]);
+            }
+        }
+
+        /// <summary>
+        /// Initialize a set of <see cref="MorroSystem"/> types this system depends on running first before this system can run.
+        /// </summary>
+        /// <param name="systems">The types of <see cref="MorroSystem"/> this systems depends on running first.</param>
+        public void Depend(params Type[] systems)
+        {
+            Dependencies.Clear();
+
+            for (int i = 0; i < systems.Length; i++)
+            {
+                Dependencies.Add(systems[i]);
             }
         }
 

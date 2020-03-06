@@ -19,6 +19,8 @@ namespace Example.Systems
         public QuadUpdater(Scene scene) : base(scene, 4)
         {
             Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CColor), typeof(CQuad));
+            Depend(typeof(PhysicsEngine));
+
             VertexTransforms = new VertexTransformColor[scene.EntityCapacity];
         }
 

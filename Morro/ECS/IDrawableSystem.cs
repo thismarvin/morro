@@ -5,8 +5,10 @@ using System.Text;
 
 namespace Morro.ECS
 {
-    interface IDrawableSystem
+    interface IDrawableSystem : IMorroSystem, IComparable<IDrawableSystem>
     {
+        int Priority { get; set; }
+
         void Draw(Camera camera);
         void DrawEntity(int entity, Camera camera);
     }

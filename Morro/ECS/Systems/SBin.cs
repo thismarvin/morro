@@ -12,10 +12,9 @@ namespace Morro.ECS
 
         private readonly Bin bin;
 
-        internal SBin(Scene scene, Bin bin) : base(scene, 4)
+        internal SBin(Scene scene, Bin bin) : base(scene, 4, 120)
         {
             Require(typeof(CPosition), typeof(CDimension), typeof(CPartitionable));
-            EnableFixedUpdate(120);
 
             this.bin = bin;
         }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Morro.ECS
 {
-    interface IUpdateableSystem
+    interface IUpdateableSystem : IMorroSystem
     {
         void Update();
-        void UpdateEntity(int entity);        
+        void UpdateEntity(int entity);
     }
 }

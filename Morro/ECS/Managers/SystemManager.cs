@@ -16,7 +16,9 @@ namespace Morro.ECS
 
         private readonly HashSet<Type> registeredSystems;
         private readonly Dictionary<Type, int> systemLookup;
-        private MorroSystem[][] updateGroups;
+
+        private IUpdateableSystem[][] updateableSystemGroups;
+        private IDrawableSystem[] drawableSystems;
 
         public SystemManager(int capacity)
         {
@@ -46,6 +48,10 @@ namespace Morro.ECS
             {
                 CreateUpdateGroups();
             }
+            else if (system is IDrawableSystem)
+            {
+                CreateDrawGroups();
+            }
         }
 
         public T GetSystem<T>() where T : MorroSystem
@@ -72,11 +78,11 @@ namespace Morro.ECS
 
         public void Draw(Camera camera)
         {
-            for (int i = 0; i < TotalSystemsRegistered; i++)
+            for (int i = 0; i < drawableSystems.Length; i++)
             {
-                if (Systems[i].Enabled && Systems[i] is IDrawableSystem)
+                if (drawableSystems[i].Enabled)
                 {
-                    ((IDrawableSystem)Systems[i]).Draw(camera);
+                    drawableSystems[i].Draw(camera);
                 }
             }
         }
@@ -153,13 +159,13 @@ namespace Morro.ECS
 
             void FinalizeResults()
             {
-                updateGroups = new MorroSystem[groups.Count][];
+                updateableSystemGroups = new IUpdateableSystem[groups.Count][];
                 for (int i = 0; i < groups.Count; i++)
                 {
-                    updateGroups[i] = new MorroSystem[groups[i].Count];
+                    updateableSystemGroups[i] = new IUpdateableSystem[groups[i].Count];
                     for (int j = 0; j < groups[i].Count; j++)
                     {
-                        updateGroups[i][j] = groups[i][j];
+                        updateableSystemGroups[i][j] = (IUpdateableSystem)groups[i][j];
                     }
                 }
             }
@@ -187,15 +193,32 @@ namespace Morro.ECS
             }
         }
 
+        private void CreateDrawGroups()
+        {
+            List<IDrawableSystem> systems = new List<IDrawableSystem>();
+
+            foreach (MorroSystem morroSystem in Systems)
+            {
+                if (morroSystem is IDrawableSystem)
+                {
+                    systems.Add((IDrawableSystem)morroSystem);
+                }
+            }
+
+            systems.Sort();
+
+            drawableSystems = systems.ToArray();
+        }
+
         private void SynchronousUpdate()
         {
-            for (int i = 0; i < updateGroups.Length; i++)
+            for (int i = 0; i < updateableSystemGroups.Length; i++)
             {
-                for (int j = 0; j < updateGroups[i].Length; j++)
+                for (int j = 0; j < updateableSystemGroups[i].Length; j++)
                 {
-                    if (updateGroups[i][j].Enabled)
+                    if (updateableSystemGroups[i][j].Enabled)
                     {
-                        ((IUpdateableSystem)updateGroups[i][j]).Update();
+                        updateableSystemGroups[i][j].Update();
                     }
                 }
             }
@@ -203,7 +226,7 @@ namespace Morro.ECS
 
         private void AsynchronousUpdate()
         {
-            for (int i = 0; i < updateGroups.Length; i++)
+            for (int i = 0; i < updateableSystemGroups.Length; i++)
             {
                 Task.WaitAll(DivideSystemsIntoTasks(i));
             }
@@ -211,12 +234,12 @@ namespace Morro.ECS
             Task[] DivideSystemsIntoTasks(int groupIndex)
             {
                 int taskIndex = 0;
-                int totalTasks = updateGroups[groupIndex].Length;
+                int totalTasks = updateableSystemGroups[groupIndex].Length;
                 Task[] tasks = new Task[totalTasks];
 
                 for (int i = 0; i < totalTasks; i++)
                 {
-                    if (updateGroups[groupIndex][i].Enabled)
+                    if (updateableSystemGroups[groupIndex][i].Enabled)
                     {
                         tasks[taskIndex++] = CreateTask(groupIndex, i);
                     }
@@ -229,7 +252,7 @@ namespace Morro.ECS
             {
                 return Task.Run(() =>
                 {
-                    ((IUpdateableSystem)updateGroups[groupIndex][systemIndex]).Update();
+                    updateableSystemGroups[groupIndex][systemIndex].Update();
                 });
             }
         }

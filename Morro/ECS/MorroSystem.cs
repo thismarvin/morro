@@ -9,7 +9,7 @@ namespace Morro.ECS
     /// <summary>
     /// Systems process a particular set of <see cref="IComponent"/> data, and perform specialized logic on said data.
     /// </summary>
-    abstract class MorroSystem
+    abstract class MorroSystem : IMorroSystem
     {
         public bool Enabled { get; set; }
         public HashSet<Type> RequiredComponents { get; private set; }

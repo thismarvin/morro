@@ -5,17 +5,38 @@ using System.Text;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// An abstraction of a <see cref="MorroSystem"/> that combines the functionality of an <see cref="UpdateSystem"/> and a <see cref="DrawSystem"/>.
+    /// </summary>
     abstract class HybridSystem : MorroSystem, IUpdateableSystem, IDrawableSystem
     {
+        public int Priority { get; set; }
+
         private readonly UpdateSystemHandler updateSystemHandler;
         private readonly DrawSystemHandler drawSystemHandler;
 
-        public HybridSystem(Scene scene, uint tasks) : this(scene, tasks, 0)
+        /// <summary>
+        /// Create a <see cref="MorroSystem"/> that combines the functionality of an <see cref="UpdateSystem"/> and a <see cref="DrawSystem"/>.
+        /// </summary>
+        /// <param name="scene">The scene this system will exist in.</param>
+        /// <param name="tasks">The total amount of tasks to divide the update cycle into. Assigning more than one task allows entities to be updated asynchronously.</param>
+        internal HybridSystem(Scene scene, uint tasks) : base(scene)
         {
+            updateSystemHandler = new UpdateSystemHandler(this, UpdateEntity)
+            {
+                TotalTasks = tasks,
+            };
 
+            drawSystemHandler = new DrawSystemHandler(this, DrawEntity);
         }
 
-        public HybridSystem(Scene scene, uint tasks, int targetFPS) : base(scene)
+        /// <summary>
+        /// Create a <see cref="MorroSystem"/> that combines the functionality of an <see cref="UpdateSystem"/> and a <see cref="DrawSystem"/>.
+        /// </summary>
+        /// <param name="scene">The scene this system will exist in.</param>
+        /// <param name="tasks">The total amount of tasks to divide the update cycle into. Assigning more than one task allows entities to be updated asynchronously.</param>
+        /// <param name="targetFPS">The target framerate the system will update in.</param>
+        internal HybridSystem(Scene scene, uint tasks, int targetFPS) : base(scene)
         {
             updateSystemHandler = new UpdateSystemHandler(this, UpdateEntity)
             {
@@ -39,5 +60,10 @@ namespace Morro.ECS
         public abstract void UpdateEntity(int entity);
 
         public abstract void DrawEntity(int entity, Camera camera);
+
+        public int CompareTo(IDrawableSystem other)
+        {
+            return Priority.CompareTo(other.Priority);
+        }
     }
 }

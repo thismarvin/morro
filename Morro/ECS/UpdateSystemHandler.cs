@@ -17,22 +17,26 @@ namespace Morro.ECS
             get => targetFPS;
             set
             {
-                TargetFPS = value;
-                FixedUpdateEnabled = TargetFPS != 0;
+                if (value <= 0)
+                    throw new MorroException("The target framerate cannot be less than 1.", new ArgumentException());
+
+                targetFPS = value;
+                FixedUpdateEnabled = TargetFPS > 0;
                 threshold = 1f / TargetFPS;
             }
         }
 
         private readonly MorroSystem parent;
         private readonly Action<int> onUpdate;
-        
-        private readonly int targetFPS;
+
+        private int targetFPS;
         private float threshold;
         private float accumulator;
 
-        public UpdateSystemHandler(MorroSystem parent, Action<int> onUpdate) : this(parent, onUpdate, 0, 0)
+        public UpdateSystemHandler(MorroSystem parent, Action<int> onUpdate)
         {
-
+            this.parent = parent;
+            this.onUpdate = onUpdate;
         }
 
         public UpdateSystemHandler(MorroSystem parent, Action<int> onUpdate, uint totalTasks, int targetFPS)

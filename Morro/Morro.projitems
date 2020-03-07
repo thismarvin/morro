@@ -34,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystemHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\HybridSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IDrawableSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\IMorroSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IUpdateableSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Bin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\IPartitionable.cs" />

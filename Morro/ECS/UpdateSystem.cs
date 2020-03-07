@@ -21,11 +21,20 @@ namespace Morro.ECS
         /// </summary>
         /// <param name="scene">The scene this system will exist in.</param>
         /// <param name="tasks">The total amount of tasks to divide the update cycle into. Assigning more than one task allows entities to be updated asynchronously.</param>
-        internal UpdateSystem(Scene scene, uint tasks) : this(scene, tasks, 0)
+        internal UpdateSystem(Scene scene, uint tasks) : base(scene)
         {
-
+            updateSystemHandler = new UpdateSystemHandler(this, UpdateEntity)
+            {
+                TotalTasks = tasks
+            };
         }
 
+        /// <summary>
+        /// Create a <see cref="MorroSystem"/> that will process or manipulate <see cref="IComponent"/> data on every frame or a fixed basis.
+        /// </summary>
+        /// <param name="scene">The scene this system will exist in.</param>
+        /// <param name="tasks">The total amount of tasks to divide the update cycle into. Assigning more than one task allows entities to be updated asynchronously.</param>
+        /// <param name="targetFPS">The target framerate the system will update in.</param>
         internal UpdateSystem(Scene scene, uint tasks, int targetFPS) : base(scene)
         {
             updateSystemHandler = new UpdateSystemHandler(this, UpdateEntity)

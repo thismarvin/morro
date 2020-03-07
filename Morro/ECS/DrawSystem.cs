@@ -11,6 +11,8 @@ namespace Morro.ECS
     /// </summary>
     abstract class DrawSystem : MorroSystem, IDrawableSystem
     {
+        public int Priority { get; set; }
+
         private readonly DrawSystemHandler drawSystemHandler;
 
         /// <summary>
@@ -28,5 +30,10 @@ namespace Morro.ECS
         }
 
         public abstract void DrawEntity(int entity, Camera camera);
+
+        public int CompareTo(IDrawableSystem other)
+        {
+            return Priority.CompareTo(other.Priority);
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace Morro.ECS
         /// </summary>
         /// <param name="scene">The scene this system will exist in.</param>
         /// <param name="tasks">The total amount of tasks to divide the update cycle into. Assigning more than one task allows entities to be updated asynchronously.</param>
-        public UpdateSystem(Scene scene, uint tasks) : base(scene)
+        internal UpdateSystem(Scene scene, uint tasks) : base(scene)
         {
             this.tasks = tasks;
         }

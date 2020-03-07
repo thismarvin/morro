@@ -18,7 +18,7 @@ namespace Example.Systems
         {
             CPosition position = (CPosition)positions[entity];
 
-            if (position.Y > scene.SceneBounds.Height + 64)
+            if (position.Y > scene.SceneBounds.Bottom + 64 || position.X < scene.SceneBounds.Left - 64 || position.X > scene.SceneBounds.Right + 64)
             {
                 scene.RemoveEntity(entity);
             }

@@ -15,9 +15,9 @@ namespace Morro.ECS
         public HashSet<Type> RequiredComponents { get; private set; }
         public HashSet<Type> BlacklistedComponents { get; private set; }
         public HashSet<Type> Dependencies { get; private set; }
-        protected HashSet<int> Entities { get; private set; }
+        protected internal HashSet<int> Entities { get; private set; }
 
-        protected int[] EntitiesAsArray
+        protected internal int[] EntitiesAsArray
         {
             get
             {

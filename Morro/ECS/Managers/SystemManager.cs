@@ -22,9 +22,9 @@ namespace Morro.ECS
         {
             Capacity = capacity;
 
+            Systems = new MorroSystem[Capacity];
             registeredSystems = new HashSet<Type>();
             systemLookup = new Dictionary<Type, int>();
-            Systems = new MorroSystem[Capacity];
         }
 
         public void RegisterSystem(MorroSystem system)
@@ -42,7 +42,7 @@ namespace Morro.ECS
             Systems[TotalSystemsRegistered] = system;
             TotalSystemsRegistered++;
 
-            if (system is UpdateSystem)
+            if (system is IUpdateableSystem)
             {
                 CreateUpdateGroups();
             }
@@ -74,9 +74,9 @@ namespace Morro.ECS
         {
             for (int i = 0; i < TotalSystemsRegistered; i++)
             {
-                if (Systems[i].Enabled && Systems[i] is DrawSystem)
+                if (Systems[i].Enabled && Systems[i] is IDrawableSystem)
                 {
-                    ((DrawSystem)Systems[i]).Draw(camera);
+                    ((IDrawableSystem)Systems[i]).Draw(camera);
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace Morro.ECS
             {
                 for (int i = 0; i < TotalSystemsRegistered; i++)
                 {
-                    if (Systems[i] is UpdateSystem)
+                    if (Systems[i] is IUpdateableSystem)
                     {
                         canidates.Add(Systems[i]);
                     }
@@ -195,7 +195,7 @@ namespace Morro.ECS
                 {
                     if (updateGroups[i][j].Enabled)
                     {
-                        ((UpdateSystem)updateGroups[i][j]).Update();
+                        ((IUpdateableSystem)updateGroups[i][j]).Update();
                     }
                 }
             }
@@ -229,7 +229,7 @@ namespace Morro.ECS
             {
                 return Task.Run(() =>
                 {
-                    ((UpdateSystem)updateGroups[groupIndex][systemIndex]).Update();
+                    ((IUpdateableSystem)updateGroups[groupIndex][systemIndex]).Update();
                 });
             }
         }

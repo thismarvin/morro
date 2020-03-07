@@ -31,6 +31,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\ResourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystemHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\HybridSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\IDrawableSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\IUpdateableSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Bin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\IPartitionable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\EntityManager.cs" />
@@ -49,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystemHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />

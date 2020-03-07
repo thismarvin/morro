@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// Systems process a particular set of <see cref="IComponent"/> data, and perform specialized logic on said data.
+    /// </summary>
     abstract class MorroSystem
     {
         public bool Enabled { get; set; }
@@ -13,6 +16,7 @@ namespace Morro.ECS
         public HashSet<Type> BlacklistedComponents { get; private set; }
         public HashSet<Type> Dependencies { get; private set; }
         protected HashSet<int> Entities { get; private set; }
+
         protected int[] EntitiesAsArray
         {
             get

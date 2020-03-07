@@ -11,15 +11,13 @@ namespace Morro.ECS
         private IComponent[] dimensions;
 
         private readonly Bin bin;
-        private readonly float target;
-        private float accumulator;
 
         internal SBin(Scene scene, Bin bin) : base(scene, 4)
         {
             Require(typeof(CPosition), typeof(CDimension), typeof(CPartitionable));
+            EnableFixedUpdate(120);
 
             this.bin = bin;
-            target = 1 / 120f;
         }
 
         public override void UpdateEntity(int entity)
@@ -35,18 +33,12 @@ namespace Morro.ECS
             if (!scene.PartitioningEnabled)
                 return;
 
-            bin.Clear();
             positions = scene.GetData<CPosition>();
             dimensions = scene.GetData<CDimension>();
 
-            accumulator += Engine.DeltaTime;
-            while (accumulator >= target)
-            {
-                base.Update();
-                accumulator -= target;
-            }
-
-            scene.FinalizePartition();            
+            bin.Clear();
+            base.Update();
+            scene.FinalizePartition();
         }
     }
 }

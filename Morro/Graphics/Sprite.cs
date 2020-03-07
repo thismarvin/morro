@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class Sprite : MonoObject
+    class Sprite : MorroObject
     {
         public float Rotation { get; set; }
         public string SpriteDataName { get; private set; }

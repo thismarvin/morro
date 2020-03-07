@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Morro.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,26 +14,39 @@ namespace Morro.Core
 
     abstract class Partitioner
     {
-        public Rectangle Boundary { get; private set; }
-
-        public Partitioner(Rectangle boundary)
+        public Rectangle Boundary
         {
-            Boundary = boundary;
+            get => boundary;
+            set
+            {
+                Boundary = value;
+                Clear();
+                Initialize();
+            }
         }
 
-        public void SetBoundary(Rectangle boundary)
-        {
-            Boundary = boundary;
+        private Rectangle boundary;
 
-            Clear();
-            Initialize();
+        internal Partitioner(Rectangle boundary)
+        {
+            this.boundary = boundary;
+        }
+
+        public HashSet<MorroObject> Query(MorroObject morroObject)
+        {
+            return Query(morroObject, 0);
+        }
+
+        public HashSet<MorroObject> Query(MorroObject morroObject, int buffer)
+        {
+            return Query(new Rectangle(morroObject.X - buffer, morroObject.Y - buffer, morroObject.Width + buffer * 2, morroObject.Height + buffer * 2));
         }
 
         protected abstract void Initialize();
 
-        public abstract List<PartitionEntry> Query(Rectangle bounds);
+        public abstract HashSet<MorroObject> Query(Rectangle bounds);
 
-        public abstract bool Insert(PartitionEntry entry);
+        public abstract bool Insert(MorroObject morroObject);
 
         public abstract void Clear();
     }

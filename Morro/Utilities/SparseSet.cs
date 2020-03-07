@@ -44,6 +44,14 @@ namespace Morro.Utilities
             n++;
         }
 
+        public void AddRange(IEnumerable<uint> collection)
+        {
+            foreach (uint i in collection)
+            {
+                Add(i);
+            }
+        }
+
         public void Remove(uint k)
         {
             if (!Contains(k))
@@ -66,6 +74,16 @@ namespace Morro.Utilities
         public void Clear()
         {
             n = 0;
+        }
+
+        public uint this[uint i]
+        {
+            get => dense[i];
+            set 
+            {
+                dense[i] = value;
+                sparse[value] = i;
+            }
         }
 
         public override string ToString()

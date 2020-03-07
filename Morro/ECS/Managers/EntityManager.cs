@@ -9,9 +9,13 @@ namespace Morro.ECS
     {
         public int Capacity { get; private set; }
 
+        public int EntityCount { get => totalEntitiesCreated - entityBuffer.Count; }
+
         private readonly SparseSet[] attachedComponents;
         private readonly SparseSet[] attachedSystems;
+        private readonly Stack<int> entityBuffer;
         private int nextEntity;
+        private int totalEntitiesCreated;
 
         private readonly SystemManager systemManager;
         private readonly ComponentManager componentManager;
@@ -22,33 +26,43 @@ namespace Morro.ECS
 
             attachedComponents = new SparseSet[Capacity];
             attachedSystems = new SparseSet[Capacity];
+            entityBuffer = new Stack<int>(Capacity);
+
+            for (int i = 0; i < Capacity; i++)
+            {
+                attachedComponents[i] = new SparseSet(componentManager.Capacity);
+                attachedSystems[i] = new SparseSet(systemManager.Capacity);
+            }
 
             this.systemManager = systemManager;
             this.componentManager = componentManager;
         }
 
-        public int AllocateEntity(int componentCapacity, int systemCapacity)
+        public int AllocateEntity()
         {
             int entity = nextEntity;
 
-            if (attachedComponents[entity] == null)
+            if (entityBuffer.Count > 0)
             {
-                attachedComponents[entity] = new SparseSet(componentCapacity);
-                attachedSystems[entity] = new SparseSet(systemCapacity);
+                entity = entityBuffer.Pop();
             }
             else
             {
-                attachedComponents[entity].Clear();
-                attachedSystems[entity].Clear();
+                nextEntity = ++nextEntity >= Capacity ? Capacity - 1 : nextEntity;
+                totalEntitiesCreated = ++totalEntitiesCreated > Capacity ? Capacity : totalEntitiesCreated;
             }
 
-            nextEntity = nextEntity + 1 >= Capacity ? 0 : ++nextEntity;
+            attachedComponents[entity].Clear();
+            attachedSystems[entity].Clear();
 
             return entity;
         }
 
         public void ClearEntity(int entity)
         {
+            if (attachedComponents[entity].Count == 0 && attachedSystems[entity].Count == 0)
+                return;
+
             foreach (uint i in attachedComponents[entity])
             {
                 componentManager.Data[i][entity] = null;
@@ -61,6 +75,8 @@ namespace Morro.ECS
 
             attachedComponents[entity].Clear();
             attachedSystems[entity].Clear();
+
+            entityBuffer.Push(entity);
         }
 
         public void AddComponent(int entity, params IComponent[] components)

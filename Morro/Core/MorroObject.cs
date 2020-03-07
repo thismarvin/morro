@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Morro.Core
 {
-    abstract class MonoObject : IComparable<MonoObject>
+    abstract class MorroObject : IComparable<MorroObject>
     {
         public float X { get; set; }
         public float Y { get; set; }
@@ -18,7 +18,7 @@ namespace Morro.Core
         public Vector2 Center { get => new Vector2(X + Width / 2, X + Height / 2); }
         public Rectangle Bounds { get => new Rectangle(X, Y, Width, Height); }
 
-        public MonoObject(float x, float y, int width, int height)
+        public MorroObject(float x, float y, int width, int height)
         {
             X = x;
             Y = y;
@@ -41,9 +41,9 @@ namespace Morro.Core
             Height = height;
         }
 
-        public int CompareTo(MonoObject monoObject)
+        public int CompareTo(MorroObject morroObject)
         {
-            return Depth.CompareTo(monoObject.Depth);
+            return Depth.CompareTo(morroObject.Depth);
         }
 
         public override string ToString()

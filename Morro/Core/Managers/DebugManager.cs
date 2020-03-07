@@ -25,7 +25,7 @@ namespace Morro.Core
 
             RegisterDebugEntry(new DebugEntry("FPS", "{0} FPS"));
             RegisterDebugEntry(new DebugEntry("Scene", "SCENE: {0}"));
-            RegisterDebugEntry(new DebugEntry("Entities", "ENTITIES: {0}"));
+            RegisterDebugEntry(new DebugEntry("Entities", "E: {0}"));
         }
 
         #region Handle DebugEntries
@@ -90,9 +90,9 @@ namespace Morro.Core
 
         private static void UpdateInfo()
         {
-            GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture));
+            GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS));
             GetDebugEntry("Scene").SetInformation(SceneManager.CurrentScene.Name);
-            //GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.TotalEntities.ToString(CultureInfo.InvariantCulture));
+            GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.EntityCount);
         }
 
         //private static void DrawDebugLayer(SpriteBatch spriteBatch)

@@ -25,7 +25,7 @@ namespace Morro.Utilities
         Sparge,        
     }
 
-    class Text : MonoObject, IDisposable, IDebugable
+    class Text : MorroObject, IDisposable, IDebugable
     {
         public string Content { get; private set; }
         public Vector2 Scale { get; private set; }

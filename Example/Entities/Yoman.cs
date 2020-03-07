@@ -27,6 +27,7 @@ namespace Example.Entities
                 new CColor(palette[Random.Range(0, palette.Length - 1)]),
                 new CQuad(),
                 new CPhysicsBody(Random.RandomVector2(Random.Range(0, 300)), new Vector2(0, 75)),
+                new CPartitionable()
             };
         }
     }

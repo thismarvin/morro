@@ -1,9 +1,10 @@
-﻿using Morro.Utilities;
+﻿using Morro.Core;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Core
+namespace Morro.ECS
 {
     class Quadtree : Partitioner
     {
@@ -11,7 +12,7 @@ namespace Morro.Core
         private readonly int entityCapacity;
         private bool divided;
         private int insertionIndex;
-        private MorroObject[] objects;
+        private QuadTreeEntry[] objects;
         private Quadtree topLeft;
         private Quadtree topRight;
         private Quadtree bottomRight;
@@ -27,12 +28,12 @@ namespace Morro.Core
 
         protected override void Initialize()
         {
-            objects = new MorroObject[capacity];
+            objects = new QuadTreeEntry[capacity];
         }
 
-        public override HashSet<MorroObject> Query(Rectangle bounds)
+        public override SparseSet Query(Rectangle bounds)
         {
-            HashSet<MorroObject> result = new HashSet<MorroObject>();
+            SparseSet result = new SparseSet(entityCapacity);
 
             if (Boundary.EntirelyWithin(bounds))
             {
@@ -41,7 +42,7 @@ namespace Morro.Core
                     if (objects[i] == null)
                         continue;
 
-                    result.Add(objects[i]);
+                    result.Add((uint)objects[i].Entity);
                 }
             }
             else
@@ -53,7 +54,7 @@ namespace Morro.Core
 
                     if (bounds.Intersects(objects[i].Bounds))
                     {
-                        result.Add(objects[i]);
+                        result.Add((uint)objects[i].Entity);
                     }
                 }
             }
@@ -61,30 +62,22 @@ namespace Morro.Core
             if (!divided)
                 return result;
 
-            AccumulateObjects(topLeft.Query(bounds));
-            AccumulateObjects(topRight.Query(bounds));
-            AccumulateObjects(bottomRight.Query(bounds));
-            AccumulateObjects(bottomLeft.Query(bounds));
+            result.AddRange(topLeft.Query(bounds));
+            result.AddRange(topRight.Query(bounds));
+            result.AddRange(bottomRight.Query(bounds));
+            result.AddRange(bottomLeft.Query(bounds));
 
             return result;
-
-            void AccumulateObjects(HashSet<MorroObject> morroObjects)
-            {
-                foreach (MorroObject morroObject in morroObjects)
-                {
-                    result.Add(morroObject);
-                }
-            }
         }
 
-        public override bool Insert(MorroObject morroObject)
+        public override bool Insert(int entity, Rectangle bounds)
         {
-            if (!morroObject.Bounds.Intersects(Boundary))
+            if (!bounds.Intersects(Boundary))
                 return false;
 
             if (insertionIndex < capacity)
             {
-                objects[insertionIndex++] = morroObject;
+                objects[insertionIndex++] = new QuadTreeEntry(entity, bounds);
                 return true;
             }
             else
@@ -92,7 +85,7 @@ namespace Morro.Core
                 if (!divided)
                     Subdivide();
 
-                if (topLeft.Insert(morroObject) || topRight.Insert(morroObject) || bottomRight.Insert(morroObject) || bottomLeft.Insert(morroObject))
+                if (topLeft.Insert(entity, bounds) || topRight.Insert(entity, bounds) || bottomRight.Insert(entity, bounds) || bottomLeft.Insert(entity, bounds))
                     return true;
             }
 
@@ -130,6 +123,18 @@ namespace Morro.Core
             bottomRight = new Quadtree(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity, entityCapacity);
             bottomLeft = new Quadtree(new Rectangle(Boundary.X, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity, entityCapacity);
             divided = true;
+        }
+
+        internal sealed class QuadTreeEntry
+        {
+            public int Entity { get; set; }
+            public Rectangle Bounds { get; set; }
+
+            public QuadTreeEntry(int entity, Rectangle bounds)
+            {
+                Entity = entity;
+                Bounds = bounds;
+            }
         }
     }
 }

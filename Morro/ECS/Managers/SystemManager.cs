@@ -45,7 +45,7 @@ namespace Morro.ECS
             if (system is UpdateSystem)
             {
                 CreateUpdateGroups();
-            }            
+            }
         }
 
         public T GetSystem<T>() where T : MorroSystem

@@ -13,8 +13,20 @@ namespace Morro.ECS
     abstract class Scene
     {
         public bool PartitioningEnabled { get; private set; }
-        public PartitionerType PartitionerPreference { get; private set; }
-        public Partitioner Partitioner { get; private set; }
+
+        /// <summary>
+        /// By default all registered <see cref="MorroSystem"/>'s are ran asyncronously.
+        /// If this functionality is disabled, systems will run in the order they were registered.
+        /// </summary>
+        public bool AsynchronousSystemsEnabled            
+        {
+            get => !systemManager.DisableAsynchronousUpdates;
+            set => systemManager.DisableAsynchronousUpdates = !value;
+        }
+
+        private PartitionerType partitionerPreference;
+        private Bin bin;
+
         public Camera Camera { get; private set; }
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
@@ -34,13 +46,15 @@ namespace Morro.ECS
 
         private readonly int queryBuffer;
 
+        public int EntityCount { get => entityManager.EntityCount; }
+
+
         public Scene(string name, int entityCapacity = 100, int componentCapacity = 64, int systemCapacity = 64)
         {
             Name = name;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
-            PreferQuadtreePartitioner(4);
-            queryBuffer = 16;
+            queryBuffer = 64;
 
             Camera = new Camera(Name);
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
@@ -65,7 +79,7 @@ namespace Morro.ECS
 
         public int CreateEntity(IComponent[] components)
         {
-            int entity = entityManager.AllocateEntity(ComponentCapacity, SystemCapacity);
+            int entity = entityManager.AllocateEntity();
             entityManager.AddComponent(entity, components);
 
             return entity;
@@ -108,8 +122,6 @@ namespace Morro.ECS
 
         protected void UpdateECS()
         {
-            SpatialPartitioning();
-
             systemManager.Update();
 
             if (entityRemovalQueue.Count != 0)
@@ -128,32 +140,19 @@ namespace Morro.ECS
         }
         #endregion
 
-        public SparseSet Query(Core.Rectangle bounds)
+        #region Partitioning Support
+        internal void FinalizePartition()
         {
-            SparseSet result = new SparseSet(EntityCapacity);
-
-            if (!PartitioningEnabled)
-            {
-                for (int entity = 0; entity < EntityCapacity; entity++)
-                {
-                    if (EntityContains(entity, typeof(CPosition), typeof(CDimension)) || EntityContains(entity, typeof(CPosition)))
-                    {
-                        result.Add((uint)entity);
-                    }
-                }
-            }
-
-            List<PartitionEntry> queryResult = Partitioner.Query(bounds);
-
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                result.Add((uint)queryResult[i].ID);
-            }
-
-            return result;
+            entitiesInView = Query(new Core.Rectangle(Camera.Bounds.X - queryBuffer, Camera.Bounds.Y - queryBuffer, Camera.Bounds.Width + queryBuffer * 2, Camera.Bounds.Height + queryBuffer * 2));
         }
 
-        public bool EntityInView(int entity)
+        /// <summary>
+        /// Returns whether or not an <see cref="CPartitionable"/> entity is currently within the camera's view and <see cref="PartitioningEnabled"/> is true.
+        /// Otherwise, this will always return false.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool EntityIsVisible(int entity)
         {
             if (!PartitioningEnabled)
                 return true;
@@ -161,39 +160,50 @@ namespace Morro.ECS
             return entitiesInView.Contains((uint)entity);
         }
 
+        /// <summary>
+        /// Create and register a <see cref="SBin"/> system.
+        /// </summary>
+        /// <param name="maximumDimension">The maximum dimension of the entities expected.</param>
+        protected void AddBinPartitioningSystem(int maximumDimension)
+        {
+            if (partitionerPreference != PartitionerType.None)
+                return;
+
+            PartitioningEnabled = true;
+            partitionerPreference = PartitionerType.Bin;
+
+            int optimalBinSize = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
+            bin = new Bin(SceneBounds, optimalBinSize, EntityCapacity);
+
+            RegisterSystem(new SBin(this, bin));
+        }
+
+        protected void EnablePartitioning()
+        {
+            if (partitionerPreference == PartitionerType.None || PartitioningEnabled)
+                return;
+
+            PartitioningEnabled = true;
+            GetSystem<SBin>().Enabled = true;
+        }
+
         protected void DisablePartitioning()
         {
-            if (!PartitioningEnabled)
+            if (partitionerPreference == PartitionerType.None || !PartitioningEnabled)
                 return;
 
             PartitioningEnabled = false;
-            PartitionerPreference = PartitionerType.None;
-            Partitioner.Clear();
-            Partitioner = null;
+            GetSystem<SBin>().Enabled = false;
         }
 
-        /// <summary>
-        /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Quadtree"/>, and initialize a new <see cref="Quadtree"/>.
-        /// </summary>
-        /// <param name="capacity">the amount of entiies allowed in each <see cref="Quadtree"/>.</param>
-        protected void PreferQuadtreePartitioner(int capacity)
+        public SparseSet Query(Core.Rectangle bounds)
         {
-            PartitioningEnabled = true;
-            PartitionerPreference = PartitionerType.Quadtree;
-            Partitioner = new Quadtree(SceneBounds, capacity);
-        }
+            if (!PartitioningEnabled)
+                return new SparseSet(0);
 
-        /// <summary>
-        /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Bin"/>, and initialize a new <see cref="Bin"/>.
-        /// </summary>
-        /// <param name="maximumDimension">the maximum dimension of the entities expected.</param>
-        protected void PreferBinPartitioner(int maximumDimension)
-        {
-            PartitioningEnabled = true;
-            PartitionerPreference = PartitionerType.Bin;
-            int optimalBinSize = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
-            Partitioner = new Bin(SceneBounds, optimalBinSize);
+            return bin.Query(bounds);
         }
+        #endregion
 
         protected void SetSceneBounds(int width, int height)
         {
@@ -203,38 +213,11 @@ namespace Morro.ECS
             SceneBounds = new Core.Rectangle(0, 0, width, height);
 
             if (PartitioningEnabled)
-                Partitioner.SetBoundary(SceneBounds);
+            {
+                bin.Boundary = SceneBounds;
+            }                
 
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
-        }
-
-        protected void SpatialPartitioning()
-        {
-            if (!PartitioningEnabled)
-                return;
-
-            Partitioner.Clear();
-
-            CPosition position;
-            CDimension dimension;
-            for (int entity = 0; entity < EntityCapacity; entity++)
-            {
-                if (EntityContains(entity, typeof(CPosition), typeof(CDimension)))
-                {
-                    position = GetData<CPosition>(entity);
-                    dimension = GetData<CDimension>(entity);
-
-                    Partitioner.Insert(new PartitionEntry(entity, new Core.Rectangle(position.X, position.Y, (int)dimension.Width, (int)dimension.Height)));
-                }
-                else if (EntityContains(entity, typeof(CPosition)))
-                {
-                    position = GetData<CPosition>(entity);
-
-                    Partitioner.Insert(new PartitionEntry(entity, new Core.Rectangle(position.X, position.Y, 1, 1)));
-                }
-            }
-
-            entitiesInView = Query(new Core.Rectangle(Camera.Bounds.X - queryBuffer, Camera.Bounds.Y - queryBuffer, Camera.Bounds.Width + queryBuffer * 2, Camera.Bounds.Height + queryBuffer * 2));
         }
 
         public abstract void LoadScene();

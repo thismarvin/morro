@@ -18,16 +18,16 @@ namespace Example.Scenes
 {
     class Playground : Scene
     {
-        public Playground() : base("Playground", 50000, 8, 4)
+        public Playground() : base("Playground", 50000, 8, 5)
         {
+            RegisterSystem(new Cleaner(this));
             RegisterSystem(new PhysicsEngine(this));
             RegisterSystem(new QuadUpdater(this));
             RegisterSystem(new QuadRenderer(this));
-            RegisterSystem(new Cleaner(this));
+
+            //AddBinPartitioningSystem(64);
 
             Camera.SmoothTrackingSpeed = 5;
-
-            DisablePartitioning();
         }
 
         public override void LoadScene()
@@ -42,6 +42,8 @@ namespace Example.Scenes
 
         public override void Update()
         {
+            UpdateECS();
+
             if (Morro.Input.Mouse.PressedLeftClick())
             {
                 for (int i = 0; i < EntityCapacity * 0.25; i++)
@@ -74,8 +76,6 @@ namespace Example.Scenes
             {
                 Camera.SmoothTrack(Camera.Center.X, Camera.Center.Y + 50);
             }
-
-            UpdateECS();
         }
 
         public override void Draw(SpriteBatch spriteBatch)

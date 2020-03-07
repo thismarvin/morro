@@ -1,20 +1,24 @@
-﻿using Morro.Utilities;
+﻿using Morro.Core;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Core
+namespace Morro.ECS
 {
     class Bin : Partitioner
     {
-        private HashSet<MorroObject>[] buckets;
+        private SparseSet[] buckets;
         private readonly int powerOfTwo;
         private int columns;
         private int rows;
 
-        public Bin(Rectangle boundary, int powerOfTwo) : base(boundary)
+        private readonly int entityCapacity;
+
+        public Bin(Rectangle boundary, int powerOfTwo, int entityCapacity) : base(boundary)
         {
             this.powerOfTwo = powerOfTwo;
+            this.entityCapacity = entityCapacity;
 
             Initialize();
         }
@@ -24,40 +28,40 @@ namespace Morro.Core
             columns = (int)Math.Ceiling(Boundary.Width / Math.Pow(2, powerOfTwo));
             rows = (int)Math.Ceiling(Boundary.Height / Math.Pow(2, powerOfTwo));
 
-            buckets = new HashSet<MorroObject>[rows * columns];
+            buckets = new SparseSet[rows * columns];
 
             for (int i = 0; i < buckets.Length; i++)
             {
-                buckets[i] = new HashSet<MorroObject>();
+                buckets[i] = new SparseSet(entityCapacity);
             }
         }
 
-        public override HashSet<MorroObject> Query(Rectangle bounds)
+        public override SparseSet Query(Rectangle bounds)
         {
-            HashSet<MorroObject> result = new HashSet<MorroObject>();
+            SparseSet entities = new SparseSet(entityCapacity);
             SparseSet ids = HashIDs(bounds);
 
             foreach (uint id in ids)
             {
-                foreach (MorroObject morroObject in buckets[id])
+                foreach (uint entity in buckets[id])
                 {
-                    result.Add(morroObject);
+                    entities.Add(entity);
                 }
             }
 
-            return result;
+            return entities;
         }
 
-        public override bool Insert(MorroObject morroObject)
+        public override bool Insert(int entity, Rectangle bounds)
         {
-            if (!morroObject.Bounds.Intersects(Boundary))
+            if (!bounds.Intersects(Boundary))
                 return false;
 
-            SparseSet ids = HashIDs(morroObject.Bounds);
+            SparseSet ids = HashIDs(bounds);
 
             foreach (uint i in ids)
             {
-                buckets[i].Add(morroObject);
+                buckets[i].Add((uint)entity);
             }
 
             return ids.Count > 0;
@@ -151,4 +155,3 @@ namespace Morro.Core
         }
     }
 }
-

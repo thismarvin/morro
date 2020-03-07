@@ -35,9 +35,6 @@ namespace Example.Systems
 
         public override void UpdateEntity(int entity)
         {
-            if (!scene.EntityInView(entity))
-                return;
-
             Simultate(entity);
         }
 

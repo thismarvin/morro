@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Morro.ECS
 {
-    class CAABB : IComponent
+    struct CAABB : IComponent
     {
 
     }

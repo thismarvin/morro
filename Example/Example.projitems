@@ -13,9 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Yoman.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Root.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Playground.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Cleaner.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\QuadRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\QuadUpdater.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\PhysicsEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\SRemove.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\SPhysics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\SQuad.cs" />
   </ItemGroup>
 </Project>

@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Example.Systems
 {
-    class Cleaner : UpdateSystem
+    class SRemove : UpdateSystem
     {
         private IComponent[] positions;
 
-        public Cleaner(Scene scene) : base(scene, 4)
+        public SRemove(Scene scene) : base(scene, 4)
         {
             Require(typeof(CPosition));
         }

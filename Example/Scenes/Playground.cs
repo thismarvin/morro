@@ -20,10 +20,9 @@ namespace Example.Scenes
     {
         public Playground() : base("Playground", 50000, 8, 5)
         {
-            RegisterSystem(new Cleaner(this));
-            RegisterSystem(new PhysicsEngine(this));
-            RegisterSystem(new QuadUpdater(this));
-            RegisterSystem(new QuadRenderer(this));
+            RegisterSystem(new SRemove(this));
+            RegisterSystem(new SPhysics(this));
+            RegisterSystem(new SQuad(this));
 
             //AddBinPartitioningSystem(64);
 
@@ -54,7 +53,7 @@ namespace Example.Scenes
 
             if (Morro.Input.Keyboard.Pressed(Microsoft.Xna.Framework.Input.Keys.Space))
             {
-                GetSystem<PhysicsEngine>().Enabled = !GetSystem<PhysicsEngine>().Enabled;
+                GetSystem<SPhysics>().Enabled = !GetSystem<SPhysics>().Enabled;
             }
 
             if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.D))

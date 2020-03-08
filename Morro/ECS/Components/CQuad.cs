@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Morro.ECS
 {
-    class CQuad : IComponent
+    struct CQuad : IComponent
     {
 
     }

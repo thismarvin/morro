@@ -48,7 +48,7 @@ namespace Morro.ECS
             {
                 CreateUpdateGroups();
             }
-            else if (system is IDrawableSystem)
+            if (system is IDrawableSystem)
             {
                 CreateDrawGroups();
             }

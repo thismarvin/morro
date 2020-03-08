@@ -12,7 +12,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
     <Folder Include="$(MSBuildThisFileDirectory)ECS\Managers\" />
     <Folder Include="$(MSBuildThisFileDirectory)ECS\Partitioning\" />
-    <Folder Include="$(MSBuildThisFileDirectory)ECS\Systems\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Geometry\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Palettes\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\Transitions\" />

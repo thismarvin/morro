@@ -11,7 +11,7 @@ using Morro.Utilities;
 
 namespace Example.Systems
 {
-    class PhysicsEngine : UpdateSystem
+    class SPhysics : UpdateSystem
     {
         private readonly float target;
         private readonly Integrator integrator;
@@ -25,7 +25,7 @@ namespace Example.Systems
             VelocityVerlet
         }
 
-        public PhysicsEngine(Scene scene) : base(scene, 4)
+        public SPhysics(Scene scene) : base(scene, 4)
         {
             Require(typeof(CPosition), typeof(CPhysicsBody));
 

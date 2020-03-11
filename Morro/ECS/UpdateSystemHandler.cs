@@ -45,6 +45,7 @@ namespace Morro.ECS
             this.onUpdate = onUpdate;
             TotalTasks = totalTasks;
             TargetFPS = targetFPS;
+            accumulator = threshold;
         }
 
         public void Update()

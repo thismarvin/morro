@@ -13,11 +13,12 @@ namespace Example
             base.Initialize();
 
             WindowManager.SetTitle("Example");
-            //WindowManager.EnableVSync(false);            
+            WindowManager.EnableVSync(false);         
 
-            SceneManager.RegisterScene(new Playground());
+            //SceneManager.RegisterScene(new Playground());
+            SceneManager.RegisterScene(new Flocking());
 
-            SceneManager.QueueScene("Playground");
+            SceneManager.QueueScene("Flocking");
         }
     }
 }

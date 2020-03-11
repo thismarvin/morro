@@ -22,7 +22,7 @@ namespace Example.Systems
 
         static SQuad()
         {
-            squareData = GeometryManager.GetShapeData(ShapeType.Square);
+            squareData = GeometryManager.GetShapeData(ShapeType.Triangle);
         }
 
         public SQuad(Scene scene) : base(scene, 4)
@@ -42,6 +42,7 @@ namespace Example.Systems
 
             vertexTransforms[entity] = new VertexTransformColor(position, dimension, transform, color);
         }
+
         public override void DrawEntity(int entity, Camera camera)
         {
             throw new NotImplementedException();

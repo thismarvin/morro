@@ -28,6 +28,7 @@ namespace Example.Systems
         public SPhysics(Scene scene) : base(scene, 4)
         {
             Require(typeof(CPosition), typeof(CPhysicsBody));
+            Depend(typeof(SFlocking));
 
             target = 1f / 120;
             integrator = Integrator.SemiImplictEuler;
@@ -77,11 +78,13 @@ namespace Example.Systems
 
         private void SemiImplictEulerIntegration(float deltaTime, CPosition position, CPhysicsBody physicsBody)
         {
-            physicsBody.SetVelocity
-            (
-                physicsBody.Velocity.X + physicsBody.Acceleration.X * deltaTime,
-                physicsBody.Velocity.Y + physicsBody.Acceleration.Y * deltaTime
-            );
+            //physicsBody.SetVelocity
+            //(
+            //    physicsBody.Velocity.X + physicsBody.Acceleration.X * deltaTime,
+            //    physicsBody.Velocity.Y + physicsBody.Acceleration.Y * deltaTime
+            //);
+
+            physicsBody.Velocity += physicsBody.Acceleration * deltaTime;
 
             position.X += physicsBody.Velocity.X * deltaTime;
             position.Y += physicsBody.Velocity.Y * deltaTime;
@@ -92,11 +95,12 @@ namespace Example.Systems
             position.X += physicsBody.Velocity.X * deltaTime + 0.5f * physicsBody.Acceleration.X * deltaTime * deltaTime;
             position.Y += physicsBody.Velocity.Y * deltaTime + 0.5f * physicsBody.Acceleration.Y * deltaTime * deltaTime;
 
-            physicsBody.SetVelocity
-            (
-                physicsBody.Velocity.X + physicsBody.Acceleration.X * deltaTime,
-                physicsBody.Velocity.Y + physicsBody.Acceleration.Y * deltaTime
-            );
+            physicsBody.Velocity += physicsBody.Acceleration * deltaTime;
+            //physicsBody.SetVelocity
+            //(
+            //    physicsBody.Velocity.X + physicsBody.Acceleration.X * deltaTime,
+            //    physicsBody.Velocity.Y + physicsBody.Acceleration.Y * deltaTime
+            //);
         }
     }
 }

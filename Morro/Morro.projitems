@@ -36,7 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IMorroSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IUpdateableSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Bin.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\IPartitionable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CPartitionable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\EntityManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\ComponentManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CAABB.cs" />

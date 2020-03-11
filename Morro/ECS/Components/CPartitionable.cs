@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Morro.ECS
 {
-    class CPartitionable : IComponent
+    struct CPartitionable : IComponent
     {
     }
 }

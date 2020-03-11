@@ -12,7 +12,7 @@ namespace Morro.ECS
 
         private readonly Bin bin;
 
-        internal SBin(Scene scene, Bin bin) : base(scene, 4, 120)
+        internal SBin(Scene scene, Bin bin) : base(scene, 4, 15)
         {
             Require(typeof(CPosition), typeof(CDimension), typeof(CPartitionable));
 

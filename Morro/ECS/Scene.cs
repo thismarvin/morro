@@ -18,7 +18,7 @@ namespace Morro.ECS
         /// By default all registered <see cref="MorroSystem"/>'s are ran asyncronously.
         /// If this functionality is disabled, systems will run in the order they were registered.
         /// </summary>
-        public bool AsynchronousSystemsEnabled            
+        public bool AsynchronousSystemsEnabled
         {
             get => !systemManager.DisableAsynchronousUpdates;
             set => systemManager.DisableAsynchronousUpdates = !value;
@@ -203,6 +203,15 @@ namespace Morro.ECS
 
             return bin.Query(bounds);
         }
+
+        public SparseSet Query(CPosition position, CDimension dimension, int buffer)
+        {
+            if (!PartitioningEnabled)
+                return new SparseSet(0);
+
+            return bin.Query(position, dimension, buffer);
+        }
+
         #endregion
 
         protected void SetSceneBounds(int width, int height)
@@ -215,7 +224,7 @@ namespace Morro.ECS
             if (PartitioningEnabled)
             {
                 bin.Boundary = SceneBounds;
-            }                
+            }
 
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
         }

@@ -93,7 +93,8 @@ namespace Morro.ECS
             int groupIndex = -1;
             HashSet<MorroSystem> canidates = new HashSet<MorroSystem>();
             HashSet<Type> registered = new HashSet<Type>();
-            List<MorroSystem> removalQueue = new List<MorroSystem>();
+            List<Type> registeredBuffer = new List<Type>();
+            List<MorroSystem> removalBuffer = new List<MorroSystem>();
             List<List<MorroSystem>> groups = new List<List<MorroSystem>>(TotalSystemsRegistered);
 
             SetupCanidates();
@@ -125,7 +126,7 @@ namespace Morro.ECS
                         ProcessSystem(system);
                     }
                 }
-                ClearRemovalQueue();
+                ClearBuffers();
             }
 
             void HandleDependencies()
@@ -145,10 +146,11 @@ namespace Morro.ECS
                             {
                                 ProcessSystem(system);
                                 done = false;
+                                break;
                             }
                         }
                     }
-                    ClearRemovalQueue();
+                    ClearBuffers();
 
                     if (!done && canidates.Count != 0)
                     {
@@ -179,17 +181,23 @@ namespace Morro.ECS
             void ProcessSystem(MorroSystem system)
             {
                 groups[groupIndex].Add(system);
-                removalQueue.Add(system);
-                registered.Add(system.GetType());
+                removalBuffer.Add(system);
+                registeredBuffer.Add(system.GetType());
             }
 
-            void ClearRemovalQueue()
+            void ClearBuffers()
             {
-                for (int i = 0; i < removalQueue.Count; i++)
+                for (int i = 0; i < removalBuffer.Count; i++)
                 {
-                    canidates.Remove(removalQueue[i]);
+                    canidates.Remove(removalBuffer[i]);
                 }
-                removalQueue.Clear();
+                removalBuffer.Clear();
+
+                for (int i = 0; i < registeredBuffer.Count; i++)
+                {
+                    registered.Add(registeredBuffer[i]);
+                }
+                registeredBuffer.Clear();
             }
         }
 
@@ -228,7 +236,9 @@ namespace Morro.ECS
         {
             for (int i = 0; i < updateableSystemGroups.Length; i++)
             {
-                Task.WaitAll(DivideSystemsIntoTasks(i));
+                Task[] tasks = DivideSystemsIntoTasks(i);
+
+                Task.WaitAll(tasks);
             }
 
             Task[] DivideSystemsIntoTasks(int groupIndex)
@@ -239,6 +249,7 @@ namespace Morro.ECS
 
                 for (int i = 0; i < totalTasks; i++)
                 {
+                    // TODO: Disabling a system causes a task to be null which causes a crash. Fix this!
                     if (updateableSystemGroups[groupIndex][i].Enabled)
                     {
                         tasks[taskIndex++] = CreateTask(groupIndex, i);

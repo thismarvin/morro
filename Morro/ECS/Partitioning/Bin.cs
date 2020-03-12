@@ -42,9 +42,6 @@ namespace Morro.ECS
             {
                 foreach (T entry in buckets[id])
                 {
-                    if (entry == null)
-                        continue;
-
                     result.Add(entry);
                 }
             }

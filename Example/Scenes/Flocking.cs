@@ -16,12 +16,10 @@ namespace Example.Scenes
         public Flocking() : base("Flocking", 2000, 16, 16)
         {
             RegisterSystem(new SWrapAround(this));
-            RegisterSystem(new SBinPartitioner(this, 64, 4, 15));
+            RegisterSystem(new SBinPartitioner(this, 64, 60));
             RegisterSystem(new SFlocking(this));
             RegisterSystem(new SPhysics(this));
             RegisterSystem(new STriangle(this));
-
-            AsynchronousSystemsEnabled = false;
 
             CreateBoids();
         }

@@ -13,7 +13,7 @@ namespace Morro.ECS
 
         protected Partitioner<PartitionerEntry> partitioner;
 
-        internal PartitioningSystem(Scene scene, uint tasks, int targetFPS) : base(scene, tasks, targetFPS)
+        internal PartitioningSystem(Scene scene, int targetFPS) : base(scene, 0, targetFPS)
         {
             Require(typeof(CPosition), typeof(CDimension), typeof(CPartitionable));
         }
@@ -49,7 +49,7 @@ namespace Morro.ECS
             base.Update();
         }
 
-        protected sealed class PartitionerEntry : IPartitionable
+        protected struct PartitionerEntry : IPartitionable
         {
             public int Identifier { get; set; }
             public Rectangle Bounds { get; set; }

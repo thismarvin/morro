@@ -113,7 +113,8 @@ namespace Example.Systems
             Vector2 totalForce = seperation + alignment + cohesion;
 
             physicsBody.Velocity += totalForce;
-            transform.Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X);
+            //transform.Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X);
+            transform.Rotation = MathHelper.Lerp(transform.Rotation, -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X), 0.9f);
 
             Vector2 CalculateSeperation()
             {

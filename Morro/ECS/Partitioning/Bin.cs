@@ -33,23 +33,28 @@ namespace Morro.ECS
             }
         }
 
-        public override HashSet<T> Query(Rectangle bounds)
+        public override List<int> Query(Rectangle bounds)
         {
-            HashSet<T> result = new HashSet<T>();
+            HashSet<int> unique = new HashSet<int>();
             HashSet<int> ids = HashIDs(bounds);
-            
+
             foreach (int id in ids)
             {
                 foreach (T entry in buckets[id])
                 {
-                    result.Add(entry);
+                    unique.Add(entry.Identifier);
                 }
+            }
+
+            List<int> result = new List<int>(unique.Count);
+            foreach (int i in unique)
+            {
+                result.Add(i);
             }
 
             return result;
         }
 
-        // TODO: The freeze error is because of this. Maybe have like a buffer that adds all the entries once this is complete?
         public override bool Insert(T entry)
         {
             if (!entry.Bounds.Intersects(Boundary))

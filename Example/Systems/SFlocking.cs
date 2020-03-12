@@ -23,7 +23,7 @@ namespace Example.Systems
 
         private SBinPartitioner binPartitioner;
 
-        public SFlocking(Scene scene) : base(scene, 4)
+        public SFlocking(Scene scene) : base(scene, 4, 60)
         {
             Require(typeof(CBoid), typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CPhysicsBody));
             Depend(typeof(SBinPartitioner));
@@ -52,7 +52,6 @@ namespace Example.Systems
             Vector2 cumulativeCohesion = Vector2.Zero;
             int totalCohesion = 0;
 
-
             float distance;
             CPosition theirPosition;
             CDimension theirDimension;
@@ -60,16 +59,16 @@ namespace Example.Systems
             Vector2 force;
             Vector2 theirCenter;
 
-            HashSet<int> queryResult = binPartitioner.Query(new Morro.Core.Rectangle(position.X - boid.ViewRadius, position.Y - boid.ViewRadius, dimension.Width + boid.ViewRadius * 2, dimension.Height + boid.ViewRadius * 2));
+            List<int> queryResult = binPartitioner.Query(new Morro.Core.Rectangle(position.X - boid.ViewRadius, position.Y - boid.ViewRadius, dimension.Width + boid.ViewRadius * 2, dimension.Height + boid.ViewRadius * 2));
 
-            foreach (int queriedEntity in queryResult)
+            for (int i = 0; i < queryResult.Count; i++)
             {
-                if (queriedEntity == entity)
+                if (queryResult[i] == entity)
                     continue;
 
-                theirPosition = (CPosition)positions[queriedEntity];
-                theirDimension = (CDimension)dimensions[queriedEntity];
-                theirPhysicsBody = (CPhysicsBody)physicsBodies[queriedEntity];
+                theirPosition = (CPosition)positions[queryResult[i]];
+                theirDimension = (CDimension)dimensions[queryResult[i]];
+                theirPhysicsBody = (CPhysicsBody)physicsBodies[queryResult[i]];
 
                 theirCenter = new Vector2(theirPosition.X + theirDimension.Width / 2, theirPosition.Y + theirDimension.Height / 2);
 
@@ -113,8 +112,7 @@ namespace Example.Systems
             Vector2 totalForce = seperation + alignment + cohesion;
 
             physicsBody.Velocity += totalForce;
-            //transform.Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X);
-            transform.Rotation = MathHelper.Lerp(transform.Rotation, -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X), 0.9f);
+            transform.Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X);
 
             Vector2 CalculateSeperation()
             {

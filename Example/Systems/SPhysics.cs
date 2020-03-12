@@ -30,7 +30,7 @@ namespace Example.Systems
             Require(typeof(CPosition), typeof(CPhysicsBody));
             Depend(typeof(SFlocking));
 
-            target = 1f / 120;
+            target = 1f / 60;
             integrator = Integrator.SemiImplictEuler;
         }
 
@@ -78,12 +78,6 @@ namespace Example.Systems
 
         private void SemiImplictEulerIntegration(float deltaTime, CPosition position, CPhysicsBody physicsBody)
         {
-            //physicsBody.SetVelocity
-            //(
-            //    physicsBody.Velocity.X + physicsBody.Acceleration.X * deltaTime,
-            //    physicsBody.Velocity.Y + physicsBody.Acceleration.Y * deltaTime
-            //);
-
             physicsBody.Velocity += physicsBody.Acceleration * deltaTime;
 
             position.X += physicsBody.Velocity.X * deltaTime;
@@ -96,11 +90,6 @@ namespace Example.Systems
             position.Y += physicsBody.Velocity.Y * deltaTime + 0.5f * physicsBody.Acceleration.Y * deltaTime * deltaTime;
 
             physicsBody.Velocity += physicsBody.Acceleration * deltaTime;
-            //physicsBody.SetVelocity
-            //(
-            //    physicsBody.Velocity.X + physicsBody.Acceleration.X * deltaTime,
-            //    physicsBody.Velocity.Y + physicsBody.Acceleration.Y * deltaTime
-            //);
         }
     }
 }

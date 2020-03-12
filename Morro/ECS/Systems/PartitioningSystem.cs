@@ -18,17 +18,9 @@ namespace Morro.ECS
             Require(typeof(CPosition), typeof(CDimension), typeof(CPartitionable));
         }
 
-        public HashSet<int> Query(Rectangle bounds)
+        public List<int> Query(Rectangle bounds)
         {
-            HashSet<int> result = new HashSet<int>();
-            HashSet<PartitionerEntry> queryResult = partitioner.Query(bounds);
-
-            foreach (PartitionerEntry entry in queryResult)
-            {
-                result.Add(entry.Identifier);
-            }
-
-            return result;
+            return partitioner.Query(bounds);
         }
 
         public override void UpdateEntity(int entity)

@@ -34,7 +34,7 @@ namespace Morro.ECS
 
         protected abstract void Initialize();
 
-        public abstract HashSet<T> Query(Rectangle bounds);
+        public abstract List<int> Query(Rectangle bounds);
 
         public abstract bool Insert(T entry);
 

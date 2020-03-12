@@ -29,9 +29,9 @@ namespace Morro.ECS
             objects = new T[capacity];
         }
 
-        public override HashSet<T> Query(Rectangle bounds)
+        public override List<int> Query(Rectangle bounds)
         {
-            HashSet<T> result = new HashSet<T>();
+            List<int> result = new List<int>();
 
             if (Boundary.EntirelyWithin(bounds))
             {
@@ -40,7 +40,7 @@ namespace Morro.ECS
                     if (objects[i] == null)
                         continue;
 
-                    result.Add(objects[i]);
+                    result.Add(objects[i].Identifier);
                 }
             }
             else
@@ -52,18 +52,18 @@ namespace Morro.ECS
 
                     if (bounds.Intersects(objects[i].Bounds))
                     {
-                        result.Add(objects[i]);
+                        result.Add(objects[i].Identifier);
                     }
                 }
             }
 
             if (!divided)
-                return result;            
+                return result;
 
-            result.UnionWith(topLeft.Query(bounds));
-            result.UnionWith(topRight.Query(bounds));
-            result.UnionWith(bottomRight.Query(bounds));
-            result.UnionWith(bottomLeft.Query(bounds));
+            result.AddRange(topLeft.Query(bounds));
+            result.AddRange(topRight.Query(bounds));
+            result.AddRange(bottomRight.Query(bounds));
+            result.AddRange(bottomLeft.Query(bounds));
 
             return result;
         }

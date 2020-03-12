@@ -12,8 +12,6 @@ namespace Morro.ECS
 {
     abstract class Scene
     {
-        public bool PartitioningEnabled { get; private set; }
-
         /// <summary>
         /// By default all registered <see cref="MorroSystem"/>'s are ran asyncronously.
         /// If this functionality is disabled, systems will run in the order they were registered.

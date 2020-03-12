@@ -21,6 +21,8 @@ namespace Example.Scenes
             RegisterSystem(new SPhysics(this));
             RegisterSystem(new STriangle(this));
 
+            AsynchronousSystemsEnabled = false;
+
             CreateBoids();
         }
 

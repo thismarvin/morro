@@ -52,6 +52,7 @@ namespace Morro.ECS
             return result;
         }
 
+        // TODO: The freeze error is because of this. Maybe have like a buffer that adds all the entries once this is complete?
         public override bool Insert(T entry)
         {
             if (!entry.Bounds.Intersects(Boundary))

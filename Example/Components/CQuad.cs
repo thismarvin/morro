@@ -1,12 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Morro.ECS;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.ECS
+namespace Example.Components
 {
     struct CQuad : IComponent
     {
-
     }
 }

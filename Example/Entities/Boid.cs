@@ -31,7 +31,7 @@ namespace Example.Entities
                 dimension,
                 transform,
                 color,
-                new CQuad(),
+                new CTriangle(),
                 new CPartitionable(),
             };
         }

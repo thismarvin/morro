@@ -19,7 +19,7 @@ namespace Example.Scenes
             AddBinPartitioningSystem(64);
             RegisterSystem(new SFlocking(this));
             RegisterSystem(new SPhysics(this));
-            RegisterSystem(new SQuad(this));
+            RegisterSystem(new STriangle(this));
 
             CreateBoids();
         }

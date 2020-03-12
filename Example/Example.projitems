@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Components\CBoid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\CPhysicsBody.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\CQuad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\CTriangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Boid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Yoman.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Root.cs" />
@@ -20,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Systems\SRemove.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\SPhysics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\SQuad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\STriangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\SWrapAround.cs" />
   </ItemGroup>
 </Project>

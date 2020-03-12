@@ -39,11 +39,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CPartitionable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\EntityManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\ComponentManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CAABB.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CDimension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CPosition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CQuad.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IComponent.cs" />
@@ -52,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SimpleShapeSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystemHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawCollection.cs" />

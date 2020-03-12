@@ -26,7 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SpriteManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ResourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
@@ -34,6 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\HybridSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IDrawableSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IMorroSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\IPartitionable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IUpdateableSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Bin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CPartitionable.cs" />
@@ -49,7 +49,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\SystemManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\PartitioningSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBinPartitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SimpleShapeSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\UpdateSystemHandler.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputProfile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\CollisionInformation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\Matrix.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Bin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\CameraManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\CollisionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\DebugManager.cs" />
@@ -87,7 +87,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\MorroObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreMath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MTV.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Partitioning\Quadtree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\Random.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Rectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SceneManager.cs" />

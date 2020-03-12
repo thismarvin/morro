@@ -6,34 +6,32 @@ using System.Text;
 
 namespace Morro.ECS
 {
-    class Quadtree : Partitioner
+    class Quadtree<T> : Partitioner<T> where T : IPartitionable
     {
         private readonly int capacity;
-        private readonly int entityCapacity;
         private bool divided;
         private int insertionIndex;
-        private QuadTreeEntry[] objects;
-        private Quadtree topLeft;
-        private Quadtree topRight;
-        private Quadtree bottomRight;
-        private Quadtree bottomLeft;
+        private T[] objects;
+        private Quadtree<T> topLeft;
+        private Quadtree<T> topRight;
+        private Quadtree<T> bottomRight;
+        private Quadtree<T> bottomLeft;
 
-        public Quadtree(Rectangle boundary, int capacity, int entityCapacity) : base(boundary)
+        public Quadtree(Rectangle boundary, int capacity) : base(boundary)
         {
             this.capacity = capacity;
-            this.entityCapacity = entityCapacity;
 
             Initialize();
         }
 
         protected override void Initialize()
         {
-            objects = new QuadTreeEntry[capacity];
+            objects = new T[capacity];
         }
 
-        public override SparseSet Query(Rectangle bounds)
+        public override HashSet<T> Query(Rectangle bounds)
         {
-            SparseSet result = new SparseSet(entityCapacity);
+            HashSet<T> result = new HashSet<T>();
 
             if (Boundary.EntirelyWithin(bounds))
             {
@@ -42,7 +40,7 @@ namespace Morro.ECS
                     if (objects[i] == null)
                         continue;
 
-                    result.Add((uint)objects[i].Entity);
+                    result.Add(objects[i]);
                 }
             }
             else
@@ -54,30 +52,30 @@ namespace Morro.ECS
 
                     if (bounds.Intersects(objects[i].Bounds))
                     {
-                        result.Add((uint)objects[i].Entity);
+                        result.Add(objects[i]);
                     }
                 }
             }
 
             if (!divided)
-                return result;
+                return result;            
 
-            result.AddRange(topLeft.Query(bounds));
-            result.AddRange(topRight.Query(bounds));
-            result.AddRange(bottomRight.Query(bounds));
-            result.AddRange(bottomLeft.Query(bounds));
+            result.UnionWith(topLeft.Query(bounds));
+            result.UnionWith(topRight.Query(bounds));
+            result.UnionWith(bottomRight.Query(bounds));
+            result.UnionWith(bottomLeft.Query(bounds));
 
             return result;
         }
 
-        public override bool Insert(int entity, Rectangle bounds)
+        public override bool Insert(T entry)
         {
-            if (!bounds.Intersects(Boundary))
+            if (!entry.Bounds.Intersects(Boundary))
                 return false;
 
             if (insertionIndex < capacity)
             {
-                objects[insertionIndex++] = new QuadTreeEntry(entity, bounds);
+                objects[insertionIndex++] = entry;
                 return true;
             }
             else
@@ -85,7 +83,7 @@ namespace Morro.ECS
                 if (!divided)
                     Subdivide();
 
-                if (topLeft.Insert(entity, bounds) || topRight.Insert(entity, bounds) || bottomRight.Insert(entity, bounds) || bottomLeft.Insert(entity, bounds))
+                if (topLeft.Insert(entry) || topRight.Insert(entry) || bottomRight.Insert(entry) || bottomLeft.Insert(entry))
                     return true;
             }
 
@@ -118,23 +116,11 @@ namespace Morro.ECS
 
         private void Subdivide()
         {
-            topLeft = new Quadtree(new Rectangle(Boundary.X, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity, entityCapacity);
-            topRight = new Quadtree(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity, entityCapacity);
-            bottomRight = new Quadtree(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity, entityCapacity);
-            bottomLeft = new Quadtree(new Rectangle(Boundary.X, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity, entityCapacity);
+            topLeft = new Quadtree<T>(new Rectangle(Boundary.X, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            topRight = new Quadtree<T>(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            bottomRight = new Quadtree<T>(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            bottomLeft = new Quadtree<T>(new Rectangle(Boundary.X, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
             divided = true;
-        }
-
-        internal sealed class QuadTreeEntry
-        {
-            public int Entity { get; set; }
-            public Rectangle Bounds { get; set; }
-
-            public QuadTreeEntry(int entity, Rectangle bounds)
-            {
-                Entity = entity;
-                Bounds = bounds;
-            }
         }
     }
 }

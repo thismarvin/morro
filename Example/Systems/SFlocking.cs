@@ -21,10 +21,12 @@ namespace Example.Systems
         private readonly float alignmentIntensity;
         private readonly float cohesionIntensity;
 
+        private SBinPartitioner binPartitioner;
+
         public SFlocking(Scene scene) : base(scene, 4)
         {
             Require(typeof(CBoid), typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CPhysicsBody));
-            Depend(typeof(SBin));
+            Depend(typeof(SBinPartitioner));
 
             seperationIntensity = 3;
             alignmentIntensity = 1.5f;
@@ -58,9 +60,9 @@ namespace Example.Systems
             Vector2 force;
             Vector2 theirCenter;
 
-            SparseSet queryResult = scene.Query(position, dimension, (int)boid.ViewRadius);
+            HashSet<int> queryResult = binPartitioner.Query(new Morro.Core.Rectangle(position.X - boid.ViewRadius, position.Y - boid.ViewRadius, dimension.Width + boid.ViewRadius * 2, dimension.Height + boid.ViewRadius * 2));
 
-            foreach (uint queriedEntity in queryResult)
+            foreach (int queriedEntity in queryResult)
             {
                 if (queriedEntity == entity)
                     continue;
@@ -161,6 +163,11 @@ namespace Example.Systems
             dimensions = scene.GetData<CDimension>();
             transforms = scene.GetData<CTransform>();
             physicsBodies = scene.GetData<CPhysicsBody>();
+
+            if (binPartitioner == null)
+            {
+                binPartitioner = scene.GetSystem<SBinPartitioner>();
+            }
 
             base.Update();
         }

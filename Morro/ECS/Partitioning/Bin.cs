@@ -6,19 +6,16 @@ using System.Text;
 
 namespace Morro.ECS
 {
-    class Bin : Partitioner
+    class Bin<T> : Partitioner<T> where T : IPartitionable
     {
-        private SparseSet[] buckets;
+        private HashSet<T>[] buckets;
         private readonly int powerOfTwo;
         private int columns;
         private int rows;
 
-        private readonly int entityCapacity;
-
-        public Bin(Rectangle boundary, int powerOfTwo, int entityCapacity) : base(boundary)
+        public Bin(Rectangle boundary, int powerOfTwo) : base(boundary)
         {
             this.powerOfTwo = powerOfTwo;
-            this.entityCapacity = entityCapacity;
 
             Initialize();
         }
@@ -28,40 +25,43 @@ namespace Morro.ECS
             columns = (int)Math.Ceiling(Boundary.Width / Math.Pow(2, powerOfTwo));
             rows = (int)Math.Ceiling(Boundary.Height / Math.Pow(2, powerOfTwo));
 
-            buckets = new SparseSet[rows * columns];
+            buckets = new HashSet<T>[rows * columns];
 
             for (int i = 0; i < buckets.Length; i++)
             {
-                buckets[i] = new SparseSet(entityCapacity);
+                buckets[i] = new HashSet<T>();
             }
         }
 
-        public override SparseSet Query(Rectangle bounds)
+        public override HashSet<T> Query(Rectangle bounds)
         {
-            SparseSet entities = new SparseSet(entityCapacity);
-            SparseSet ids = HashIDs(bounds);
-
-            foreach (uint id in ids)
+            HashSet<T> result = new HashSet<T>();
+            HashSet<int> ids = HashIDs(bounds);
+            
+            foreach (int id in ids)
             {
-                foreach (uint entity in buckets[id])
+                foreach (T entry in buckets[id])
                 {
-                    entities.Add(entity);
+                    if (entry == null)
+                        continue;
+
+                    result.Add(entry);
                 }
             }
 
-            return entities;
+            return result;
         }
 
-        public override bool Insert(int entity, Rectangle bounds)
+        public override bool Insert(T entry)
         {
-            if (!bounds.Intersects(Boundary))
+            if (!entry.Bounds.Intersects(Boundary))
                 return false;
 
-            SparseSet ids = HashIDs(bounds);
+            HashSet<int> ids = HashIDs(entry.Bounds);
 
-            foreach (uint i in ids)
+            foreach (int i in ids)
             {
-                buckets[i].Add((uint)entity);
+                buckets[i].Add(entry);
             }
 
             return ids.Count > 0;
@@ -78,10 +78,10 @@ namespace Morro.ECS
             }
         }
 
-        private SparseSet HashIDs(Rectangle bounds)
+        private HashSet<int> HashIDs(Rectangle bounds)
         {
             Rectangle validatedBounds = ValidateBounds();
-            SparseSet result = new SparseSet(buckets.Length);
+            HashSet<int> result = new HashSet<int>();
             int x = -1;
             int y = -1;
             int cellSize = 1 << powerOfTwo;
@@ -99,7 +99,7 @@ namespace Morro.ECS
                         if (x < 0 || x >= columns || y < 0 || y >= rows)
                             continue;
 
-                        result.Add((uint)(columns * y + x));
+                        result.Add(columns * y + x);
                     }
                 }
             }
@@ -109,27 +109,27 @@ namespace Morro.ECS
                 switch (i)
                 {
                     case 0:
-                        x = (int)(validatedBounds.Left) >> powerOfTwo;
-                        y = (int)(validatedBounds.Top) >> powerOfTwo;
+                        x = (int)validatedBounds.Left >> powerOfTwo;
+                        y = (int)validatedBounds.Top >> powerOfTwo;
                         break;
                     case 1:
-                        x = (int)(validatedBounds.Right) >> powerOfTwo;
-                        y = (int)(validatedBounds.Top) >> powerOfTwo;
+                        x = (int)validatedBounds.Right >> powerOfTwo;
+                        y = (int)validatedBounds.Top >> powerOfTwo;
                         break;
                     case 2:
-                        x = (int)(validatedBounds.Right) >> powerOfTwo;
-                        y = (int)(validatedBounds.Bottom) >> powerOfTwo;
+                        x = (int)validatedBounds.Right >> powerOfTwo;
+                        y = (int)validatedBounds.Bottom >> powerOfTwo;
                         break;
                     case 3:
-                        x = (int)(validatedBounds.Left) >> powerOfTwo;
-                        y = (int)(validatedBounds.Bottom) >> powerOfTwo;
+                        x = (int)validatedBounds.Left >> powerOfTwo;
+                        y = (int)validatedBounds.Bottom >> powerOfTwo;
                         break;
                 }
 
                 if (x < 0 || x >= columns || y < 0 || y >= rows)
                     continue;
 
-                result.Add((uint)(columns * y + x));
+                result.Add(columns * y + x);
             }
 
             return result;

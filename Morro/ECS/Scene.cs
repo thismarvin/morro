@@ -24,9 +24,6 @@ namespace Morro.ECS
             set => systemManager.DisableAsynchronousUpdates = !value;
         }
 
-        private PartitionerType partitionerPreference;
-        private Bin bin;
-
         public Camera Camera { get; private set; }
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
@@ -42,9 +39,6 @@ namespace Morro.ECS
         private readonly EntityManager entityManager;
 
         private readonly SparseSet entityRemovalQueue;
-        private SparseSet entitiesInView;
-
-        private readonly int queryBuffer;
 
         public int EntityCount { get => entityManager.EntityCount; }
 
@@ -53,8 +47,6 @@ namespace Morro.ECS
         {
             Name = name;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
-
-            queryBuffer = 64;
 
             Camera = new Camera(Name);
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
@@ -67,7 +59,6 @@ namespace Morro.ECS
             componentManager = new ComponentManager(componentCapacity, entityCapacity);
             entityManager = new EntityManager(entityCapacity, systemManager, componentManager);
 
-            entitiesInView = new SparseSet(EntityCapacity);
             entityRemovalQueue = new SparseSet(EntityCapacity);
         }
 
@@ -140,91 +131,12 @@ namespace Morro.ECS
         }
         #endregion
 
-        #region Partitioning Support
-        internal void FinalizePartition()
-        {
-            entitiesInView = Query(new Core.Rectangle(Camera.Bounds.X - queryBuffer, Camera.Bounds.Y - queryBuffer, Camera.Bounds.Width + queryBuffer * 2, Camera.Bounds.Height + queryBuffer * 2));
-        }
-
-        /// <summary>
-        /// Returns whether or not an <see cref="CPartitionable"/> entity is currently within the camera's view and <see cref="PartitioningEnabled"/> is true.
-        /// Otherwise, this will always return false.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public bool EntityIsVisible(int entity)
-        {
-            if (!PartitioningEnabled)
-                return true;
-
-            return entitiesInView.Contains((uint)entity);
-        }
-
-        /// <summary>
-        /// Create and register a <see cref="SBin"/> system.
-        /// </summary>
-        /// <param name="maximumDimension">The maximum dimension of the entities expected.</param>
-        protected void AddBinPartitioningSystem(int maximumDimension)
-        {
-            if (partitionerPreference != PartitionerType.None)
-                return;
-
-            PartitioningEnabled = true;
-            partitionerPreference = PartitionerType.Bin;
-
-            int optimalBinSize = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
-            bin = new Bin(SceneBounds, optimalBinSize, EntityCapacity);
-
-            RegisterSystem(new SBin(this, bin));
-        }
-
-        protected void EnablePartitioning()
-        {
-            if (partitionerPreference == PartitionerType.None || PartitioningEnabled)
-                return;
-
-            PartitioningEnabled = true;
-            GetSystem<SBin>().Enabled = true;
-        }
-
-        protected void DisablePartitioning()
-        {
-            if (partitionerPreference == PartitionerType.None || !PartitioningEnabled)
-                return;
-
-            PartitioningEnabled = false;
-            GetSystem<SBin>().Enabled = false;
-        }
-
-        public SparseSet Query(Core.Rectangle bounds)
-        {
-            if (!PartitioningEnabled)
-                return new SparseSet(0);
-
-            return bin.Query(bounds);
-        }
-
-        public SparseSet Query(CPosition position, CDimension dimension, int buffer)
-        {
-            if (!PartitioningEnabled)
-                return new SparseSet(0);
-
-            return bin.Query(position, dimension, buffer);
-        }
-
-        #endregion
-
         protected void SetSceneBounds(int width, int height)
         {
             if (SceneBounds.Width == width && SceneBounds.Height == height)
                 return;
 
             SceneBounds = new Core.Rectangle(0, 0, width, height);
-
-            if (PartitioningEnabled)
-            {
-                bin.Boundary = SceneBounds;
-            }
 
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
         }

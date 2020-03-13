@@ -84,6 +84,11 @@ namespace Morro.ECS
             return entityManager.EntityContains(entity, components);
         }
 
+        public void AddComponent(int entity, params IComponent[] components)
+        {
+            entityManager.AddComponent(entity, components);
+        }
+
         public void RemoveComponent(int entity, params Type[] componentTypes)
         {
             entityManager.RemoveComponent(entity, componentTypes);

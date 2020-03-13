@@ -9,7 +9,7 @@ namespace Example.Components
 {
     class CPhysicsBody : IComponent
     {
-        public Vector2 Velocity { get; set; }
+        public Vector2 Velocity;
         public Vector2 Acceleration { get; set; }
         public float Accumulator { get; set; }
         public TimeSpan LastUpdate { get; set; }

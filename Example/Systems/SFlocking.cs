@@ -26,6 +26,7 @@ namespace Example.Systems
         public SFlocking(Scene scene) : base(scene, 4, 60)
         {
             Require(typeof(CBoid), typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CPhysicsBody));
+            Avoid(typeof(CPredator));
             Depend(typeof(SBinPartitioner));
 
             seperationIntensity = 3;
@@ -90,6 +91,14 @@ namespace Example.Systems
                         force = myCenter - theirCenter;
                         force /= distance * distance;
                         cumulativeSeperation += force;
+                        totalSeperation++;
+                    }
+
+                    if (distance < 64 && theirDimension.Width > 2)
+                    {
+                        force = myCenter - theirCenter;
+                        force /= distance * distance;
+                        cumulativeSeperation += force * 4;
                         totalSeperation++;
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using Example.Entities;
+﻿using Example.Components;
+using Example.Entities;
 using Example.Systems;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
@@ -16,6 +17,7 @@ namespace Example.Scenes
         public Flocking() : base("Flocking", 2000, 16, 16)
         {
             RegisterSystem(new SWrapAround(this));
+            RegisterSystem(new SHunting(this));
             RegisterSystem(new SBinPartitioner(this, 64, 60));
             RegisterSystem(new SFlocking(this));
             RegisterSystem(new SPhysics(this));
@@ -42,6 +44,10 @@ namespace Example.Scenes
             {
                 CreateBoids();
             }
+            if (Morro.Input.Mouse.PressedRightClick())
+            {
+                CreatePredators();
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -59,10 +65,18 @@ namespace Example.Scenes
         private void CreateBoids()
         {
             int buffer = 32;
+
             for (int i = 0; i < EntityCapacity * 0.1; i++)
             {
                 CreateEntity(Boid.Create(Morro.Maths.Random.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)SceneBounds.Height - buffer)));
             }
+        }
+
+        private void CreatePredators()
+        {
+            int buffer = 32;
+
+            CreateEntity(Hawk.Create(Morro.Maths.Random.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)SceneBounds.Height - buffer)));
         }
     }
 }

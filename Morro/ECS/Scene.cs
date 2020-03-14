@@ -64,7 +64,7 @@ namespace Morro.ECS
             systemManager.RegisterSystem(morroSystem);
         }
 
-        public int CreateEntity(IComponent[] components)
+        public int CreateEntity(params IComponent[] components)
         {
             int entity = entityManager.AllocateEntity();
             entityManager.AddComponent(entity, components);

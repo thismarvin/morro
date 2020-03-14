@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\ResourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystemHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\HybridSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IDrawableSystem.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\SystemManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\SSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\PartitioningSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBinPartitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SimpleShapeSystem.cs" />

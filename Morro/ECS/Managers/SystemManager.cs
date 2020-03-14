@@ -29,29 +29,27 @@ namespace Morro.ECS
             systemLookup = new Dictionary<Type, int>();
         }
 
-        public void RegisterSystem(MorroSystem system)
+        public void RegisterSystem(params MorroSystem[] system)
         {
             if (TotalSystemsRegistered > Capacity)
                 throw new MorroException("Too many systems have been registered. Consider raising the capacity of systems allowed.", new IndexOutOfRangeException());
 
-            Type systemType = system.GetType();
-
-            if (registeredSystems.Contains(systemType))
-                return;
-
-            registeredSystems.Add(systemType);
-            systemLookup.Add(systemType, TotalSystemsRegistered);
-            Systems[TotalSystemsRegistered] = system;
-            TotalSystemsRegistered++;
-
-            if (system is IUpdateableSystem)
+            Type systemType;
+            for (int i = 0; i < system.Length; i++)
             {
-                CreateUpdateGroups();
+                systemType = system[i].GetType();
+
+                if (registeredSystems.Contains(systemType))
+                    continue;
+
+                registeredSystems.Add(systemType);
+                systemLookup.Add(systemType, TotalSystemsRegistered);
+                Systems[TotalSystemsRegistered] = system[i];
+                TotalSystemsRegistered++;
             }
-            if (system is IDrawableSystem)
-            {
-                CreateDrawGroups();
-            }
+
+            CreateUpdateGroups();
+            CreateDrawGroups();
         }
 
         public T GetSystem<T>() where T : MorroSystem

@@ -31,15 +31,13 @@ namespace Morro.ECS
         public int SystemCapacity { get => systemManager.Capacity; }
         public int ComponentCapacity { get => componentManager.Capacity; }
         public int EntityCapacity { get => entityManager.Capacity; }
+        public int EntityCount { get => entityManager.EntityCount; }
 
         private readonly SystemManager systemManager;
         private readonly ComponentManager componentManager;
         private readonly EntityManager entityManager;
 
         private readonly SparseSet entityRemovalQueue;
-
-        public int EntityCount { get => entityManager.EntityCount; }
-
 
         public Scene(string name, int entityCapacity = 100, int componentCapacity = 64, int systemCapacity = 64)
         {
@@ -61,7 +59,7 @@ namespace Morro.ECS
         }
 
         #region ECS Stuff
-        public void RegisterSystem(MorroSystem morroSystem)
+        public void RegisterSystem(params MorroSystem[] morroSystem)
         {
             systemManager.RegisterSystem(morroSystem);
         }
@@ -92,11 +90,6 @@ namespace Morro.ECS
         public void RemoveComponent(int entity, params Type[] componentTypes)
         {
             entityManager.RemoveComponent(entity, componentTypes);
-        }
-
-        private void ClearEntity(int entity)
-        {
-            entityManager.ClearEntity(entity);
         }
 
         public IComponent[] GetData<T>() where T : IComponent
@@ -131,6 +124,11 @@ namespace Morro.ECS
         protected void DrawECS()
         {
             systemManager.Draw(Camera);
+        }
+
+        private void ClearEntity(int entity)
+        {
+            entityManager.ClearEntity(entity);
         }
         #endregion
 

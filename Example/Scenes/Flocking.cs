@@ -16,12 +16,15 @@ namespace Example.Scenes
     {
         public Flocking() : base("Flocking", 2000, 16, 16)
         {
-            RegisterSystem(new SWrapAround(this));
-            RegisterSystem(new SHunting(this));
-            RegisterSystem(new SBinPartitioner(this, 64, 60));
-            RegisterSystem(new SFlocking(this));
-            RegisterSystem(new SPhysics(this));
-            RegisterSystem(new STriangle(this));
+            RegisterSystem
+            (
+                new SWrapAround(this),
+                new SHunting(this),
+                new SBinPartitioner(this, 64, 60),
+                new SFlocking(this),
+                new SPhysics(this),
+                new STriangle(this)
+            );
         }
 
         public override void LoadScene()

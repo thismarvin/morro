@@ -22,8 +22,6 @@ namespace Example.Scenes
             RegisterSystem(new SFlocking(this));
             RegisterSystem(new SPhysics(this));
             RegisterSystem(new STriangle(this));
-
-            //CreateBoids();
         }
 
         public override void LoadScene()

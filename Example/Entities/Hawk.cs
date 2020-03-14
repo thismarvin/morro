@@ -17,7 +17,7 @@ namespace Example.Entities
             CDimension dimension = new CDimension(4, 4);
             CTransform transform = new CTransform()
             {
-                Scale = new Microsoft.Xna.Framework.Vector3(2, 1, 1),
+                Scale = new Microsoft.Xna.Framework.Vector3(3, 1, 1),
                 Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X),
                 RotationOffset = new Microsoft.Xna.Framework.Vector2(dimension.Width / 2, dimension.Height / 2)
             };

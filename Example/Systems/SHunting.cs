@@ -32,9 +32,7 @@ namespace Example.Systems
             if (!predator.Seeking)
             {
                 predator.Seeking = true;
-                int buffer = 8;
-                predator.Target = new Vector2(Morro.Maths.Random.Range(buffer, (int)scene.SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)scene.SceneBounds.Height - buffer));
-                return;
+                predator.Target = new Vector2(Morro.Maths.Random.Range(0, (int)scene.SceneBounds.Width), Morro.Maths.Random.Range(0, (int)scene.SceneBounds.Height));
             }
             else
             {
@@ -46,18 +44,12 @@ namespace Example.Systems
                     return;
                 }
 
-                if (Morro.Maths.Random.Roll(0.05f))
-                {
-                    int buffer = 8;
-                    predator.Target = new Vector2(Morro.Maths.Random.Range(buffer, (int)scene.SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)scene.SceneBounds.Height - buffer));
-                }
+                Vector2 desired = predator.Target - positionVector;
+                desired.SetMagnitude(boid.MoveSpeed);
+                Vector2 seek = desired - physicsBody.Velocity;
+                seek.Limit(boid.MaxForce);
+                physicsBody.Velocity += seek;
 
-
-                Vector2 force = predator.Target - positionVector;
-                force.SetMagnitude(boid.MoveSpeed);
-                Vector2 what = force - physicsBody.Velocity;
-                what.Limit(boid.MaxForce);
-                physicsBody.Velocity += what;
                 transform.Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X);
             }
         }

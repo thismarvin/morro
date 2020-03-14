@@ -234,20 +234,17 @@ namespace Morro.ECS
         {
             for (int i = 0; i < updateableSystemGroups.Length; i++)
             {
-                Task[] tasks = DivideSystemsIntoTasks(i);
-
-                Task.WaitAll(tasks);
+                Task.WaitAll(DivideSystemsIntoTasks(i));
             }
 
             Task[] DivideSystemsIntoTasks(int groupIndex)
             {
                 int taskIndex = 0;
-                int totalTasks = updateableSystemGroups[groupIndex].Length;
+                int totalTasks = TotalSystemsEnabled(groupIndex);
                 Task[] tasks = new Task[totalTasks];
 
                 for (int i = 0; i < totalTasks; i++)
                 {
-                    // TODO: Disabling a system causes a task to be null which causes a crash. Fix this!
                     if (updateableSystemGroups[groupIndex][i].Enabled)
                     {
                         tasks[taskIndex++] = CreateTask(groupIndex, i);
@@ -263,6 +260,16 @@ namespace Morro.ECS
                 {
                     updateableSystemGroups[groupIndex][systemIndex].Update();
                 });
+            }
+
+            int TotalSystemsEnabled(int groupIndex)
+            {
+                int result = 0;
+                for (int i = 0; i < updateableSystemGroups[groupIndex].Length; i++)
+                {
+                    result = updateableSystemGroups[groupIndex][i].Enabled ? ++result : result;
+                }
+                return result;
             }
         }
     }

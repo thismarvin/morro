@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.Graphics;
+using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,95 +11,69 @@ namespace Morro.Utilities
 {
     class Pinhole : Transition
     {
-        private Circle pinhole;
-        private int size;
+        const int PADDING = 64;
 
-        public Pinhole(TransitionType type) : this(type, 100, 500)
+        private readonly MCircle pinhole;
+        private int radius;
+
+        private float lineWidth;
+
+        public Pinhole(TransitionType type) : this(type, 0, 4)
         {
 
         }
 
-        public Pinhole(TransitionType type, float speed, float jerk) : base(type)
+        public Pinhole(TransitionType type, float speed, float acceleration) : base(type, speed, acceleration)
         {
-            this.speed = speed;
-            this.jerk = jerk;
-            size = Width > Height ? Width / 2 : Height / 2;
+            pinhole = new MCircle(0, 0, 1) { Color = Color.Black };
+        }
 
+        protected override void SetupTransition()
+        {
+            lineWidth = Type == TransitionType.Enter ? radius : 1;
+            //pinhole.ShapeData = Geometry.CreateHollowCircle(pinhole.Radius, lineWidth);
+            pinhole.LineWidth = lineWidth;
+            
+        }
+
+        protected override void AccommodateToCamera()
+        {
+            radius = (int)Camera.Bounds.Width > (int)Camera.Bounds.Height ? (int)Camera.Bounds.Width / 2 : (int)Camera.Bounds.Height / 2;
+            radius += PADDING;
+            pinhole.Radius = radius;
+            pinhole.SetCenter(Camera.Center.X, Camera.Center.Y);
+        }
+
+        protected override void UpdateLogic()
+        {
             switch (Type)
             {
                 case TransitionType.Enter:
-                    pinhole = new Circle(X, Y, size, size, Color.Black, VertexInformation.Dynamic);
-                    break;
-                case TransitionType.Exit:
-                    pinhole = new Circle(X, Y, size, 1, Color.Black, VertexInformation.Dynamic);
-                    break;
-            }
-        }
-
-        public override void Reset()
-        {
-            base.Reset();
-            switch (Type)
-            {
-                case TransitionType.Enter:
-                    pinhole.SetLineWidth(size);
-                    break;
-
-                case TransitionType.Exit:
-                    pinhole.SetLineWidth(1);
-                    break;
-            }
-        }
-
-        public override void SetLocation(float x, float y)
-        {
-            base.SetLocation(x, y);
-            pinhole.SetLocation(X, Y);
-        }
-
-        public void SetSpeed(float speed)
-        {
-            velocity = velocity < 0 ? -speed : speed;
-        }
-
-        public override void Update()
-        {
-            if (!InProgress)
-                return;
-
-            CalculateForce();
-
-            switch (Type)
-            {
-                case TransitionType.Enter:
-                    pinhole.SetLineWidth(pinhole.LineWidth - velocity);
-                    if (pinhole.LineWidth <= 1)
+                    lineWidth -= Force;
+                    if (lineWidth <= 1)
                     {
-                        pinhole.SetLineWidth(1);
-                        lastDraw = true;
+                        lineWidth = 1;
+                        FlagCompletion();
                     }
                     break;
 
                 case TransitionType.Exit:
-                    pinhole.SetLineWidth(pinhole.LineWidth + velocity);
-                    if (pinhole.LineWidth >= size)
+                    lineWidth += Force;
+                    if (lineWidth >= radius)
                     {
-                        pinhole.SetLineWidth(size);
-                        lastDraw = true;
+                        lineWidth = radius;
+                        FlagCompletion();
                     }
                     break;
             }
+
+            //pinhole.ShapeData = Geometry.CreateHollowCircle(pinhole.Radius, lineWidth);
+            pinhole.LineWidth = lineWidth;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawTransition(SpriteBatch spriteBatch)
         {
-            if (!InProgress)
-                return;
-
-            pinhole.Draw(spriteBatch, CameraType.Static);
-
-            if (lastDraw)
-                Done = true;
+            pinhole.Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
         }
     }
 }

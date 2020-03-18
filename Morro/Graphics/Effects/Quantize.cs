@@ -9,7 +9,7 @@ namespace Morro.Graphics
     {
         public int TotalColors { get; private set; }
 
-        public Quantize(int totalColors) : base(EffectType.Quantize)
+        public Quantize(int totalColors) : base("Quantize")
         {
             TotalColors = totalColors;
 

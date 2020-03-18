@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Graphics;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,8 +26,8 @@ namespace Morro.Core
         public static int DisplayHeight { get; private set; }
         public static int DefaultWindowWidth { get; private set; }
         public static int DefaultWindowHeight { get; private set; }
-        public static int WindowWidth { get { return Engine.Graphics.PreferredBackBufferWidth; } }
-        public static int WindowHeight { get { return Engine.Graphics.PreferredBackBufferHeight; } }
+        public static int WindowWidth { get => Engine.Graphics.PreferredBackBufferWidth; }
+        public static int WindowHeight { get => Engine.Graphics.PreferredBackBufferHeight; }
         public static RenderTarget2D RenderTarget { get; private set; }
         public static OrientationType Orientation { get; private set; }
         public static string Title { get; set; }
@@ -38,17 +37,17 @@ namespace Morro.Core
 
         public static float FPS { get; private set; }
 
-        private static Queue<float> sampleFPS;
+        private static readonly Queue<float> sampleFPS;
 
         public static float LetterBox { get; private set; }
         public static float PillarBox { get; private set; }
 
         private static int defaultPixelWidth;
         private static int defaultPixelHeight;
-        private static Quad topLetterBox;
-        private static Quad bottomLetterBox;
-        private static Quad leftPillarBox;
-        private static Quad rightPillarBox;
+
+        private static MAABB[] boxing;
+        private static readonly PolygonCollection polygonCollection;
+
         private static bool togglingFullscreen;
 
         public static EventHandler<EventArgs> WindowChanged { get; set; }
@@ -57,42 +56,122 @@ namespace Morro.Core
             WindowChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        public static void Initialize(int pixelWidth, int pixelHeight, int windowWidth, int windowHeight, OrientationType orientation, string title, bool enableVSync, bool startFullScreen, bool supportWideScreen)
+        static WindowManager()
         {
-            SetupPixelScene(pixelWidth, pixelHeight);
-            SetupWindow(windowWidth, windowHeight, orientation);
-            SetupTitle(title);
-            EnableVSync(enableVSync);
-            EnableFullscreen(startFullScreen);
-            SetupWideScreenSupport(supportWideScreen);
-            SetupBoxing();
-
-            Engine.Graphics.ApplyChanges();
-
-            CalculateScale();
-            CalculateBoxing();
-            UpdateRenderTarget();
-
             sampleFPS = new Queue<float>();
+            polygonCollection = new PolygonCollection();
 
             Engine.Instance.Window.ClientSizeChanged += HandleWindowResize;
+
+            InitializeWindow();
+            SetTitle("morroEngine");
+
+            /// When a MonoGame Windows Project application is fullscreen and the game's window has not been moved since startup, 
+            /// Microsoft.Xna.Framework.Input.Mouse.GetState().Y is offset unless the following line of code is included.
+            Engine.Instance.Window.Position = Engine.Instance.Window.Position;
         }
 
-        private static void SetupPixelScene(int pixelWidth, int pixelHeight)
+        public static void SetPixelDimensions(int pixelWidth, int pixelHeight)
         {
             defaultPixelWidth = pixelWidth;
             defaultPixelHeight = pixelHeight;
             PixelWidth = defaultPixelWidth;
             PixelHeight = defaultPixelHeight;
+
+            SetupOrientation();
+            SetupBoxing();
+            ResetScale();
         }
 
-        private static void SetupWindow(int defaultWindowWidth, int defaultWindowHeight, OrientationType orientation)
+        public static void SetWindowDimensions(int defaultWindowWidth, int defaultWindowHeight)
         {
             DefaultWindowWidth = defaultWindowWidth;
             DefaultWindowHeight = defaultWindowHeight;
             DisplayWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             DisplayHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            Orientation = orientation;
+
+            // Set Screen Dimensions.
+#if __IOS__ || __ANDROID__
+            Engine.Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            Engine.Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+#else
+            Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
+            Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
+#endif           
+            Engine.Graphics.ApplyChanges();
+
+            ResetScale();
+        }
+
+        public static void SetTitle(string title)
+        {
+            Title = title;
+            Engine.Instance.Window.Title = Title;
+        }
+
+        public static void EnableVSync(bool enabled)
+        {
+            Engine.Instance.IsFixedTimeStep = false;
+
+            if (enabled)
+                Engine.Graphics.SynchronizeWithVerticalRetrace = true;
+            else
+                Engine.Graphics.SynchronizeWithVerticalRetrace = false;
+
+            Engine.Graphics.ApplyChanges();
+        }
+
+        public static void EnableFullscreen(bool enabled)
+        {
+            if (enabled)
+            {
+                ToggleFullScreen();
+            }
+        }
+
+        public static void EnableWideScreenSupport(bool enabled)
+        {
+            WideScreenSupported = enabled;
+            IsWideScreen = GraphicsAdapter.DefaultAdapter.IsWideScreen;
+
+            Engine.Graphics.ApplyChanges();
+        }
+
+        private static void InitializeWindow()
+        {
+            defaultPixelWidth = 320;
+            defaultPixelHeight = 180;
+            PixelWidth = defaultPixelWidth;
+            PixelHeight = defaultPixelHeight;
+
+            DefaultWindowWidth = PixelWidth * 2;
+            DefaultWindowHeight = PixelHeight * 2;
+            DisplayWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            DisplayHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+
+            Orientation = OrientationType.Landscape;
+            Engine.Graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+
+            // Set Screen Dimensions.
+#if __IOS__ || __ANDROID__
+            Engine.Graphics.PreferredBackBufferWidth = DisplayWidth;
+            Engine.Graphics.PreferredBackBufferHeight = DisplayHeight;
+#else
+            Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
+            Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
+#endif
+            Engine.Instance.IsFixedTimeStep = false;
+            Engine.Graphics.SynchronizeWithVerticalRetrace = true;
+
+            Engine.Graphics.ApplyChanges();
+
+            SetupBoxing();
+            ResetScale();
+        }
+
+        private static void SetupOrientation()
+        {
+            Orientation = PixelWidth > PixelHeight ? OrientationType.Landscape : OrientationType.Portrait;
 
             // Set Supported Orientations.
             switch (Orientation)
@@ -105,63 +184,22 @@ namespace Morro.Core
                     break;
             }
 
-            // Make sure pixel dimensions are in line with the game's orientation.
-            if (Orientation == OrientationType.Landscape && PixelHeight > PixelWidth)
-            {
-                throw new Exception("When the Orientation is set to Landscape, PixelWidth must be greater than PixelHeight.");
-            }
-            else if (Orientation == OrientationType.Portrait && PixelWidth > PixelHeight)
-            {
-                throw new Exception("When the Orientation is set to Portrait, PixelHeight must be greater than PixelWidth.");
-            }
-
-            // Set Screen Dimensions.
-#if __IOS__ || __ANDROID__
-            Engine.Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            Engine.Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-#else
-            Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
-            Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
-#endif           
-        }
-
-        private static void SetupTitle(string title)
-        {
-            Title = title;
-            Engine.Instance.Window.Title = Title;
-        }
-
-        private static void EnableVSync(bool vsync)
-        {
-            Engine.Instance.IsFixedTimeStep = false;
-
-            if (vsync)
-                Engine.Graphics.SynchronizeWithVerticalRetrace = true;
-            else
-                Engine.Graphics.SynchronizeWithVerticalRetrace = false;
-        }
-
-        private static void EnableFullscreen(bool enableFullScreen)
-        {
-            if (enableFullScreen)
-            {
-                ToggleFullScreen();
-            }
-        }
-
-        private static void SetupWideScreenSupport(bool supportWideScreen)
-        {
-            WideScreenSupported = supportWideScreen;
-            IsWideScreen = GraphicsAdapter.DefaultAdapter.IsWideScreen;
+            Engine.Graphics.ApplyChanges();
         }
 
         private static void SetupBoxing()
         {
             int buffer = 1000;
-            topLetterBox = new Quad(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer, Color.Black, VertexInformation.Static);
-            bottomLetterBox = new Quad(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer, Color.Black, VertexInformation.Static);
-            leftPillarBox = new Quad(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2, Color.Black, VertexInformation.Static);
-            rightPillarBox = new Quad(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2, Color.Black, VertexInformation.Static);
+
+            boxing = new MAABB[]
+            {
+                new MAABB(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black },
+                new MAABB(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black }
+            };
+
+            polygonCollection.SetCollection(boxing);
         }
 
         private static void CalculateScale()
@@ -184,14 +222,6 @@ namespace Morro.Core
                     if (PixelWidth * zoom > windowWidth)
                     {
                         zoom = (float)windowWidth / PixelWidth;
-                    }
-                    else if (PixelWidth * zoom < windowWidth)
-                    {
-                        // Disable letterboxing if WideScreenSupport is enabled.
-                        if (WideScreenSupported)
-                        {
-                            PixelWidth = (int)((windowWidth - PixelWidth * zoom) / zoom) + PixelWidth;
-                        }
                     }
                     Bounds = new Rectangle(0, 0, PixelWidth, PixelHeight);
                     break;
@@ -259,24 +289,28 @@ namespace Morro.Core
             togglingFullscreen = true;
 
             if (Fullscreen)
+            {
                 DeactivateFullScreen();
+            }
             else
+            {
                 ActivateFullScreenMode();
+            }
 
             Engine.Graphics.ToggleFullScreen();
             Engine.Graphics.ApplyChanges();
-            
+
             Fullscreen = !Fullscreen;
             togglingFullscreen = false;
 
             ResetScale();
         }
 
-        private static void CalculateFPS(GameTime gameTime)
+        private static void CalculateFPS()
         {
-            if ((float)gameTime.ElapsedGameTime.TotalSeconds != 0)
+            if (Engine.DeltaTime != 0)
             {
-                sampleFPS.Enqueue(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
+                sampleFPS.Enqueue(1 / Engine.DeltaTime);
             }
 
             if (sampleFPS.Count == 100)
@@ -292,39 +326,26 @@ namespace Morro.Core
             {
                 ToggleFullScreen();
             }
+
+#if !__IOS__ && !__TVOS__
+            if (Input.Keyboard.Pressed(Keys.Escape))
+            {
+                Engine.Instance.Exit();
+            }
+#endif
         }
 
-        public static void Update(GameTime gameTime)
+        internal static void Update()
         {
             UpdateInput();
-            CalculateFPS(gameTime);
+            CalculateFPS();
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw()
         {
-            switch (Orientation)
+            if (!WideScreenSupported)
             {
-                case OrientationType.Landscape:
-                    topLetterBox.Draw(spriteBatch, CameraType.Static);
-                    bottomLetterBox.Draw(spriteBatch, CameraType.Static);
-
-                    if (!WideScreenSupported)
-                    {
-                        leftPillarBox.Draw(spriteBatch, CameraType.Static);
-                        rightPillarBox.Draw(spriteBatch, CameraType.Static);
-                    }
-                    break;
-
-                case OrientationType.Portrait:
-                    leftPillarBox.Draw(spriteBatch, CameraType.Static);
-                    rightPillarBox.Draw(spriteBatch, CameraType.Static);
-
-                    if (!WideScreenSupported)
-                    {
-                        topLetterBox.Draw(spriteBatch, CameraType.Static);
-                        bottomLetterBox.Draw(spriteBatch, CameraType.Static);
-                    }
-                    break;
+                polygonCollection.Draw(CameraManager.GetCamera(CameraType.Static));
             }
         }
     }

@@ -12,127 +12,144 @@ namespace Morro.ECS
 {
     abstract class Scene
     {
-        public List<Entity> Entities { get; private set; }
-        public List<Entity> EntityBuffer { get; private set; }
-        public Quadtree EntityQuadtree { get; protected set; }
-        public Bin EntityBin { get; protected set; }
+        /// <summary>
+        /// By default all registered <see cref="MorroSystem"/>'s are ran asyncronously.
+        /// If this functionality is disabled, systems will run in the order they were registered.
+        /// </summary>
+        public bool AsynchronousSystemsEnabled
+        {
+            get => !systemManager.DisableAsynchronousUpdates;
+            set => systemManager.DisableAsynchronousUpdates = !value;
+        }
+
+        public Camera Camera { get; private set; }
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
-        public SceneType SceneType { get; private set; }
-        public Core.Rectangle SceneBounds { get; protected set; }
+        public string Name { get; private set; }
+        public Core.Rectangle SceneBounds { get; private set; }
 
-        public Scene(SceneType type)
+        public int SystemCapacity { get => systemManager.Capacity; }
+        public int ComponentCapacity { get => componentManager.Capacity; }
+        public int EntityCapacity { get => entityManager.Capacity; }
+        public int EntityCount { get => entityManager.EntityCount; }
+
+        private readonly SystemManager systemManager;
+        private readonly ComponentManager componentManager;
+        private readonly EntityManager entityManager;
+        private readonly EventManager eventManager;
+
+        private readonly SparseSet entityRemovalQueue;
+
+        public Scene(string name, int entityCapacity = 100, int componentCapacity = 64, int systemCapacity = 64)
         {
-            Entities = new List<Entity>();
-            EntityBuffer = new List<Entity>();
-            
-            SceneType = type;
+            Name = name;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
-            EntityQuadtree = new Quadtree(SceneBounds, 4);
-            EntityBin = new Bin(SceneBounds, 3);
+            Camera = new Camera(Name);
+            Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
+            CameraManager.RegisterCamera(Camera);
 
             EnterTransition = new Pinhole(TransitionType.Enter);
             ExitTransition = new Fade(TransitionType.Exit);
 
-            Initialize();
+            systemManager = new SystemManager(systemCapacity);
+            componentManager = new ComponentManager(componentCapacity, entityCapacity);
+            entityManager = new EntityManager(entityCapacity, systemManager, componentManager);
+            eventManager = new EventManager(systemManager);
+
+            entityRemovalQueue = new SparseSet(EntityCapacity);
         }
 
-        protected void SpatialPartitioning()
+        #region ECS Stuff
+        public void RegisterSystem(params MorroSystem[] morroSystem)
         {
-            EntityQuadtree.Clear();
-            EntityBin.Clear();
+            systemManager.RegisterSystem(morroSystem);
+            eventManager.Crawl();
+        }
 
-            for (int i = 0; i < Entities.Count; i++)
+        public int CreateEntity(params IComponent[] components)
+        {
+            int entity = entityManager.AllocateEntity();
+            entityManager.AddComponent(entity, components);
+
+            return entity;
+        }
+
+        public void RemoveEntity(int entity)
+        {
+            entityRemovalQueue.Add((uint)entity);
+        }
+
+        public bool EntityContains(int entity, params Type[] components)
+        {
+            return entityManager.EntityContains(entity, components);
+        }
+
+        public void AddComponent(int entity, params IComponent[] components)
+        {
+            entityManager.AddComponent(entity, components);
+        }
+
+        public void RemoveComponent(int entity, params Type[] componentTypes)
+        {
+            entityManager.RemoveComponent(entity, componentTypes);
+        }
+
+        public IComponent[] GetData<T>() where T : IComponent
+        {
+            return componentManager.GetData<T>();
+        }
+
+        public T GetData<T>(int entity) where T : IComponent
+        {
+            return componentManager.GetData<T>(entity);
+        }
+
+        public T GetSystem<T>() where T : MorroSystem
+        {
+            return systemManager.GetSystem<T>();
+        }
+
+        protected void UpdateECS()
+        {
+            systemManager.Update();
+
+            if (entityRemovalQueue.Count != 0)
             {
-                EntityQuadtree.Insert(Entities[i]);
-                EntityBin.Insert(Entities[i]);
+                foreach (uint entity in entityRemovalQueue)
+                {
+                    ClearEntity((int)entity);
+                }
+                entityRemovalQueue.Clear();
             }
         }
 
-        protected void UpdateSections(GameTime gameTime, int start, int end)
+        protected void DrawECS()
         {
-            for (int i = end - 1; i >= start; i--)
-            {
-                Entities[i].Update(gameTime);
-
-                if (Entities[i].Remove)
-                    Entities.RemoveAt(i);
-            }
+            systemManager.Draw(Camera);
         }
 
-        protected virtual void UpdateEntities(GameTime gameTime)
+        private void ClearEntity(int entity)
         {
-            SpatialPartitioning();
-
-            for (int i = Entities.Count - 1; i >= 0; i--)
-            {
-                Entities[i].Update(gameTime);
-
-                if (Entities[i].Remove)
-                    Entities.RemoveAt(i);
-            }
-
-            if (EntityBuffer.Count > 0)
-            {
-                for (int i = 0; i < EntityBuffer.Count; i++)
-                    Entities.Add(EntityBuffer[i]);
-
-                EntityBuffer.Clear();
-            }
-
-            Entities.Sort();
+            entityManager.ClearEntity(entity);
         }
+        #endregion
 
-        private Task UpdateSection(GameTime gameTime, int start, int end)
+        protected void SetSceneBounds(int width, int height)
         {
-            return Task.Run(() => UpdateSections(gameTime, start, end));
+            if (SceneBounds.Width == width && SceneBounds.Height == height)
+                return;
+
+            SceneBounds = new Core.Rectangle(0, 0, width, height);
+
+            Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
         }
-
-        private Task[] DivideUpdateIntoTasks(GameTime gameTime, int totalTasks)
-        {
-            Task[] result = new Task[totalTasks];
-            int increment = Entities.Count / totalTasks;
-            int start = 0;
-            int end = increment;
-            for (int i = 0; i < totalTasks; i++)
-            {
-                if (i != totalTasks - 1)
-                    result[i] = UpdateSection(gameTime, start, end);
-                else
-                    result[i] = UpdateSection(gameTime, start, Entities.Count);
-
-                start += increment;
-                end += increment;
-            }
-            return result;
-        }
-
-        protected virtual void UpdateEntities(GameTime gameTime, int sections)
-        {
-            SpatialPartitioning();
-
-            Task.WaitAll(
-                DivideUpdateIntoTasks(gameTime, sections)
-            );
-        }
-
-        protected virtual void DrawEntities(SpriteBatch spriteBatch)
-        {
-            for (int i = 0; i < Entities.Count; i++)
-            {
-                Entities[i].Draw(spriteBatch);
-                Entities[i].DrawBoundingBox(spriteBatch);
-            }
-        }
-
-        protected abstract void Initialize();
 
         public abstract void LoadScene();
 
         public abstract void UnloadScene();
 
-        public abstract void Update(GameTime gameTime);
+        public abstract void Update();
 
         public abstract void Draw(SpriteBatch spriteBatch);
     }

@@ -1,50 +1,43 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Morro.Graphics
 {
-    class SpriteGroup
+    class SpriteGroup : DrawGroup<Sprite>
     {
-        public SamplerState SharedSamplerState { get; private set; }
-        public Effect SharedEffect { get; private set; }
-        public Sprite[] Sprites { get; private set; }
-        public int Capacity { get; private set; }
+        private readonly BlendState sharedBlendState;
+        private readonly SamplerState sharedSamplerState;
+        private readonly Effect sharedEffect;
 
-        private int spriteIndex;
-
-        public SpriteGroup(SamplerState sharedSamplerState, Effect sharedEffect, int capacity)
+        static readonly SpriteBatch spriteBatch;
+        static SpriteGroup()
         {
-            SharedSamplerState = sharedSamplerState;
-            SharedEffect = sharedEffect;
-            Capacity = capacity;
-            Sprites = new Sprite[Capacity];
+            spriteBatch = SpriteManager.SpriteBatch;
         }
 
-        public bool Add(Sprite sprite)
+        public SpriteGroup(BlendState sharedBlendState, SamplerState sharedSamplerState, Effect sharedEffect, int capacity) : base(capacity)
         {
-            if (spriteIndex >= Capacity)
-                return false;
-
-            if (sprite.SamplerState == SharedSamplerState && sprite.Effect == SharedEffect)
-            {
-                Sprites[spriteIndex++] = sprite;
-                return true;
-            }
-
-            return false;
+            this.sharedBlendState = sharedBlendState;
+            this.sharedSamplerState = sharedSamplerState;
+            this.sharedEffect = sharedEffect;
         }
 
-        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        protected override bool ConditionToAdd(Sprite sprite)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SharedSamplerState, null, GraphicsManager.DefaultRasterizerState, SharedEffect, CameraManager.GetCamera(cameraType).Transform);
-            for (int i = 0; i < Capacity; i++)
+            return sprite.BlendState == sharedBlendState && sprite.SamplerState == sharedSamplerState && sprite.Effect == sharedEffect;
+        }
+
+        public override void Draw(Camera camera)
+        {
+            spriteBatch.Begin(SpriteSortMode.Deferred, sharedBlendState, sharedSamplerState, null, null, sharedEffect, camera.Transform);
             {
-                if (Sprites[i] != null)
+                for (int i = 0; i < groupIndex; i++)
                 {
-                    Sprites[i].ManagedDraw(spriteBatch);
+                    group[i]?.ManagedDraw();
                 }
             }
             spriteBatch.End();

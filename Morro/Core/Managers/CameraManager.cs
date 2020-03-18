@@ -5,54 +5,80 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Basic camera types that are registered by default.
+    /// </summary>
     public enum CameraType
     {
-        /// <summary>
-        /// Anything drawn with a dynamic camera will move inversely to the camera's top left. This effect will create the illusion of movement.
-        /// </summary>
-        Dynamic,
         /// <summary>
         /// The static camera will never move, and is used for drawing anything that must always be visible on the screen (e.g. menus, transitions, etc.).
         /// </summary>
         Static,
+
         /// <summary>
-        /// The LeftJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become left justified to use the extra window space.
+        /// The TopLeftAlign camera will also never move, but if WideScreenSupported is true, anything drawn will become top-left aligned to use the extra window space.
         /// </summary>
-        LeftJustified,
+        TopLeftAlign,
         /// <summary>
-        /// The RightJustified camera will also never move, but if WideScreenSupported is true, anything drawn will become right justified to use the extra window space.
+        /// The RightAlign camera will also never move, but if WideScreenSupported is true, anything drawn will become top-right aligned to use the extra window space.
         /// </summary>
-        RightJustified,
+        TopRightAlign,
     }
 
-    class CameraManager
+    static class CameraManager
     {
-        private static List<Camera> cameras;
+        private static readonly ResourceHandler<Camera> cameras;
 
-        public static void Initialize()
+        static CameraManager()
         {
-            cameras = new List<Camera>()
-            {
-                new Camera(CameraType.Dynamic),
-                new Camera(CameraType.Static),
-                new Camera(CameraType.LeftJustified),
-                new Camera(CameraType.RightJustified),
-            };
+            cameras = new ResourceHandler<Camera>();
+
+            RegisterCamera(new Camera($"Morro_{CameraType.Static.ToString()}"));
+            RegisterCamera(new Camera($"Morro_{CameraType.TopLeftAlign.ToString()}"));
+            RegisterCamera(new Camera($"Morro_{CameraType.TopRightAlign.ToString()}"));
 
             WindowManager.WindowChanged += HandleWindowChange;
         }
 
-        public static Camera GetCamera(CameraType type)
+        #region Handle Cameras
+        /// <summary>
+        /// Register a <see cref="Camera"/> to be managed by Morro.
+        /// </summary>
+        /// <param name="camera">The camera you want to be registered.</param>
+        public static void RegisterCamera(Camera camera)
         {
-            foreach (Camera camera in cameras)
-            {
-                if (camera.CameraType == type)
-                {
-                    return camera;
-                }
-            }
-            return null;
+            cameras.Register(camera.Name, camera);
         }
+
+        /// <summary>
+        /// Get a <see cref="Camera"/> that was previously registered.
+        /// </summary>
+        /// <param name="name">The name given to the camera that was previously registered.</param>
+        /// <returns>The registered camera with the given name.</returns>
+        public static Camera GetCamera(string name)
+        {
+            return cameras.Get(name);
+        }
+
+        /// <summary>
+        /// Get a <see cref="Camera"/> that was registered by Morro.
+        /// </summary>
+        /// <param name="cameraType">The basic camera you want to get.</param>
+        /// <returns>The registered camera with the given name.</returns>
+        public static Camera GetCamera(CameraType cameraType)
+        {
+            return GetCamera($"Morro_{cameraType.ToString()}");
+        }
+
+        /// <summary>
+        /// Remove a registered <see cref="Camera"/>.
+        /// </summary>
+        /// <param name="name">The name given to the camera that was previously registered.</param>
+        public static void RemoveCamera(string name)
+        {
+            cameras.Remove(name);
+        }
+        #endregion
 
         private static void HandleWindowChange(object sender, EventArgs e)
         {
@@ -67,25 +93,34 @@ namespace Morro.Core
             }
         }
 
-        public static void Update()
+        private static void ManageManagedCameras()
         {
             if (WindowManager.WideScreenSupported)
             {
-                GetCamera(CameraType.LeftJustified).SetTopLeft(WindowManager.PillarBox, 0);
-                GetCamera(CameraType.RightJustified).SetTopLeft(-WindowManager.PillarBox, 0);
+                GetCamera(CameraType.TopLeftAlign).SetTopLeft(WindowManager.PillarBox, WindowManager.LetterBox);
+                GetCamera(CameraType.TopRightAlign).SetTopLeft(-WindowManager.PillarBox, -WindowManager.LetterBox);
             }
             else
             {
-                GetCamera(CameraType.LeftJustified).SetTopLeft(0, 0);
-                GetCamera(CameraType.RightJustified).SetTopLeft(0, 0);
+                GetCamera(CameraType.TopLeftAlign).SetTopLeft(0, 0);
+                GetCamera(CameraType.TopRightAlign).SetTopLeft(0, 0);
             }
 
             GetCamera(CameraType.Static).SetTopLeft(0, 0);
+        }
 
+        private static void UpdateCameras()
+        {
             foreach (Camera camera in cameras)
             {
                 camera.Update();
             }
+        }
+
+        internal static void Update()
+        {
+            ManageManagedCameras();
+            UpdateCameras();
         }
     }
 }

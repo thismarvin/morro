@@ -14,22 +14,17 @@ namespace Morro.Graphics
         public Color Color { get; private set; }
         public float Size { get; private set; }
 
-        public DropShadow(Texture2D texture) : this(texture, new Vector2(1, 1), 1, new Color(Color.Black, 75))
+        public DropShadow(Texture2D texture) : this(texture, new Vector2(1, 1), 1, Color.Black * 0.3f)
         {
 
         }
 
-        public DropShadow(Texture2D texture, Vector2 direction, float size) : this(texture, direction, size, new Color(Color.Black, 75))
-        {
-
-        }
-
-        public DropShadow(Texture2D texture, Vector2 direction, float size, Color color ) : base(EffectType.DropShadow)
+        public DropShadow(Texture2D texture, Vector2 direction, float size, Color color ) : base("DropShadow")
         {
             Texture = texture;
             Direction = direction;
             Color = color;
-            Size = size;
+            Size = size * WindowManager.Scale;
 
             Initialize();
         }

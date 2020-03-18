@@ -18,10 +18,10 @@ namespace Morro.Graphics
 
         }
 
-        public Outline(Texture2D texture, float size, Color color) : base(EffectType.Outline)
+        public Outline(Texture2D texture, float size, Color color) : base("Outline")
         {
             Texture = texture;
-            Size = size;
+            Size = size * WindowManager.Scale;
             Color = color;
 
             Initialize();

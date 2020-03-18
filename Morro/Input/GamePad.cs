@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Morro.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,11 +20,49 @@ namespace Morro.Input
             PlayerIndex = playerIndex;
         }
 
+        public bool IsConnected()
+        {
+            VerifyUpdateIsCalled();
+            return currentGamePadState.IsConnected;
+        }
+
+        public void Vibrate(float leftMotor, float rightMotor)
+        {
+            if (InputManager.InputMode == InputMode.Controller)
+                Microsoft.Xna.Framework.Input.GamePad.SetVibration(PlayerIndex, leftMotor, rightMotor);
+            else
+                Microsoft.Xna.Framework.Input.GamePad.SetVibration(PlayerIndex, 0, 0);
+        }
+
+        public bool Pressed(Buttons button)
+        {
+            VerifyUpdateIsCalled();
+
+            if (!previousGamePadState.IsButtonDown(button) && currentGamePadState.IsButtonDown(button))
+            {
+                InputManager.InputMode = InputMode.Controller;
+                return true;
+            }
+            return false;
+        }
+
+        public bool Pressing(Buttons button)
+        {
+            VerifyUpdateIsCalled();
+
+            if (currentGamePadState.IsButtonDown(button))
+            {
+                InputManager.InputMode = InputMode.Controller;
+                return true;
+            }
+            return false;
+        }
+
         private void VerifyUpdateIsCalled()
         {
             if (!isBeingUpdated)
             {
-                throw new Exception("Make sure to call your GamePad's Update() method before you use any of the built in methods.");
+                throw new MorroException("Make sure to call your GamePad's Update() method before you use any of the built in methods.", new MethodExpectedException());
             }
         }
 
@@ -32,24 +71,6 @@ namespace Morro.Input
             isBeingUpdated = true;
             previousGamePadState = currentGamePadState;
             currentGamePadState = Microsoft.Xna.Framework.Input.GamePad.GetState(PlayerIndex);
-        }
-
-        public bool IsConnected()
-        {
-            VerifyUpdateIsCalled();
-            return currentGamePadState.IsConnected;
-        }
-
-        public bool PressedButton(Buttons button)
-        {
-            VerifyUpdateIsCalled();
-            return !previousGamePadState.IsButtonDown(button) && currentGamePadState.IsButtonDown(button);
-        }
-
-        public bool PressingButton(Buttons button)
-        {
-            VerifyUpdateIsCalled();
-            return currentGamePadState.IsButtonDown(button);
         }
     }
 }

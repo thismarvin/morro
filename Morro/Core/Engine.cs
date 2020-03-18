@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Morro.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,9 +9,10 @@ namespace Morro.Core
     public class Engine : Game
     {
         public static GraphicsDeviceManager Graphics { get; private set; }
-        public static Engine Instance { get; private set; }        
-        public static RenderTarget2D RenderTarget { get { return WindowManager.RenderTarget; } }
+        public static Engine Instance { get; private set; }
+        public static RenderTarget2D RenderTarget { get => WindowManager.RenderTarget; }
         public static float DeltaTime { get; private set; }
+        public static TimeSpan TotalGameTime { get; private set; }
 
         private SpriteBatch spriteBatch;
 
@@ -22,7 +21,7 @@ namespace Morro.Core
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             Instance = this;
-            
+
             IsMouseVisible = true;
 
             Window.AllowUserResizing = true;
@@ -32,36 +31,14 @@ namespace Morro.Core
         }
 
         protected override void Initialize()
-        {          
-            AssetManager.LoadContent(Content);            
-            GraphicsManager.Initialize();
-            
-            WindowManager.Initialize
-            (
-                pixelWidth: 320,
-                pixelHeight: 180,
-                windowWidth: 320 * 3,
-                windowHeight: 180 * 3,
-                orientation: OrientationType.Landscape,
-                title: "morroEngine",
-                enableVSync: true,
-                startFullScreen: false,
-                supportWideScreen: false
-            );
-
-            RandomManager.Initialize();
-            SketchManager.Initialize();
-            DebugManager.Initialize();
-            CameraManager.Initialize();
-            SoundManager.Initialize();            
-            SceneManager.Initialize();
-
+        {
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);          
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            AssetManager.LoadContent();
         }
 
         protected override void UnloadContent()
@@ -69,48 +46,32 @@ namespace Morro.Core
             base.UnloadContent();
 
             spriteBatch.Dispose();
-            
+
             AssetManager.UnloadContent();
             GraphicsManager.UnloadContent();
         }
 
-        private void UpdateInput()
-        {
-            Input.Keyboard.Update();
-            Input.Mouse.Update();
-
-#if !__IOS__ && !__TVOS__
-            if (Input.Keyboard.Pressed(Keys.Escape))
-            {
-                Exit();
-            }
-#endif
-        }
-
         protected override void Update(GameTime gameTime)
         {
-            DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            UpdateInput();
+            DeltaTime = (float)gameTime?.ElapsedGameTime.TotalSeconds;
+            TotalGameTime = gameTime.TotalGameTime;
 
-            GraphicsManager.Update();
-            WindowManager.Update(gameTime);
+            InputManager.Update();
+            WindowManager.Update();
             CameraManager.Update();
-            SceneManager.Update(gameTime);
+            SceneManager.Update();
             DebugManager.Update();
-           
+            SoundManager.Update();
+
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             SceneManager.Draw(spriteBatch);
-            //SketchManager.AttachEffect(new Dither(RenderTarget));
-            //SketchManager.AttachEffect(new Quantize(4));
-            //SketchManager.AttachEffect(new Palette());
             SketchManager.Draw(spriteBatch);
-
             DebugManager.Draw(spriteBatch);
-            WindowManager.Draw(spriteBatch);
+            WindowManager.Draw();
 
             base.Draw(gameTime);
         }

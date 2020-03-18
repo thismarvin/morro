@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Morro.Maths
@@ -70,7 +71,7 @@ namespace Morro.Maths
             }
             else
             {
-                throw new Exception("The data does not match the dimensions of the Matrix.");
+                throw new ArgumentException("The data does not match the dimensions of the Matrix.");
             }
         }
 
@@ -196,7 +197,7 @@ namespace Morro.Maths
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            stringBuilder.Append(string.Format("{0}x{1}\n", Rows, Columns));
+            stringBuilder.Append(string.Format(CultureInfo.InvariantCulture, "{0}x{1}\n", Rows, Columns));
             for (int y = 0; y < Rows; y++)
             {
                 stringBuilder.Append("| ");
@@ -204,11 +205,11 @@ namespace Morro.Maths
                 {
                     if (x != Columns - 1)
                     {
-                        stringBuilder.Append(string.Format("{0}{1}  ", ExtraSpaces(x, y), Get(x, y)));
+                        stringBuilder.Append(string.Format(CultureInfo.InvariantCulture, "{0}{1}  ", ExtraSpaces(x, y), Get(x, y)));
                     }
                     else
                     {
-                        stringBuilder.Append(string.Format("{0}{1}", ExtraSpaces(x, y), Get(x, y)));
+                        stringBuilder.Append(string.Format(CultureInfo.InvariantCulture, "{0}{1}", ExtraSpaces(x, y), Get(x, y)));
                     }
                 }
                 stringBuilder.Append(" |\n");

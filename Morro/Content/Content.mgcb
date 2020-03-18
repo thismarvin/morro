@@ -9,6 +9,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\Morro.Content.Pipeline\bin\Release\Morro.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -17,6 +18,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Assets/Effects/Blur.fx
+
+#begin Assets/Effects/BMFontShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Assets/Effects/BMFontShader.fx
 
 #begin Assets/Effects/ChromaticAberration.fx
 /importer:EffectImporter
@@ -60,11 +67,11 @@
 /processorParam:DebugMode=Auto
 /build:Assets/Effects/Palette.fx
 
-#begin Assets/Effects/PostProcessing.fx
+#begin Assets/Effects/Polygon.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Assets/Effects/PostProcessing.fx
+/build:Assets/Effects/Polygon.fx
 
 #begin Assets/Effects/Quantize.fx
 /importer:EffectImporter
@@ -72,13 +79,12 @@
 /processorParam:DebugMode=Auto
 /build:Assets/Effects/Quantize.fx
 
-#begin Assets/Effects/Transition.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Assets/Effects/Transition.fx
+#begin Assets/Fonts/probity.fnt
+/importer:BMFontImporter
+/processor:BMFontProcessor
+/build:Assets/Fonts/probity.fnt
 
-#begin Assets/Fonts/Probity.png
+#begin Assets/Fonts/probity_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -88,9 +94,14 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Assets/Fonts/Probity.png
+/build:Assets/Fonts/probity_0.png
 
-#begin Assets/Fonts/Sparge.png
+#begin Assets/Fonts/sparge.fnt
+/importer:BMFontImporter
+/processor:BMFontProcessor
+/build:Assets/Fonts/sparge.fnt
+
+#begin Assets/Fonts/sparge_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -100,7 +111,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Assets/Fonts/Sparge.png
+/build:Assets/Fonts/sparge_0.png
 
 #begin Assets/Sprites/Sprites.png
 /importer:TextureImporter

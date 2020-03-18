@@ -10,87 +10,78 @@ namespace Morro.Utilities
 {
     class Fade : Transition
     {
+        const int PADDING = 8;
+
         private float alpha;
         private Color defaultColor;
         private Color fadeColor;
-        private Quad fade;
+        private readonly MQuad fade;
 
-        public Fade(TransitionType type) : this(type, Color.Black, 1, 2)
+        public Fade(TransitionType type) : this(type, 0.01f, 0.01f, Color.Black)
         {
 
         }
 
-        public Fade(TransitionType type, Color color) : this(type, color, 1, 2)
-        {
-
-        }
-
-        public Fade(TransitionType type, Color color, float speed, float jerk) : base(-BUFFER, -BUFFER, type)
+        public Fade(TransitionType type, float velocity, float acceleration, Color color) : base(type, velocity, acceleration)
         {
             defaultColor = color;
-            this.speed = speed;
-            this.jerk = jerk;
-
-            Reset();
+            fade = new MQuad(-PADDING, -PADDING, 1, 1) { Color = Color.Black };
         }
 
-        public override void Reset()
+        protected override void AccommodateToCamera()
         {
-            base.Reset();
+            fade.Width = Camera.Bounds.Width + PADDING * 2;
+            fade.Height = Camera.Bounds.Height + PADDING * 2;
 
-            alpha = Type == TransitionType.Enter ? (byte)255 : (byte)0;
-            fadeColor = new Color(defaultColor, alpha);
-            fade = new Quad(X, Y, Width, Height, fadeColor, VertexInformation.Dynamic);
+            if (WindowManager.WideScreenSupported)
+            {
+                fade.X = -WindowManager.PillarBox - PADDING;
+                fade.Y = -WindowManager.LetterBox - PADDING;
+            }
+            else
+            {
+                fade.X = -PADDING;
+                fade.Y = -PADDING;
+            }
         }
 
-        public override void Update()
+        protected override void SetupTransition()
         {
-            if (!InProgress)
-                return;
+            alpha = Type == TransitionType.Enter ? 1 : 0;
+            fadeColor = defaultColor * alpha;
+            fade.Color = fadeColor;
+        }
 
-            CalculateForce();
-
+        protected override void UpdateLogic()
+        {
             switch (Type)
             {
                 case TransitionType.Exit:
-                    if (alpha + velocity < 1)
-                    {
-                        alpha += velocity;
-                    }
-                    else
+                    alpha += Force;
+                    if (alpha > 1)
                     {
                         alpha = 1;
-                        lastDraw = true;
+                        FlagCompletion();
                     }
                     break;
 
                 case TransitionType.Enter:
-                    if (alpha - velocity > 0)
-                    {
-                        alpha -= velocity;
-                    }
-                    else
+                    alpha -= Force;
+                    if (alpha < 0)
                     {
                         alpha = 0;
-                        lastDraw = true;
+                        FlagCompletion();
                     }
                     break;
             }
 
-            fadeColor = new Color(defaultColor, alpha);
-
-            fade.SetColor(fadeColor);
+            fadeColor = defaultColor * alpha;
+            fade.Color = fadeColor;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawTransition(SpriteBatch spriteBatch)
         {
-            if (!InProgress)
-                return;
-
-            fade.Draw(spriteBatch, CameraType.Static);
-
-            if (lastDraw)
-                Done = true;
+            fade.Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
         }
     }
 }

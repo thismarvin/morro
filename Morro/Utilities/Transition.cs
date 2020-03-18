@@ -9,52 +9,109 @@ namespace Morro.Utilities
 {
     public enum TransitionType
     {
-        Enter, Exit
+        Enter,
+        Exit
     }
 
-    abstract class Transition : MonoObject
+    abstract class Transition
     {
-        protected const int BUFFER = 100;
-        public bool Started { get; private set; }        
-        public bool InProgress { get { return Started && !Done; } }
+        public bool Started { get; private set; }
         public bool Done { get; protected set; }
+        
         protected TransitionType Type { get; private set; }
+        protected Camera Camera { get; private set; }
+        protected float Force { get; private set; }        
 
-        protected bool lastDraw;
-        protected float velocity;
-        protected float speed;
-        protected float jerk;
-        protected float acceleration;
+        private bool setup;
+        private bool lastDraw;
 
-        public Transition(TransitionType type) : this(WindowManager.PixelWidth / 2, WindowManager.PixelHeight / 2, type)
-        {
+        private readonly float initialVelocity;
+        private float velocity;
+        private readonly float acceleration;
 
-        }
+        private readonly float deltaTime;
+        private double accumulator;
 
-        public Transition(float x, float y, TransitionType type) : base(x, y, WindowManager.PixelWidth + BUFFER * 2, WindowManager.PixelHeight + BUFFER * 2)
+        public Transition(TransitionType type, float velocity, float acceleration)
         {
             Type = type;
+            Camera = CameraManager.GetCamera(CameraType.Static);
+
+            initialVelocity = velocity;
+            this.velocity = initialVelocity;
+            this.acceleration = acceleration;
+
+            deltaTime = 1f / 240;
         }
 
         public virtual void Reset()
         {
             Started = false;
             Done = false;
+            setup = false;
+            lastDraw = false;
+
+            velocity = initialVelocity;
+            Force = 0;
         }
 
-        public void Start()
+        public void Begin()
         {
             Started = true;
         }
 
-        protected void CalculateForce()
+        protected void FlagCompletion()
         {
-            velocity = (acceleration + speed) * Engine.DeltaTime;
-            acceleration += jerk * Engine.DeltaTime;
+            lastDraw = true;
         }
 
-        public abstract void Update();
+        private void CalculateForce()
+        {
+            velocity += acceleration * deltaTime;
+            Force += velocity * deltaTime;
+        }
 
-        public abstract void Draw(SpriteBatch spriteBatch);
+        protected abstract void SetupTransition();
+
+        protected abstract void AccommodateToCamera();
+
+        protected abstract void UpdateLogic();
+
+        protected abstract void DrawTransition(SpriteBatch spriteBatch);
+
+        public void Update()
+        {
+            if (!setup || Done)
+                return;
+
+            accumulator += Engine.DeltaTime;
+
+            while (accumulator >= deltaTime)
+            {
+                CalculateForce();
+                AccommodateToCamera();
+                UpdateLogic();
+
+                accumulator -= deltaTime;
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            if (Done)
+                return;
+
+            if (!setup)
+            {
+                AccommodateToCamera();
+                SetupTransition();
+                setup = true;
+            }
+
+            DrawTransition(spriteBatch);
+
+            if (lastDraw)
+                Done = true;
+        }
     }
 }

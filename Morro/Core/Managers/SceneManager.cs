@@ -10,52 +10,63 @@ using System.Text;
 
 namespace Morro.Core
 {
-    public enum SceneType
-    {
-        Menu,
-        Platformer,      
-        Flocking,
-    }
-
     static class SceneManager
     {
         public static Scene CurrentScene { get; private set; }
         public static Scene NextScene { get; private set; }
 
-        private static List<Scene> scenes;
+        private static readonly ResourceHandler<Scene> scenes;
         private static Transition enterTransition;
         private static Transition exitTransition;
         private static bool transitionInProgress;
+        private static bool exitCompleted;
 
-        public static void Initialize()
+        static SceneManager()
         {
-            PreLoadScenes();
-            SetStartingScene(SceneType.Menu);
+            scenes = new ResourceHandler<Scene>();
         }
 
-        private static void PreLoadScenes()
+        #region Handle Scenes
+        /// <summary>
+        /// Register a <see cref="Scene"/> to be managed by Morro.
+        /// </summary>
+        /// <param name="scene">The scene you want to be registered.</param>
+        public static void RegisterScene(Scene scene)
         {
-            scenes = new List<Scene>()
-            {       
-                new Menu(),
-                new Platformer(),
-                new Flocking(),
-            };
+            scenes.Register(scene.Name, scene);
         }
 
-        private static void SetStartingScene(SceneType scene)
+        /// <summary>
+        /// Get a <see cref="Scene"/> that was previously registered.
+        /// </summary>
+        /// <param name="name">The name given to the scene that was previously registered.</param>
+        /// <returns>The registered scene with the given name.</returns>
+        public static Scene GetScene(string name)
         {
-            QueueScene(scene);
+            return scenes.Get(name);
         }
 
-        private static Scene ParseSceneType(SceneType scene)
+        /// <summary>
+        /// Remove a registered <see cref="Scene"/>.
+        /// </summary>
+        /// <param name="name">The name given to the scene that was previously registered.</param>
+        public static void RemoveScene(string name)
         {
-            foreach (Scene s in scenes)
-            {
-                if (s.SceneType == scene)
-                    return s;
-            }
-            return null;
+            scenes.Remove(name);
+        }
+        #endregion
+
+        /// <summary>
+        /// Queue a <see cref="Scene"/>, and start the <see cref="Transition"/> between the current scene and the given scene.
+        /// </summary>
+        /// <param name="name">The name given to the scene that was previously registered.</param>
+        public static void QueueScene(string name)
+        {
+            if (transitionInProgress)
+                return;
+
+            NextScene = GetScene(name);
+            SetupTransitions();
         }
 
         private static void SetupTransitions()
@@ -69,16 +80,10 @@ namespace Morro.Core
             {
                 exitTransition = CurrentScene.ExitTransition;
                 enterTransition = NextScene.EnterTransition;
-                exitTransition.Start();
+                exitTransition.Begin();
             }
 
             transitionInProgress = true;
-        }
-
-        public static void QueueScene(SceneType scene)
-        {
-            NextScene = ParseSceneType(scene);
-            SetupTransitions();
         }
 
         private static void UnloadCurrentScene()
@@ -101,57 +106,89 @@ namespace Morro.Core
             if (!transitionInProgress)
                 return;
 
-            if (exitTransition != null && exitTransition.InProgress)
+            if (!exitCompleted)
             {
-                exitTransition.Update();
+                if (exitTransition == null)
+                {
+                    LoadNextScene();
+                    enterTransition.Begin();
+
+                    exitCompleted = true;
+                }
+                else
+                {
+                    exitTransition.Update();
+
+                    if (exitTransition.Done)
+                    {
+                        UnloadCurrentScene();
+                        exitTransition.Reset();
+                        exitTransition = null;
+
+                        LoadNextScene();
+                        enterTransition.Begin();
+
+                        exitCompleted = true;
+                    }
+                }
             }
-            else if (((exitTransition != null && exitTransition.Done) || (exitTransition == null)) && !enterTransition.Started)
+            else
             {
-                UnloadCurrentScene();
-                LoadNextScene();
-                enterTransition.Start();
-            }
-            else if (enterTransition.InProgress)
-            {
-                enterTransition.Update();
-            }
-            else if (enterTransition.Done)
-            {
-                transitionInProgress = false;
+                if (enterTransition != null)
+                {
+                    enterTransition.Update();
+
+                    if (enterTransition.Done)
+                    {
+                        enterTransition.Reset();
+                        enterTransition = null;
+
+                        transitionInProgress = false;
+                        exitCompleted = false;
+                    }
+                }
             }
         }
 
-        private static void UpdateCurrentScene(GameTime gameTime)
+        private static void UpdateCurrentScene()
         {
-            if (transitionInProgress)
+            CurrentScene?.Update();
+        }
+
+        private static void DrawTransitions(SpriteBatch spriteBatch)
+        {
+            if (!transitionInProgress)
                 return;
-
-            CurrentScene.Update(gameTime);
-        }
-
-        public static void Update(GameTime gameTime)
-        {
-            UpdateTransitions();
-            UpdateCurrentScene(gameTime);
-
-            if (Input.Keyboard.Pressed(Keys.R))
-            {
-                CurrentScene.LoadScene();
-            }
-        }
-
-        public static void Draw(SpriteBatch spriteBatch)
-        {
-            CurrentScene.Draw(spriteBatch);
 
             Sketch.Begin(spriteBatch);
             {
-                if (exitTransition != null)
-                    exitTransition.Draw(spriteBatch);
-                if (enterTransition != null)
-                    enterTransition.Draw(spriteBatch);
+                if (!exitCompleted)
+                {
+                    exitTransition?.Draw(spriteBatch);
+                }
+                else
+                {
+                    enterTransition?.Draw(spriteBatch);
+                }
             }
             Sketch.End(spriteBatch);
+        }
+
+        internal static void Update()
+        {
+            UpdateTransitions();
+            UpdateCurrentScene();
+
+            if (DebugManager.Debugging && Input.Keyboard.Pressed(Keys.R))
+            {
+                CurrentScene?.LoadScene();
+            }
+        }
+
+        internal static void Draw(SpriteBatch spriteBatch)
+        {
+            CurrentScene?.Draw(spriteBatch);
+            DrawTransitions(spriteBatch);
         }
     }
 }

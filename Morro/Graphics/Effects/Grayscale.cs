@@ -7,7 +7,7 @@ namespace Morro.Graphics
 {
     class Grayscale : FX
     {
-        public Grayscale() : base(EffectType.Grayscale)
+        public Grayscale() : base("Grayscale")
         {
             Initialize();
         }

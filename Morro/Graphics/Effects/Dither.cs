@@ -11,7 +11,7 @@ namespace Morro.Graphics
     {
         public Texture2D Texture { get; private set; }
 
-        public Dither(Texture2D texture) : base(EffectType.Dither)
+        public Dither(Texture2D texture) : base("Dither")
         {
             Texture = texture;
 

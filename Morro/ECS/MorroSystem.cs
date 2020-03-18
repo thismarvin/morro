@@ -47,7 +47,7 @@ namespace Morro.ECS
         private readonly int[] entitiesAsArray;
         private bool entityDataChanged;
 
-        internal MorroSystem(Scene scene)
+        public MorroSystem(Scene scene)
         {
             RequiredComponents = new HashSet<Type>();
             BlacklistedComponents = new HashSet<Type>();
@@ -103,7 +103,7 @@ namespace Morro.ECS
         }
 
         /// <summary>
-        /// Initialize a set of <see cref="MorroSystem"/> types this system will subscribe to for future events.
+        /// Initialize a set of <see cref="IEventAnnouncer"/> types this system will subscribe to for future events.
         /// </summary>
         /// <param name="systems">The types of <see cref="IEventAnnouncer"/> this system will subscribe to.</param>
         public void Subscribe(params Type[] systems)

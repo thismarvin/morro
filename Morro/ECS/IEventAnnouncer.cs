@@ -13,7 +13,7 @@ namespace Morro.ECS
     {
         public static void AnnounceEvent(this IEventAnnouncer announcer)
         {
-            announcer.Announcement.Invoke(null, EventArgs.Empty);
+            announcer.Announcement?.Invoke(null, EventArgs.Empty);
         }
     }
 }

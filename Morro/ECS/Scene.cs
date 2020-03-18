@@ -36,6 +36,7 @@ namespace Morro.ECS
         private readonly SystemManager systemManager;
         private readonly ComponentManager componentManager;
         private readonly EntityManager entityManager;
+        private readonly EventManager eventManager;
 
         private readonly SparseSet entityRemovalQueue;
 
@@ -54,6 +55,7 @@ namespace Morro.ECS
             systemManager = new SystemManager(systemCapacity);
             componentManager = new ComponentManager(componentCapacity, entityCapacity);
             entityManager = new EntityManager(entityCapacity, systemManager, componentManager);
+            eventManager = new EventManager(systemManager);
 
             entityRemovalQueue = new SparseSet(EntityCapacity);
         }
@@ -62,6 +64,7 @@ namespace Morro.ECS
         public void RegisterSystem(params MorroSystem[] morroSystem)
         {
             systemManager.RegisterSystem(morroSystem);
+            eventManager.Crawl();
         }
 
         public int CreateEntity(params IComponent[] components)

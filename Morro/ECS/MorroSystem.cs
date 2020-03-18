@@ -15,6 +15,7 @@ namespace Morro.ECS
         public HashSet<Type> RequiredComponents { get; private set; }
         public HashSet<Type> BlacklistedComponents { get; private set; }
         public HashSet<Type> Dependencies { get; private set; }
+        public HashSet<Type> Subscriptions { get; private set; }
         protected internal HashSet<int> Entities { get; private set; }
 
         protected internal int[] EntitiesAsArray
@@ -51,6 +52,7 @@ namespace Morro.ECS
             RequiredComponents = new HashSet<Type>();
             BlacklistedComponents = new HashSet<Type>();
             Dependencies = new HashSet<Type>();
+            Subscriptions = new HashSet<Type>();
             Entities = new HashSet<int>();
             entitiesAsArray = new int[scene.EntityCapacity];
 
@@ -89,7 +91,7 @@ namespace Morro.ECS
         /// <summary>
         /// Initialize a set of <see cref="MorroSystem"/> types this system depends on running first before this system can run.
         /// </summary>
-        /// <param name="systems">The types of <see cref="MorroSystem"/> this systems depends on running first.</param>
+        /// <param name="systems">The types of <see cref="MorroSystem"/> this system depends on running first.</param>
         public void Depend(params Type[] systems)
         {
             Dependencies.Clear();
@@ -97,6 +99,20 @@ namespace Morro.ECS
             for (int i = 0; i < systems.Length; i++)
             {
                 Dependencies.Add(systems[i]);
+            }
+        }
+
+        /// <summary>
+        /// Initialize a set of <see cref="MorroSystem"/> types this system will subscribe to for future events.
+        /// </summary>
+        /// <param name="systems">The types of <see cref="IEventAnnouncer"/> this system will subscribe to.</param>
+        public void Subscribe(params Type[] systems)
+        {
+            Subscriptions.Clear();
+
+            for (int i = 0; i < systems.Length; i++)
+            {
+                Subscriptions.Add(systems[i]);
             }
         }
 

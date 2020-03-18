@@ -13,18 +13,5 @@ namespace Example.Components
         public float MoveSpeed { get; set; }
         public float MaxForce { get; set; }
         public float Angle { get; set; }
-
-        public CBoid()
-        {
-
-        }
-
-        public CBoid(float viewRadius, float moveSpeed, float maxForce, float angle)
-        {
-            ViewRadius = viewRadius;
-            MoveSpeed = moveSpeed;
-            MaxForce = maxForce;
-            Angle = angle;
-        }
     }
 }

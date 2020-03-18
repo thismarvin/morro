@@ -10,21 +10,15 @@ namespace Morro.ECS
 {
     class CSprite : IComponent
     {
-        public SpriteData SpriteData { get; set; }
         public Texture2D SpriteSheet { get; set; }
         public Microsoft.Xna.Framework.Rectangle Source { get; set; }
         public SpriteEffects SpriteEffect { get; set; }
-    }
 
-    static class CSpriteHelper
-    {
-        public static CSprite SetupSprite(this CSprite sprite, string name)
+        public CSprite(string name)
         {
-            sprite.SpriteData = SpriteManager.GetSpriteData(name);
-            sprite.SpriteSheet = AssetManager.GetImage(sprite.SpriteData.SpriteSheet);
-            sprite.Source = new Microsoft.Xna.Framework.Rectangle(sprite.SpriteData.X, sprite.SpriteData.Y, sprite.SpriteData.Width, sprite.SpriteData.Height);
-
-            return sprite;
+            SpriteData spriteData = SpriteManager.GetSpriteData(name);
+            SpriteSheet = AssetManager.GetImage(spriteData.SpriteSheet);
+            Source = new Microsoft.Xna.Framework.Rectangle(spriteData.X, spriteData.Y, spriteData.Width, spriteData.Height);
         }
     }
 }

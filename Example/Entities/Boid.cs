@@ -11,7 +11,12 @@ namespace Example.Entities
     {
         public static IComponent[] Create(float x, float y)
         {
-            CBoid boid = new CBoid(16, Morro.Maths.Random.Range(40, 50), 0.5f, 0);
+            CBoid boid = new CBoid()
+            {
+                ViewRadius = 16,
+                MoveSpeed = Morro.Maths.Random.Range(40, 50),
+                MaxForce = 0.5f
+            };
             CPhysicsBody physicsBody = new CPhysicsBody(Morro.Maths.Random.RandomVector2(boid.MoveSpeed), Microsoft.Xna.Framework.Vector2.Zero);
             CPosition position = new CPosition(x, y);
             CDimension dimension = new CDimension(2, 2);

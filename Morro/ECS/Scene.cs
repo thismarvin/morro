@@ -12,34 +12,38 @@ namespace Morro.ECS
 {
     abstract class Scene
     {
-        public List<Entity> Entities { get; private set; }
-        public List<Entity> EntityBuffer { get; private set; }
-        public PartitionerType PartitionerPreference { get; private set; }
-        public Partitioner Partitioner { get; private set; }
+        /// <summary>
+        /// By default all registered <see cref="MorroSystem"/>'s are ran asyncronously.
+        /// If this functionality is disabled, systems will run in the order they were registered.
+        /// </summary>
+        public bool AsynchronousSystemsEnabled
+        {
+            get => !systemManager.DisableAsynchronousUpdates;
+            set => systemManager.DisableAsynchronousUpdates = !value;
+        }
+
         public Camera Camera { get; private set; }
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
         public string Name { get; private set; }
         public Core.Rectangle SceneBounds { get; private set; }
 
+        public int SystemCapacity { get => systemManager.Capacity; }
+        public int ComponentCapacity { get => componentManager.Capacity; }
+        public int EntityCapacity { get => entityManager.Capacity; }
+        public int EntityCount { get => entityManager.EntityCount; }
 
-        private int totalEntities;
-        private int nextEntity;
+        private readonly SystemManager systemManager;
+        private readonly ComponentManager componentManager;
+        private readonly EntityManager entityManager;
+        private readonly EventManager eventManager;
 
-        private readonly Dictionary<string, Component[]> data;
-        private readonly Dictionary<string, System> systems;
-        public ComponentBag[] Lentities { get; private set; }
+        private readonly SparseSet entityRemovalQueue;
 
-        public Scene(string name)
+        public Scene(string name, int entityCapacity = 100, int componentCapacity = 64, int systemCapacity = 64)
         {
-            Entities = new List<Entity>();
-            EntityBuffer = new List<Entity>();
-
-            Name = SceneManager.FormatName(name);
+            Name = name;
             SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
-
-            PartitionerPreference = PartitionerType.Quadtree;
-            Partitioner = new Quadtree(SceneBounds, 4);
 
             Camera = new Camera(Name);
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
@@ -48,130 +52,88 @@ namespace Morro.ECS
             EnterTransition = new Pinhole(TransitionType.Enter);
             ExitTransition = new Fade(TransitionType.Exit);
 
-            totalEntities = 1000;
-            data = new Dictionary<string, Component[]>();
-            systems = new Dictionary<string, System>();
-            Lentities = new ComponentBag[totalEntities];
+            systemManager = new SystemManager(systemCapacity);
+            componentManager = new ComponentManager(componentCapacity, entityCapacity);
+            entityManager = new EntityManager(entityCapacity, systemManager, componentManager);
+            eventManager = new EventManager(systemManager);
+
+            entityRemovalQueue = new SparseSet(EntityCapacity);
         }
 
         #region ECS Stuff
-
-        public void AddSystem(System system)
+        public void RegisterSystem(params MorroSystem[] morroSystem)
         {
-            if (systems.ContainsKey(system.Name))
-                return;
-
-            systems.Add(system.Name, system);
+            systemManager.RegisterSystem(morroSystem);
+            eventManager.Crawl();
         }
 
-        public int AllocateEntity()
+        public int CreateEntity(params IComponent[] components)
         {
-            int next = nextEntity;
-            Lentities[next] = new ComponentBag();
+            int entity = entityManager.AllocateEntity();
+            entityManager.AddComponent(entity, components);
 
-            nextEntity = nextEntity + 1 > totalEntities ? 0 : ++nextEntity;
-            
-            return next;
+            return entity;
         }
 
-        public void Require(string componentName)
+        public void RemoveEntity(int entity)
         {
-            string formattedName = ComponentManager.FormatName(componentName);
-
-            if (data.ContainsKey(formattedName))
-                return;
-
-            data.Add(formattedName, new Component[totalEntities]);
+            entityRemovalQueue.Add((uint)entity);
         }
 
-        public void RegisterEntity(int entity)
+        public bool EntityContains(int entity, params Type[] components)
         {
-            foreach (KeyValuePair<string, System> entry in systems)
+            return entityManager.EntityContains(entity, components);
+        }
+
+        public void AddComponent(int entity, params IComponent[] components)
+        {
+            entityManager.AddComponent(entity, components);
+        }
+
+        public void RemoveComponent(int entity, params Type[] componentTypes)
+        {
+            entityManager.RemoveComponent(entity, componentTypes);
+        }
+
+        public IComponent[] GetData<T>() where T : IComponent
+        {
+            return componentManager.GetData<T>();
+        }
+
+        public T GetData<T>(int entity) where T : IComponent
+        {
+            return componentManager.GetData<T>(entity);
+        }
+
+        public T GetSystem<T>() where T : MorroSystem
+        {
+            return systemManager.GetSystem<T>();
+        }
+
+        protected void UpdateECS()
+        {
+            systemManager.Update();
+
+            if (entityRemovalQueue.Count != 0)
             {
-                entry.Value.RegisterEntity(this, entity);
+                foreach (uint entity in entityRemovalQueue)
+                {
+                    ClearEntity((int)entity);
+                }
+                entityRemovalQueue.Clear();
             }
         }
 
-        public Component[] GetData(string componentName)
+        protected void DrawECS()
         {
-            string formattedName = ComponentManager.FormatName(componentName);
-
-            if (!data.ContainsKey(formattedName))
-                return new Component[0];
-
-            return data[formattedName];
+            systemManager.Draw(Camera);
         }
 
-        public void UpdateECS()
+        private void ClearEntity(int entity)
         {
-            foreach (KeyValuePair<string, System> entry in systems)
-            {
-                entry.Value.Update(this);
-            }
-
-        }
-
-        public void DrawECS(SpriteBatch spriteBatch)
-        {
-            foreach (KeyValuePair<string, System> entry in systems)
-            {
-                entry.Value.Draw(spriteBatch, this);
-            }
-        }
-
-        public void AssignComponent(int entity, Component data)
-        {
-            if (!this.data.ContainsKey(data.Name))
-                throw new MorroException("didnt require that component type", new KeyNotFoundException());
-
-            Lentities[entity].AddComponent(data.Name);
-            this.data[data.Name][entity] = data;
-        }
-
-        public Component GetComponent(string componentName, int entity)
-        {
-            string formattedName = ComponentManager.FormatName(componentName);
-
-            return data[formattedName][entity];
+            entityManager.ClearEntity(entity);
         }
         #endregion
-        public List<Entity> Query(Core.Rectangle bounds)
-        {
-            List<Entity> result = new List<Entity>();
-            List<MonoObject> queryResult = Partitioner.Query(bounds);
-
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                if (queryResult[i] is Entity)
-                {
-                    result.Add((Entity)queryResult[i]);
-                }
-            }
-            result.Sort();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Quadtree"/>, and initialize a new <see cref="Quadtree"/>.
-        /// </summary>
-        /// <param name="capacity">the amount of <see cref="MonoObject"/>'s allowed in each <see cref="Quadtree"/>.</param>
-        protected void PreferQuadtreePartitioner(int capacity)
-        {
-            PartitionerPreference = PartitionerType.Quadtree;
-            Partitioner = new Quadtree(SceneBounds, capacity);
-        }
-
-        /// <summary>
-        /// Set the <see cref="PartitionerPreference"/> to <see cref="PartitionerType.Bin"/>, and initialize a new <see cref="Bin"/>.
-        /// </summary>
-        /// <param name="maximumDimension">the maximum dimension of the <see cref="MonoObject.Bounds"/> expected.</param>
-        protected void PreferBinPartitioner(int maximumDimension)
-        {
-            PartitionerPreference = PartitionerType.Bin;
-            int optimalBinSize = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
-            Partitioner = new Bin(SceneBounds, optimalBinSize);
-        }
 
         protected void SetSceneBounds(int width, int height)
         {
@@ -179,92 +141,8 @@ namespace Morro.ECS
                 return;
 
             SceneBounds = new Core.Rectangle(0, 0, width, height);
-            Partitioner.SetBoundary(SceneBounds);
 
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
-        }
-
-        protected void SpatialPartitioning()
-        {
-            Partitioner.Clear();
-            for (int i = 0; i < Entities.Count; i++)
-            {
-                Partitioner.Insert(Entities[i]);
-            }
-        }
-
-        protected virtual void UpdateEntities()
-        {
-            SpatialPartitioning();
-
-            for (int i = Entities.Count - 1; i >= 0; i--)
-            {
-                Entities[i].Update();
-
-                if (Entities[i].Remove)
-                    Entities.RemoveAt(i);
-            }
-
-            if (EntityBuffer.Count > 0)
-            {
-                for (int i = 0; i < EntityBuffer.Count; i++)
-                    Entities.Add(EntityBuffer[i]);
-
-                EntityBuffer.Clear();
-            }
-        }
-
-        private void UpdateSections(int start, int end)
-        {
-            for (int i = end - 1; i >= start; i--)
-            {
-                Entities[i].Update();
-
-                if (Entities[i].Remove)
-                    Entities.RemoveAt(i);
-            }
-        }
-
-        private Task UpdateSection(int start, int end)
-        {
-            return Task.Run(() => UpdateSections(start, end));
-        }
-
-        private Task[] DivideUpdateIntoTasks(int totalTasks)
-        {
-            Task[] result = new Task[totalTasks];
-            int increment = Entities.Count / totalTasks;
-            int start = 0;
-            int end = increment;
-            for (int i = 0; i < totalTasks; i++)
-            {
-                if (i != totalTasks - 1)
-                    result[i] = UpdateSection(start, end);
-                else
-                    result[i] = UpdateSection(start, Entities.Count);
-
-                start += increment;
-                end += increment;
-            }
-            return result;
-        }
-
-        protected virtual void UpdateEntities(int sections)
-        {
-            SpatialPartitioning();
-
-            Task.WaitAll(
-                DivideUpdateIntoTasks(sections)
-            );
-        }
-
-        protected virtual void DrawEntities(SpriteBatch spriteBatch)
-        {
-            List<Entity> queryResult = Query(Camera.Bounds);
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                queryResult[i].Draw(spriteBatch, Camera);
-            }
         }
 
         public abstract void LoadScene();

@@ -6,6 +6,26 @@ using System.Text;
 
 namespace Morro.Graphics
 {
+    /// <summary>
+    /// All of the basic <see cref="FX"/>'s included with Morro.
+    /// </summary>
+    public enum EffectType
+    {
+        Blur,
+        ChromaticAberration,
+        Dither,
+        DropShadow,
+        Grayscale,
+        Invert,
+        Outline,
+        Palette,
+        Quantize
+    }
+
+    /// <summary>
+    /// An abstraction of a helper class used to manage the parameters and logic of a custom registered <see cref="Microsoft.Xna.Framework.Graphics.Effect"/>. 
+    /// Refer to <see cref="Morro.Graphics.EffectType"/> to see all implementations of this class by Morro.
+    /// </summary>
     abstract class FX : IDisposable
     {
         public Effect Effect { get; private set; }
@@ -13,13 +33,8 @@ namespace Morro.Graphics
 
         public FX(string type)
         {
-            EffectType = type.ToLowerInvariant();
+            EffectType = type;
             Effect = AssetManager.GetEffect(EffectType).Clone();
-        }
-
-        public void Reset()
-        {
-            Initialize();
         }
 
         protected abstract void Initialize();

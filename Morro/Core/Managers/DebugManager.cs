@@ -11,60 +11,50 @@ using System.Text;
 
 namespace Morro.Core
 {
-    /// Maybe make this more Modular?
-    /// For example you can have a DebugFlag class or like a DebugEntry class.
     static class DebugManager
     {
         public static bool Debugging { get; private set; }
         public static bool ShowWireFrame { get; private set; }
         public static bool ShowDebugLayer { get; private set; }
 
-        private static Dictionary<string, DebugEntry> debugEntries;
+        private static readonly ResourceHandler<DebugEntry> debugEntries;
 
-        internal static void Initialize()
+        static DebugManager()
         {
-            debugEntries = new Dictionary<string, DebugEntry>();
+            debugEntries = new ResourceHandler<DebugEntry>();
 
-            AddDebugEntry(new DebugEntry("FPS", "{0} FPS"));
-            AddDebugEntry(new DebugEntry("Scene", "SCENE: {0}"));
-            AddDebugEntry(new DebugEntry("Entities", "ENTITIES: {0}"));
-        }
-
-        internal static string FormatName(string name)
-        {
-            return name.ToLowerInvariant();
+            RegisterDebugEntry(new DebugEntry("FPS", "{0} FPS"));
+            RegisterDebugEntry(new DebugEntry("Scene", "SCENE: {0}"));
+            RegisterDebugEntry(new DebugEntry("Entities", "E: {0}"));
         }
 
         #region Handle DebugEntries
-        public static void AddDebugEntry(DebugEntry debugEntry)
+        /// <summary>
+        /// Register a <see cref="DebugEntry"/> to be managed by Morro.
+        /// </summary>
+        /// <param name="debugEntry">The debug entry you want to register.</param>
+        public static void RegisterDebugEntry(DebugEntry debugEntry)
         {
-            if (debugEntries.ContainsKey(debugEntry.Name))
-                throw new MorroException("A DebugEntry with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            debugEntries.Add(debugEntry.Name, debugEntry);
+            debugEntries.Register(debugEntry.Name, debugEntry);
         }
 
+        /// <summary>
+        /// Get a <see cref="DebugEntry"/> that was previously registered.
+        /// </summary>
+        /// <param name="name">The name given to the debug entry that was previously registered.</param>
+        /// <returns>The registered debug entry with the given name.</returns>
         public static DebugEntry GetDebugEntry(string name)
         {
-            string formattedName = FormatName(name);
-            VerifyDebugEntryExists(formattedName);
-
-            return debugEntries[formattedName];
+            return debugEntries.Get(name);
         }
 
+        /// <summary>
+        /// Remove a registered <see cref="DebugEntry"/>.
+        /// </summary>
+        /// <param name="name">The name given to the debug entry that was previously registered.</param>
         public static void RemoveDebugEntry(string name)
         {
-            string formattedName = FormatName(name);
-            VerifyDebugEntryExists(formattedName);
-
-            debugEntries[formattedName].Dispose();
-            debugEntries.Remove(formattedName);
-        }
-
-        private static void VerifyDebugEntryExists(string name)
-        {
-            if (!debugEntries.ContainsKey(name))
-                throw new Exception("A debug entry with that name does not exist.", new KeyNotFoundException());
+            debugEntries.Remove(name);
         }
         #endregion
 
@@ -100,47 +90,47 @@ namespace Morro.Core
 
         private static void UpdateInfo()
         {
-            GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS).ToString(CultureInfo.InvariantCulture));
+            GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS));
             GetDebugEntry("Scene").SetInformation(SceneManager.CurrentScene.Name);
-            GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.Entities.Count.ToString(CultureInfo.InvariantCulture));
+            GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.EntityCount);
         }
 
-        private static void DrawDebugLayer(SpriteBatch spriteBatch)
-        {
-            if (!ShowDebugLayer)
-                return;
+        //private static void DrawDebugLayer(SpriteBatch spriteBatch)
+        //{
+        //    if (!ShowDebugLayer)
+        //        return;
 
-            List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                if (queryResult[i] is IDebugable)
-                {
-                    ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
-                }
-            }
-        }
+        //    //List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
+        //    //for (int i = 0; i < queryResult.Count; i++)
+        //    //{
+        //    //    if (queryResult[i] is IDebugable)
+        //    //    {
+        //    //        ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
+        //    //    }
+        //    //}
+        //}
 
-        private static void DrawDebugEntries(SpriteBatch spriteBatch)
+        private static void DrawDebugEntries()
         {
             if (!Debugging)
                 return;
 
-            foreach (KeyValuePair<string, DebugEntry> entry in debugEntries)
+            foreach (DebugEntry debugEntry in debugEntries)
             {
-                entry.Value.Draw(spriteBatch, CameraType.TopLeftAlign);
+                debugEntry.Draw(CameraManager.GetCamera(CameraType.TopLeftAlign));
             }
         }
 
-        public static void Update()
+        internal static void Update()
         {
             UpdateInput();
             UpdateInfo();
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw(SpriteBatch spriteBatch)
         {
-            DrawDebugLayer(spriteBatch);
-            DrawDebugEntries(spriteBatch);
+            //DrawDebugLayer(spriteBatch);
+            DrawDebugEntries();
         }
     }
 }

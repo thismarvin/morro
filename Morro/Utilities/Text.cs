@@ -3,13 +3,29 @@ using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.Debug;
 using Morro.Graphics;
+using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Morro.Utilities
 {
-    class Text : MonoObject, IDisposable, IDebugable
+    /// <summary>
+    /// A handful of default <see cref="BMFont"/>'s included with Morro.
+    /// </summary>
+    public enum FontType
+    {
+        /// <summary>
+        /// An 8px tall bitmap font.
+        /// </summary>
+        Probity,
+        /// <summary>
+        /// A 16px tall bitmap font.
+        /// </summary>
+        Sparge,        
+    }
+
+    class Text : MorroObject, IDisposable, IDebugable
     {
         public string Content { get; private set; }
         public Vector2 Scale { get; private set; }
@@ -17,12 +33,15 @@ namespace Morro.Utilities
 
         private readonly BMFont font;
         private readonly BMFontShader shader;
-        private readonly List<Sprite> sprites;
+        private Sprite[] sprites;
+        private int spriteIndex;
         private Matrix transform;
 
-        private readonly AABB literalBounds;
-        private readonly Quad exactBounds;
-        private readonly AABB broadBounds;
+        private readonly MAABB literalBounds;
+        private readonly MQuad exactBounds;
+        private readonly MAABB broadBounds;
+
+        private readonly SpriteCollection spriteCollection;
 
         public Text(float x, float y, string content, string fontName) : base(x, y, 1, 1)
         {
@@ -31,14 +50,20 @@ namespace Morro.Utilities
             Scale = new Vector2(1, 1);
             transform = Matrix.Identity;
 
-            sprites = new List<Sprite>();
             shader = new BMFontShader(Color.White, Color.Black, Color.Transparent);
 
-            literalBounds = new AABB(X, Y, Width, Height, 1, PICO8.GrassGreen, VertexInformation.Dynamic);
-            exactBounds = new Quad(X, Y, Width, Height, 1, PICO8.BloodRed, VertexInformation.Dynamic);
-            broadBounds = new AABB(X, Y, Width, Height, 1, PICO8.FleshPink, VertexInformation.Dynamic);
+            literalBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.GrassGreen };
+            exactBounds = new MQuad(X, Y, Width, Height) { Color = PICO8.BloodRed };
+            broadBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.FleshPink };
+
+            spriteCollection = new SpriteCollection();
 
             CreateText();
+        }
+
+        public Text(float x, float y, string content, FontType fontType) : this(x, y, content, $"Morro_{fontType.ToString()}")
+        {
+
         }
 
         public override void SetPosition(float x, float y)
@@ -96,37 +121,43 @@ namespace Morro.Utilities
 
         private void CreateText()
         {
-            sprites.Clear();
+            if (Content.Length <= 0)
+                return;
+
+            sprites = new Sprite[Content.Length];
+            spriteIndex = 0;
 
             float xFinal = X;
             char character;
             BMFontCharacter characterData;
-            Sprite sprite;
 
             for (int i = 0; i < Content.Length; i++)
             {
                 character = Content.Substring(i, 1).ToCharArray()[0];
                 characterData = font.GetCharacterData(character);
 
-                sprite = new Sprite(xFinal + characterData.XOffset * Scale.X, Y + characterData.YOffset * Scale.Y, font.FontFace + " " + (int)character)
+                sprites[spriteIndex++] = new Sprite(xFinal + characterData.XOffset * Scale.X, Y + characterData.YOffset * Scale.Y, font.FontFace + " " + (int)character)
                 {
                     Effect = shader.Effect,
                     Scale = Scale,
                     Rotation = Rotation
                 };
 
-                sprites.Add(sprite);
-
                 xFinal += characterData.XAdvance * Scale.X;
             }
 
-            SetDimensions((int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
+            spriteCollection.SetCollection(sprites);
+            SetBounds(X, Y, (int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
+
             exactBounds.SetBounds(X, Y, Width, Height);
             literalBounds.SetBounds(X, Y, Width, Height);
         }
 
         private void UpdateText()
         {
+            if (Content.Length <= 0)
+                return;
+
             float xFinal = X;
             char character;
             BMFontCharacter characterData;
@@ -150,7 +181,9 @@ namespace Morro.Utilities
                 xFinal += characterData.XAdvance * Scale.X;
             }
 
-            SetDimensions((int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
+            spriteCollection.SetCollection(sprites);
+            SetBounds(X, Y, (int)Math.Ceiling(xFinal - X), (int)Math.Ceiling(font.Size * Scale.Y));
+
             exactBounds.SetBounds(X, Y, Width, Height);
             literalBounds.SetBounds(X, Y, Width, Height);
 
@@ -162,18 +195,19 @@ namespace Morro.Utilities
             if (Rotation == 0)
                 return;
 
-            exactBounds.SetRotationOffset(Width / 2, Height / 2);
-            exactBounds.SetRotation(Rotation);
-            exactBounds.SetupForCollisionTesting();
+            exactBounds.RotationOffset = new Vector2(Width / 2, Height / 2);
+            exactBounds.Rotation = Rotation;
 
-            float xMin = VertexFinder(exactBounds.TransformedVertices, "x", "minimum");
-            float xMax = VertexFinder(exactBounds.TransformedVertices, "x", "maximum");
-            float yMin = VertexFinder(exactBounds.TransformedVertices, "y", "minimum");
-            float yMax = VertexFinder(exactBounds.TransformedVertices, "y", "maximum");
+            CollisionInformation collisionInformation = exactBounds.GetCollisionInformation();
+
+            float xMin = VertexFinder(collisionInformation.Vertices, "x", "minimum");
+            float xMax = VertexFinder(collisionInformation.Vertices, "x", "maximum");
+            float yMin = VertexFinder(collisionInformation.Vertices, "y", "minimum");
+            float yMax = VertexFinder(collisionInformation.Vertices, "y", "maximum");
             float width = xMax - xMin;
             float height = yMax - yMin;
 
-            broadBounds.SetBounds(xMin, yMin, (int)Math.Ceiling(width), (int)Math.Ceiling(height));
+            broadBounds.SetBounds(xMin, yMin, width, height);
         }
 
         private float VertexFinder(Vector2[] vertices, string dimension, string qualifier)
@@ -227,14 +261,9 @@ namespace Morro.Utilities
             literalBounds.Draw(spriteBatch, camera);
         }
 
-        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        public void Draw(Camera camera)
         {
-            Draw(spriteBatch, CameraManager.GetCamera(cameraType));
-        }
-
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
-        {
-            Batcher.DrawSprites(spriteBatch, sprites, camera);
+            spriteCollection.Draw(camera);
         }
 
         #region IDisposable Support

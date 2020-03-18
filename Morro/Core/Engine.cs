@@ -10,8 +10,9 @@ namespace Morro.Core
     {
         public static GraphicsDeviceManager Graphics { get; private set; }
         public static Engine Instance { get; private set; }
-        public static RenderTarget2D RenderTarget { get { return WindowManager.RenderTarget; } }
+        public static RenderTarget2D RenderTarget { get => WindowManager.RenderTarget; }
         public static float DeltaTime { get; private set; }
+        public static TimeSpan TotalGameTime { get; private set; }
 
         private SpriteBatch spriteBatch;
 
@@ -31,28 +32,13 @@ namespace Morro.Core
 
         protected override void Initialize()
         {
-            AssetManager.Initialize();
-            SpriteManager.Initialize();
-            AssetManager.LoadContent();
-
-            GraphicsManager.Initialize();
-            WindowManager.Initialize();
-
-            RandomManager.Initialize();            
-            SketchManager.Initialize();
-            InputManager.Initialize();
-            DebugManager.Initialize();
-            CameraManager.Initialize();
-            SoundManager.Initialize();
-            ComponentManager.Initialize();
-            SceneManager.Initialize();
-
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            AssetManager.LoadContent();
         }
 
         protected override void UnloadContent()
@@ -68,9 +54,9 @@ namespace Morro.Core
         protected override void Update(GameTime gameTime)
         {
             DeltaTime = (float)gameTime?.ElapsedGameTime.TotalSeconds;
+            TotalGameTime = gameTime.TotalGameTime;
 
             InputManager.Update();
-            GraphicsManager.Update();
             WindowManager.Update();
             CameraManager.Update();
             SceneManager.Update();
@@ -85,7 +71,7 @@ namespace Morro.Core
             SceneManager.Draw(spriteBatch);
             SketchManager.Draw(spriteBatch);
             DebugManager.Draw(spriteBatch);
-            WindowManager.Draw(spriteBatch);
+            WindowManager.Draw();
 
             base.Draw(gameTime);
         }

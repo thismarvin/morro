@@ -9,8 +9,8 @@ namespace Morro.Input
 {
     static class Mouse
     {
-        public static Vector2 SceneLocation { get { return sceneLocation; } }
-        public static Vector2 WindowLocation { get { return windowLocation; } }
+        public static Vector2 SceneLocation { get => sceneLocation; }
+        public static Vector2 WindowLocation { get => windowLocation; }
         public static Core.Rectangle DynamicBounds { get; private set; }
         public static Core.Rectangle StaticBounds { get; private set; }
 

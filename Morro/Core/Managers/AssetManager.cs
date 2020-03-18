@@ -7,133 +7,156 @@ using System.Text;
 
 namespace Morro.Core
 {
-    class AssetManager
+    static class AssetManager
     {
-        private static Dictionary<string, Texture2D> textures;
-        private static Dictionary<string, Effect> effects;
-        private static Dictionary<string, SoundEffect> soundEffects;
-        private static Dictionary<string, BMFont> fonts;
+        private static readonly ResourceHandler<Texture2D> textures;
+        private static readonly ResourceHandler<Effect> effects;
+        private static readonly ResourceHandler<SoundEffect> soundEffects;
+        private static readonly ResourceHandler<BMFont> fonts;
 
-        public static void Initialize()
+        static AssetManager()
         {
-            textures = new Dictionary<string, Texture2D>();
-            effects = new Dictionary<string, Effect>();
-            soundEffects = new Dictionary<string, SoundEffect>();
-            fonts = new Dictionary<string, BMFont>();
+            textures = new ResourceHandler<Texture2D>();
+            effects = new ResourceHandler<Effect>();
+            soundEffects = new ResourceHandler<SoundEffect>();
+            fonts = new ResourceHandler<BMFont>();
         }
-                  
+
         #region Handle Images
+        /// <summary>
+        /// Load a <see cref="Texture2D"/> into memory.
+        /// </summary>
+        /// <param name="name">The name that the image being loaded will be referenced as.</param>
+        /// <param name="path">The relative path to the image contained in the Content folder.</param>
         public static void LoadImage(string name, string path)
         {
-            string formattedName = FormatName(name);
-            if (textures.ContainsKey(formattedName))
-                throw new MorroException("An Image with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            textures.Add(formattedName, Engine.Instance.Content.Load<Texture2D>(path));
+            textures.Register(name, Engine.Instance.Content.Load<Texture2D>(path));
         }
 
+        /// <summary>
+        /// Get a <see cref="Texture2D"/> that was already loaded into memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded image.</param>
+        /// <returns>The loaded <see cref="Texture2D"/> associated with the given name.</returns>
         public static Texture2D GetImage(string name)
         {
-            string formattedName = FormatName(name);
-            VerifyImage(formattedName);
-
-            return textures[formattedName];
+            return textures.Get(name);
         }
 
-        public static void RemoveImage(string name)
+        /// <summary>
+        /// Unload an already loaded <see cref="Texture2D"/> from memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded image.</param>
+        public static void UnloadImage(string name)
         {
-            string formattedName = FormatName(name);
-            VerifyImage(formattedName);
-
-            textures[formattedName].Dispose();
-            textures.Remove(formattedName);
+            textures.Remove(name);
         }
         #endregion
 
         #region Handle Effects
+        /// <summary>
+        /// Load a <see cref="Effect"/> into memory.
+        /// </summary>
+        /// <param name="name">The name that the effect being loaded will be referenced as.</param>
+        /// <param name="path">The relative path to the effect contained in the Content folder.</param>
         public static void LoadEffect(string name, string path)
         {
-            string formattedName = FormatName(name);
-            if (effects.ContainsKey(formattedName))
-                throw new MorroException("An Effect with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            effects.Add(formattedName, Engine.Instance.Content.Load<Effect>(path));
+            effects.Register(name, Engine.Instance.Content.Load<Effect>(path));
         }
 
+        /// <summary>
+        /// Get a <see cref="Effect"/> that was already loaded into memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded effect.</param>
+        /// <returns>The loaded <see cref="Effect"/> associated with the given name.</returns>
         public static Effect GetEffect(string name)
         {
-            string formattedName = FormatName(name);
-            VerifyEffect(formattedName);
-
-            return effects[formattedName];
+            return effects.Get(name);
         }
 
-        public static void RemoveEffect(string name)
+        /// <summary>
+        /// Unload an already loaded <see cref="Effect"/> from memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded effect.</param>
+        public static void UnloadEffect(string name)
         {
-            string formattedName = FormatName(name);
-            VerifyEffect(formattedName);
-
-            effects[formattedName].Dispose();
-            effects.Remove(formattedName);
+            effects.Remove(name);
         }
         #endregion
 
-        #region Handle Sound Effects
+        #region Handle SoundEffects
+        /// <summary>
+        /// Load a <see cref="SoundEffect"/> into memory.
+        /// </summary>
+        /// <param name="name">The name that the .wav file being loaded will be referenced as.</param>
+        /// <param name="path">The relative path to the .wav file contained in the Content folder.</param>
         public static void LoadSoundEffect(string name, string path)
         {
-            string formattedName = FormatName(name);
-            if (soundEffects.ContainsKey(formattedName))
-                throw new MorroException("An Effect with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            soundEffects.Add(formattedName, Engine.Instance.Content.Load<SoundEffect>(path));
+            soundEffects.Register(name, Engine.Instance.Content.Load<SoundEffect>(path));
         }
 
+        /// <summary>
+        /// Get a <see cref="SoundEffect"/> that was already loaded into memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded sound effect.</param>
+        /// <returns>The loaded <see cref="SoundEffect"/> associated with the given name.</returns>
         public static SoundEffect GetSoundEffect(string name)
         {
-            string formattedName = FormatName(name);
-            VerifySoundEffect(formattedName);
-
-            return soundEffects[formattedName];
+            return soundEffects.Get(name);
         }
 
-        public static void RemoveSoundEffect(string name)
+        /// <summary>
+        /// Unload an already loaded <see cref="SoundEffect"/> from memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded sound effect.</param>
+        public static void UnloadSoundEffect(string name)
         {
-            string formattedName = FormatName(name);
-            VerifySoundEffect(formattedName);
-
-            soundEffects[formattedName].Dispose();
-            soundEffects.Remove(formattedName);
+            soundEffects.Remove(name);
         }
         #endregion
 
         #region Handle BMFonts
+        /// <summary>
+        /// Load a <see cref="BMFont"/> into memory.
+        /// </summary>
+        /// <param name="name">The name that the BMFont being loaded will be referenced as.</param>
+        /// <param name="path">The relative path to the BMFont contained in the Content folder.</param>
         public static void LoadFont(string name, string path)
         {
-            string formattedName = FormatName(name);
-            if (fonts.ContainsKey(formattedName))
-                throw new MorroException("A Font with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            fonts.Add(formattedName, Engine.Instance.Content.Load<BMFont>(path));
+            fonts.Register(name, Engine.Instance.Content.Load<BMFont>(path));
         }
 
+        /// <summary>
+        /// Get a <see cref="BMFont"/> that was already loaded into memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded font.</param>
+        /// <returns>The loaded <see cref="BMFont"/> associated with the given name.</returns>
         public static BMFont GetFont(string name)
         {
-            string formattedName = FormatName(name);
-            VerifyFont(formattedName);
-
-            return fonts[formattedName];
+            return fonts.Get(name);
         }
 
-        public static void RemoveFont(string name)
+        /// <summary>
+        /// Get a <see cref="BMFont"/> that was already loaded into memory.
+        /// </summary>
+        /// <param name="fontType">The basic font type you want to get.</param>
+        /// <returns>The loaded <see cref="BMFont"/> associated with the given name.</returns>
+        public static BMFont GetFont(FontType fontType)
         {
-            string formattedName = FormatName(name);
-            VerifyFont(formattedName);
+            return fonts.Get($"Morro_{fontType}");
+        }
 
-            fonts.Remove(formattedName);
+        /// <summary>
+        /// Unload an already loaded <see cref="BMFont"/> from memory.
+        /// </summary>
+        /// <param name="name">The name assigned to a previously loaded font.</param>
+        public static void UnloadFont(string name)
+        {
+            fonts.Remove(name);
         }
         #endregion
 
-        public static void LoadContent()
+        internal static void LoadContent()
         {
             LoadEffect("Blur", "Assets/Effects/Blur");
             LoadEffect("ChromaticAberration", "Assets/Effects/ChromaticAberration");
@@ -145,56 +168,18 @@ namespace Morro.Core
             LoadEffect("Palette", "Assets/Effects/Palette");
             LoadEffect("Quantize", "Assets/Effects/Quantize");
             LoadEffect("BMFontShader", "Assets/Effects/BMFontShader");
+            LoadEffect("PolygonShader", "Assets/Effects/Polygon");
 
-            LoadFont("Probity", "Assets/Fonts/probity");
-            LoadFont("Sparge", "Assets/Fonts/sparge");
+            LoadFont("Morro_Probity", "Assets/Fonts/probity");
+            LoadFont("Morro_Sparge", "Assets/Fonts/sparge");
         }
 
-        public static void UnloadContent()
+        internal static void UnloadContent()
         {
-            foreach (KeyValuePair<string, Texture2D> pair in textures)
-            {
-                pair.Value.Dispose();
-            }
-
-            foreach (KeyValuePair<string, Effect> pair in effects)
-            {
-                pair.Value.Dispose();
-            }
-
-            foreach (KeyValuePair<string, SoundEffect> pair in soundEffects)
-            {
-                pair.Value.Dispose();
-            }
-        }
-
-        internal static string FormatName(string name)
-        {
-            return name.ToLowerInvariant();
-        }
-
-        private static void VerifyImage(string name)
-        {
-            if (!textures.ContainsKey(name))
-                throw new MorroException("An image with that name has not been loaded.", new KeyNotFoundException());
-        }
-
-        private static void VerifyEffect(string name)
-        {
-            if (!effects.ContainsKey(name))
-                throw new MorroException("An effect with that name has not been loaded.", new KeyNotFoundException());
-        }
-
-        private static void VerifySoundEffect(string name)
-        {
-            if (!soundEffects.ContainsKey(name))
-                throw new MorroException("A sound effect with that name has not been loaded.", new KeyNotFoundException());
-        }
-
-        private static void VerifyFont(string name)
-        {
-            if (!fonts.ContainsKey(name))
-                throw new MorroException("A font with that name has not been loaded.", new KeyNotFoundException());
+            textures.Dispose();
+            effects.Dispose();
+            soundEffects.Dispose();
+            fonts.Dispose();
         }
     }
 }

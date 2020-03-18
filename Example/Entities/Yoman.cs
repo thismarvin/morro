@@ -1,28 +1,34 @@
 ﻿using Example.Components;
+using Microsoft.Xna.Framework;
 using Morro.ECS;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Morro.Maths;
 
 namespace Example.Entities
 {
     static class Yoman
     {
-        public static int Create(Scene scene, int x, int y)
+        private static readonly Color[] palette = { Color.White, Color.Red, Color.Orange, Color.Blue };
+
+        public static IComponent[] Create(float x, float y, float size)
         {
-            int entity = scene.AllocateEntity();
+            CPosition position = new CPosition(x, y);
+            CDimension dimension = new CDimension(size, size);
+            CTransform transform = new CTransform()
+            {
+                Rotation = (float)Random.Range(0, System.Math.PI * 2),
+                RotationOffset = new Vector2(size / 2, size / 2),
+            };
 
-            scene.Require("Transform");
-            scene.Require("PhysicsBody");
-            scene.Require("DrawableBody");
-
-            scene.AssignComponent(entity, new Transform(x, y));
-            scene.AssignComponent(entity, new PhysicsBody(10));
-            scene.AssignComponent(entity, new DrawableBody());
-
-            scene.RegisterEntity(entity);
-
-            return entity;
+            return new IComponent[]
+            {
+                position,
+                dimension,
+                transform,
+                new CColor(palette[Random.Range(0, palette.Length - 1)]),
+                new CQuad(),
+                new CPhysicsBody(Random.RandomVector2(Random.Range(0, 300)), new Vector2(0, 75)),
+                new CPartitionable()
+            };
         }
     }
 }

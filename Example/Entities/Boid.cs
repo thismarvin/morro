@@ -1,203 +1,44 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Morro.Core;
+﻿using Example.Components;
 using Morro.ECS;
 using Morro.Graphics;
-using Morro.Maths;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Example.Entities
 {
-    class Boid : Kinetic
+    static class Boid
     {
-        private readonly RegularPolygon body;        
-        private readonly float viewRadius;
-        private readonly float maxForce;
-        private float angle;
-
-        public Boid(float x, float y) : base(x, y, 4, 2, 1)
+        public static IComponent[] Create(float x, float y)
         {
-            body = new RegularPolygon(X, Y, Width, Height, 3, Color.Black, VertexInformation.Static);            
-            MoveSpeed = RandomHelper.Range(40, 50);
-            viewRadius = 16;
-            maxForce = 0.5f;
-
-            Velocity = new Vector2
-            (
-                (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f,
-                (-MoveSpeed + RandomHelper.Range(0, 5) * MoveSpeed * 2 / 5) * 0.1f
-            );
-
-            body.SetRotationOffset(body.Width / 2, body.Height / 2);
-        }
-
-        public override void SetPosition(float x, float y)
-        {
-            base.SetPosition(x, y);
-            body.SetPosition(X, Y);
-        }
-
-        protected override void Collision()
-        {
-            if (Bounds.Right < 0)
+            CBoid boid = new CBoid()
             {
-                SetPosition(SceneManager.CurrentScene.SceneBounds.Width, Y);
-            }
-            else if (Bounds.Left > SceneManager.CurrentScene.SceneBounds.Width)
+                ViewRadius = 16,
+                MoveSpeed = Morro.Maths.Random.Range(40, 50),
+                MaxForce = 0.5f
+            };
+            CPhysicsBody physicsBody = new CPhysicsBody(Morro.Maths.Random.RandomVector2(boid.MoveSpeed), Microsoft.Xna.Framework.Vector2.Zero);
+            CPosition position = new CPosition(x, y);
+            CDimension dimension = new CDimension(2, 2);
+            CTransform transform = new CTransform()
             {
-                SetPosition(0 - Width, Y);
-            }
+                Scale = new Microsoft.Xna.Framework.Vector3(2, 1, 1),
+                Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X),
+                RotationOffset = new Microsoft.Xna.Framework.Vector2(dimension.Width / 2, dimension.Height / 2)
+            };
+            CColor color = new CColor(PICO8.MidnightBlack);
 
-            if (Bounds.Bottom < 0)
+            return new IComponent[]
             {
-                SetPosition(X, SceneManager.CurrentScene.SceneBounds.Height);
-            }
-            else if (Bounds.Top > SceneManager.CurrentScene.SceneBounds.Height)
-            {
-                SetPosition(X, 0 - Height);
-            }
-        }
-
-        private Vector2 Seperation(List<Entity> queryResult)
-        {
-            Vector2 result = Vector2.Zero;
-            Vector2 cumulative = Vector2.Zero;
-            Vector2 force;
-            int total = 0;
-            float distance;
-
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                if (queryResult[i] == this)
-                    continue;
-
-                if (!(queryResult[i] is Boid))
-                    continue;
-
-                distance = Vector2.Distance(Center, queryResult[i].Center);
-
-                if (distance > 0 && distance < queryResult[i].Width * 0.75f)
-                {
-                    force = Center - queryResult[i].Center;
-                    force /= distance * distance;
-                    cumulative += force;
-                    total++;
-                }
-            }
-
-            if (total > 0)
-            {
-                cumulative /= total;
-                cumulative.SetMagnitude(MoveSpeed);
-                result = cumulative - Velocity;
-                result.Limit(maxForce);
-            }
-
-            return result;
-        }
-
-        private Vector2 Alignment(List<Entity> queryResult)
-        {
-            Vector2 result = Vector2.Zero;
-            Vector2 cumulative = Vector2.Zero;
-            int total = 0;
-            float distance;
-
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                if (queryResult[i] == this)
-                    continue;
-
-                if (!(queryResult[i] is Boid))
-                    continue;
-
-                distance = Vector2.Distance(Center, queryResult[i].Center);
-
-                if (distance > 0 && distance < viewRadius)
-                {
-                    cumulative += ((Boid)queryResult[i]).Velocity;
-                    total++;
-                }
-            }
-
-            if (total > 0)
-            {
-                cumulative /= total;
-                cumulative.SetMagnitude(MoveSpeed);
-                result = cumulative - Velocity;
-                result.Limit(maxForce);
-            }
-
-            return result;
-        }
-
-        private Vector2 Cohesion(List<Entity> queryResult)
-        {
-            Vector2 result = Vector2.Zero;
-            Vector2 cumulative = Vector2.Zero;
-            int total = 0;
-            float distance;
-
-            for (int i = 0; i < queryResult.Count; i++)
-            {
-                if (queryResult[i] == this)
-                    continue;
-
-                if (!(queryResult[i] is Boid))
-                    continue;
-
-                distance = Vector2.Distance(Center, queryResult[i].Center);
-
-                if (distance > 0 && distance < viewRadius)
-                {
-                    cumulative += queryResult[i].Center;
-                    total++;
-                }
-            }
-
-            if (total > 0)
-            {
-                cumulative /= total;
-                cumulative -= Center;
-                cumulative.SetMagnitude(MoveSpeed);
-                result = cumulative - Velocity;
-                result.Limit(maxForce);
-            }
-
-            return result;
-        }
-
-        private void UpdateFlocking()
-        {
-            List<Entity> queryResult = SceneManager.CurrentScene.Query(GetQueryingBounds((int)viewRadius));
-
-            Vector2 separation = Seperation(queryResult);
-            Vector2 alignment = Alignment(queryResult);
-            Vector2 cohesion = Cohesion(queryResult);
-
-            separation *= 3;
-            alignment *= 1.5f;
-            cohesion *= 0.75f;
-
-            Velocity += separation + alignment + cohesion;
-
-            angle = (float)Math.Atan2(Velocity.Y, Velocity.X);
-            body.SetRotation(angle + MathHelper.Pi);
-        }
-
-        public override void Update()
-        {
-            UpdateFlocking();
-
-            base.Update();
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, Camera camera)
-        {
-            body.Draw(spriteBatch, camera);
+                boid,
+                physicsBody,
+                position,
+                dimension,
+                transform,
+                color,
+                new CTriangle(),
+                new CPartitionable(),
+            };
         }
     }
 }

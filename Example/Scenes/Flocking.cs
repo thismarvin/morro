@@ -1,41 +1,35 @@
-﻿using Example.Entities;
-using Microsoft.Xna.Framework;
+﻿using Example.Components;
+using Example.Entities;
+using Example.Systems;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.ECS;
 using Morro.Graphics;
-using Morro.Input;
-using Morro.Maths;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Example.Scenes
 {
     class Flocking : Scene
     {
-        private int totalBoids;
-
-        public Flocking() : base("Flocking")
+        public Flocking() : base("Flocking", 2000, 16, 16)
         {
-            Initialize();
-        }
-
-        private void Initialize()
-        {
-            PreferBinPartitioner(8);
-            totalBoids = 500;
+            RegisterSystem
+            (
+                new SWrapAround(this),
+                new SHunting(this),
+                new SBinPartitioner(this, 64, 60),
+                new SFlocking(this),
+                new SPhysics(this),
+                new STriangle(this)
+            );
         }
 
         public override void LoadScene()
         {
-            Entities.Clear();
 
-            for (int i = 0; i < totalBoids; i++)
-            {
-                Entities.Add(new Boid(RandomHelper.Range(32, SceneBounds.Width - 32), RandomHelper.Range(32, SceneBounds.Height - 32)));
-            }
         }
 
         public override void UnloadScene()
@@ -45,19 +39,45 @@ namespace Example.Scenes
 
         public override void Update()
         {
-            UpdateEntities(4);
+            UpdateECS();
+
+            if (Morro.Input.Mouse.PressedLeftClick())
+            {
+                CreateBoids();
+            }
+            if (Morro.Input.Mouse.PressedRightClick())
+            {
+                CreatePredators();
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             Sketch.CreateBackgroundLayer(spriteBatch, PICO8.SkyBlue);
 
-            Sketch.AttachEffect(new DropShadow(Engine.RenderTarget, new Vector2(1, 1), WindowManager.Scale));
+            Sketch.AttachEffect(new DropShadow(Engine.RenderTarget));
             Sketch.Begin(spriteBatch);
             {
-                DrawEntities(spriteBatch);
+                DrawECS();
             }
             Sketch.End(spriteBatch);
+        }
+
+        private void CreateBoids()
+        {
+            int buffer = 32;
+
+            for (int i = 0; i < EntityCapacity * 0.1; i++)
+            {
+                CreateEntity(Boid.Create(Morro.Maths.Random.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)SceneBounds.Height - buffer)));
+            }
+        }
+
+        private void CreatePredators()
+        {
+            int buffer = 32;
+
+            CreateEntity(Hawk.Create(Morro.Maths.Random.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)SceneBounds.Height - buffer)));
         }
     }
 }

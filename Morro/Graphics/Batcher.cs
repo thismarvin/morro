@@ -9,32 +9,32 @@ namespace Morro.Graphics
 {
     static class Batcher
     {
-        public static void DrawSprites(SpriteBatch spriteBatch, List<Sprite> sprites, Camera camera)
+        /// <summary>
+        /// Creates a temporary <see cref="SpriteCollection"/> that batches and draws a given array of sprites.
+        /// </summary>
+        /// <param name="sprites">The array of sprites that will be batched and drawn together.</param>
+        /// <param name="camera">The camera used to draw the sprites.</param>
+        public static void DrawSprites(Sprite[] sprites, Camera camera)
         {
-            List<SpriteGroup> spriteGroups = OrganizeSprites(sprites);
-            for (int i = 0; i < spriteGroups.Count; i++)
-            {
-                spriteGroups[i].Draw(spriteBatch, camera);
-            }
+            SpriteCollection spriteCollection = new SpriteCollection();
+            spriteCollection
+                .SetCollection(sprites)
+                .Draw(camera);
         }
 
-        private static List<SpriteGroup> OrganizeSprites(List<Sprite> sprites)
+        /// <summary>
+        /// Creates a temporary <see cref="PolygonCollection"/> that batches and draws a given array of polygons.
+        /// </summary>
+        /// <param name="polygons">The array of polygons that will be batched and drawn together.</param>
+        /// <param name="camera">The camera used to draw the sprites.</param>
+        public static void DrawPolygons(MPolygon[] polygons, Camera camera)
         {
-            List<SpriteGroup> result = new List<SpriteGroup>();
-            int resultIndex = -1;
-            int spriteGroupCapacity = 2048;
-
-            for (int i = 0; i < sprites.Count; i++)
+            using (PolygonCollection polygonCollection = new PolygonCollection())
             {
-                if (result.Count == 0 || !result[resultIndex].Add(sprites[i]))
-                {
-                    result.Add(new SpriteGroup(sprites[i].BlendState, sprites[i].SamplerState, sprites[i].Effect, spriteGroupCapacity));
-                    resultIndex++;
-                    result[resultIndex].Add(sprites[i]);                    
-                }
+                polygonCollection
+                    .SetCollection(polygons)
+                    .Draw(camera);
             }
-
-            return result;
         }
     }
 }

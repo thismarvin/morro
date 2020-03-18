@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class Sprite : MonoObject
+    class Sprite : MorroObject
     {
         public float Rotation { get; set; }
         public string SpriteDataName { get; private set; }
@@ -39,7 +39,7 @@ namespace Morro.Graphics
         {
             Rotation = 0;
             Visible = true;
-            SpriteDataName = SpriteManager.FormatName(spriteDataName);
+            SpriteDataName = spriteDataName;
             RotationOffset = Vector2.Zero;
             Scale = new Vector2(1, 1);
             BlendState = BlendState.AlphaBlend;
@@ -62,28 +62,28 @@ namespace Morro.Graphics
             originalFrameX = frameX;
             originalFrameY = frameY;
 
-            SetDimensions(spriteData.Width, spriteData.Height);
+            SetBounds(X, Y, spriteData.Width, spriteData.Height);
 
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void IncrementFrameX(int pixels)
         {
             frameX += pixels;
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void IncrementFrameY(int pixels)
         {
             frameY += pixels;
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void SetFrame(int frame, int columns)
         {
-            frameX = originalFrameX + frame % columns * Width;
-            frameY = originalFrameY + frame / columns * Height;
-            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, Width, Height);
+            frameX = originalFrameX + frame % columns * (int)Width;
+            frameY = originalFrameY + frame / columns * (int)Height;
+            sourceRectangle = new Microsoft.Xna.Framework.Rectangle(frameX, frameY, (int)Width, (int)Height);
         }
 
         public void SetSprite(string spriteDataName)
@@ -106,9 +106,9 @@ namespace Morro.Graphics
 
         }
 
-        internal virtual void ManagedDraw(SpriteBatch spriteBatch)
+        internal virtual void ManagedDraw()
         {
-            spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+            SpriteManager.SpriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
         }
 
         public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
@@ -121,14 +121,23 @@ namespace Morro.Graphics
             if (!Visible)
                 return;
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState, null, GraphicsManager.DefaultRasterizerState, Effect, camera.Transform);
+            if (customScissorRectangle)
             {
-                if (customScissorRectangle)
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, null, GraphicsManager.ScissorRasterizerState, Effect, camera.Transform);
+                {
                     spriteBatch.GraphicsDevice.ScissorRectangle = scissorRectangle;
-
-                spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+                    spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+                }
+                spriteBatch.End();
             }
-            spriteBatch.End();
+            else
+            {
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, null, null, Effect, camera.Transform);
+                {
+                    spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+                }
+                spriteBatch.End();
+            }
         }
     }
 }

@@ -44,12 +44,12 @@ namespace Morro.Debug
         /// <param name="format">A composite format string.</param>
         public DebugEntry(string name, string format)
         {
-            Name = DebugManager.FormatName(name);
+            Name = name;
             Format = format;
             Information = new string[] { "" };
 
             Vector2 position = DebugManager.NextDebugEntryPosition();
-            entryText = new Text(position.X, position.Y, "", "Probity");
+            entryText = new Text(position.X, position.Y, "", FontType.Probity);
         }
 
         /// <summary>
@@ -57,18 +57,24 @@ namespace Morro.Debug
         /// </summary>
         /// <param name="information"></param>
         /// <exception cref="FormatException"></exception>
-        public void SetInformation(params string[] information)
+        public void SetInformation(params object[] information)
         {
+            string[] informationAsString = new string[information.Length];
+            for (int i = 0; i < information.Length; i++)
+            {
+                informationAsString[i] = information[i].ToString();
+            }
+
             try
             {
-                string.Format(CultureInfo.InvariantCulture, Format, information);
+                string.Format(CultureInfo.InvariantCulture, Format, informationAsString);
             }
             catch (FormatException e)
             {
                 throw new MorroException("The amount of information provided is incompatible with the current format string.", e);
             }
 
-            Information = information;
+            Information = informationAsString;
 
             FormatEntry();
         }
@@ -78,9 +84,9 @@ namespace Morro.Debug
             entryText.SetContent(string.Format(CultureInfo.InvariantCulture, Format, Information));
         }
 
-        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        public void Draw(Camera camera)
         {
-            entryText.Draw(spriteBatch, cameraType);
+            entryText.Draw(camera);
         }
 
         #region IDisposable Support

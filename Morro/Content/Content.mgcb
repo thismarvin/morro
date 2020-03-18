@@ -67,6 +67,12 @@
 /processorParam:DebugMode=Auto
 /build:Assets/Effects/Palette.fx
 
+#begin Assets/Effects/Polygon.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Assets/Effects/Polygon.fx
+
 #begin Assets/Effects/Quantize.fx
 /importer:EffectImporter
 /processor:EffectProcessor

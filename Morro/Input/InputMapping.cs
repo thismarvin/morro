@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Morro.Input
 {
+    /// <summary>
+    /// A data structure that associates a name with a variety of <see cref="Microsoft.Xna.Framework.Input.Keys"/> and <see cref="Microsoft.Xna.Framework.Input.Buttons"/>.
+    /// </summary>
     class InputMapping
     {
         public string Name { get; private set; }
@@ -20,7 +23,7 @@ namespace Morro.Input
 
         public InputMapping(string name, Keys[] keys, Buttons[] buttons)
         {
-            Name = InputManager.FormatName(name);
+            Name = name;
             Keys = keys;
             Buttons = buttons;
         }

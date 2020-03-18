@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Basic camera types that are registered by default.
+    /// </summary>
     public enum CameraType
     {
         /// <summary>
@@ -22,47 +25,60 @@ namespace Morro.Core
         TopRightAlign,
     }
 
-    class CameraManager
+    static class CameraManager
     {
-        private static Dictionary<string, Camera> cameras;
+        private static readonly ResourceHandler<Camera> cameras;
 
-        internal static void Initialize()
+        static CameraManager()
         {
-            cameras = new Dictionary<string, Camera>();
+            cameras = new ResourceHandler<Camera>();
 
-            RegisterCamera(new Camera("Static"));
-            RegisterCamera(new Camera("TopLeftAlign"));
-            RegisterCamera(new Camera("TopRightAlign"));
+            RegisterCamera(new Camera($"Morro_{CameraType.Static.ToString()}"));
+            RegisterCamera(new Camera($"Morro_{CameraType.TopLeftAlign.ToString()}"));
+            RegisterCamera(new Camera($"Morro_{CameraType.TopRightAlign.ToString()}"));
 
             WindowManager.WindowChanged += HandleWindowChange;
         }
 
+        #region Handle Cameras
+        /// <summary>
+        /// Register a <see cref="Camera"/> to be managed by Morro.
+        /// </summary>
+        /// <param name="camera">The camera you want to be registered.</param>
         public static void RegisterCamera(Camera camera)
         {
-            if (cameras.ContainsKey(camera.Name))
-                throw new MorroException("A Camera with that name already exists; try a different name.", new ArgumentException("An item with the same key has already been added."));
-
-            cameras.Add(camera.Name, camera);
+            cameras.Register(camera.Name, camera);
         }
 
+        /// <summary>
+        /// Get a <see cref="Camera"/> that was previously registered.
+        /// </summary>
+        /// <param name="name">The name given to the camera that was previously registered.</param>
+        /// <returns>The registered camera with the given name.</returns>
         public static Camera GetCamera(string name)
         {
-            string formattedName = FormatCameraName(name);
-            if (!cameras.ContainsKey(formattedName))
-                throw new Exception("A camera with that name does not exist.", new KeyNotFoundException());
-
-            return cameras[formattedName];
+            return cameras.Get(name);
         }
 
+        /// <summary>
+        /// Get a <see cref="Camera"/> that was registered by Morro.
+        /// </summary>
+        /// <param name="cameraType">The basic camera you want to get.</param>
+        /// <returns>The registered camera with the given name.</returns>
         public static Camera GetCamera(CameraType cameraType)
         {
-            return GetCamera(cameraType.ToString());
+            return GetCamera($"Morro_{cameraType.ToString()}");
         }
 
-        internal static string FormatCameraName(string name)
+        /// <summary>
+        /// Remove a registered <see cref="Camera"/>.
+        /// </summary>
+        /// <param name="name">The name given to the camera that was previously registered.</param>
+        public static void RemoveCamera(string name)
         {
-            return name.ToLowerInvariant();
+            cameras.Remove(name);
         }
+        #endregion
 
         private static void HandleWindowChange(object sender, EventArgs e)
         {
@@ -71,9 +87,9 @@ namespace Morro.Core
 
         private static void ResetCameras()
         {
-            foreach (KeyValuePair<string, Camera> entry in cameras)
+            foreach (Camera camera in cameras)
             {
-                entry.Value.Reset();
+                camera.Reset();
             }
         }
 
@@ -81,27 +97,27 @@ namespace Morro.Core
         {
             if (WindowManager.WideScreenSupported)
             {
-                GetCamera("TopLeftAlign").SetTopLeft(WindowManager.PillarBox, WindowManager.LetterBox);
-                GetCamera("TopRightAlign").SetTopLeft(-WindowManager.PillarBox, -WindowManager.LetterBox);
+                GetCamera(CameraType.TopLeftAlign).SetTopLeft(WindowManager.PillarBox, WindowManager.LetterBox);
+                GetCamera(CameraType.TopRightAlign).SetTopLeft(-WindowManager.PillarBox, -WindowManager.LetterBox);
             }
             else
             {
-                GetCamera("TopLeftAlign").SetTopLeft(0, 0);
-                GetCamera("TopRightAlign").SetTopLeft(0, 0);
+                GetCamera(CameraType.TopLeftAlign).SetTopLeft(0, 0);
+                GetCamera(CameraType.TopRightAlign).SetTopLeft(0, 0);
             }
 
-            GetCamera("Static").SetTopLeft(0, 0);
+            GetCamera(CameraType.Static).SetTopLeft(0, 0);
         }
 
         private static void UpdateCameras()
         {
-            foreach (KeyValuePair<string, Camera> entry in cameras)
+            foreach (Camera camera in cameras)
             {
-                entry.Value.Update();
+                camera.Update();
             }
         }
 
-        public static void Update()
+        internal static void Update()
         {
             ManageManagedCameras();
             UpdateCameras();

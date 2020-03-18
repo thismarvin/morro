@@ -26,8 +26,8 @@ namespace Morro.Core
         public static int DisplayHeight { get; private set; }
         public static int DefaultWindowWidth { get; private set; }
         public static int DefaultWindowHeight { get; private set; }
-        public static int WindowWidth { get { return Engine.Graphics.PreferredBackBufferWidth; } }
-        public static int WindowHeight { get { return Engine.Graphics.PreferredBackBufferHeight; } }
+        public static int WindowWidth { get => Engine.Graphics.PreferredBackBufferWidth; }
+        public static int WindowHeight { get => Engine.Graphics.PreferredBackBufferHeight; }
         public static RenderTarget2D RenderTarget { get; private set; }
         public static OrientationType Orientation { get; private set; }
         public static string Title { get; set; }
@@ -37,17 +37,17 @@ namespace Morro.Core
 
         public static float FPS { get; private set; }
 
-        private static Queue<float> sampleFPS;
+        private static readonly Queue<float> sampleFPS;
 
         public static float LetterBox { get; private set; }
         public static float PillarBox { get; private set; }
 
         private static int defaultPixelWidth;
         private static int defaultPixelHeight;
-        private static Quad topLetterBox;
-        private static Quad bottomLetterBox;
-        private static Quad leftPillarBox;
-        private static Quad rightPillarBox;
+
+        private static MAABB[] boxing;
+        private static readonly PolygonCollection polygonCollection;
+
         private static bool togglingFullscreen;
 
         public static EventHandler<EventArgs> WindowChanged { get; set; }
@@ -56,14 +56,19 @@ namespace Morro.Core
             WindowChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        internal static void Initialize()
+        static WindowManager()
         {
             sampleFPS = new Queue<float>();
+            polygonCollection = new PolygonCollection();
+
             Engine.Instance.Window.ClientSizeChanged += HandleWindowResize;
 
             InitializeWindow();
-
             SetTitle("morroEngine");
+
+            /// When a MonoGame Windows Project application is fullscreen and the game's window has not been moved since startup, 
+            /// Microsoft.Xna.Framework.Input.Mouse.GetState().Y is offset unless the following line of code is included.
+            Engine.Instance.Window.Position = Engine.Instance.Window.Position;
         }
 
         public static void SetPixelDimensions(int pixelWidth, int pixelHeight)
@@ -185,10 +190,16 @@ namespace Morro.Core
         private static void SetupBoxing()
         {
             int buffer = 1000;
-            topLetterBox = new Quad(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer, Color.Black, VertexInformation.Static);
-            bottomLetterBox = new Quad(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer, Color.Black, VertexInformation.Static);
-            leftPillarBox = new Quad(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2, Color.Black, VertexInformation.Static);
-            rightPillarBox = new Quad(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2, Color.Black, VertexInformation.Static);
+
+            boxing = new MAABB[]
+            {
+                new MAABB(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black },
+                new MAABB(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black }
+            };
+
+            polygonCollection.SetCollection(boxing);
         }
 
         private static void CalculateScale()
@@ -278,9 +289,13 @@ namespace Morro.Core
             togglingFullscreen = true;
 
             if (Fullscreen)
+            {
                 DeactivateFullScreen();
+            }
             else
+            {
                 ActivateFullScreenMode();
+            }
 
             Engine.Graphics.ToggleFullScreen();
             Engine.Graphics.ApplyChanges();
@@ -320,20 +335,17 @@ namespace Morro.Core
 #endif
         }
 
-        public static void Update()
+        internal static void Update()
         {
             UpdateInput();
             CalculateFPS();
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw()
         {
             if (!WideScreenSupported)
             {
-                topLetterBox.Draw(spriteBatch, CameraType.Static);
-                bottomLetterBox.Draw(spriteBatch, CameraType.Static);
-                leftPillarBox.Draw(spriteBatch, CameraType.Static);
-                rightPillarBox.Draw(spriteBatch, CameraType.Static);
+                polygonCollection.Draw(CameraManager.GetCamera(CameraType.Static));
             }
         }
     }

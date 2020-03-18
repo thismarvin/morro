@@ -7,6 +7,5 @@ namespace Morro.ECS
     interface IUpdateableSystem : IMorroSystem
     {
         void Update();
-        void UpdateEntity(int entity);
     }
 }

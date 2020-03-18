@@ -10,6 +10,5 @@ namespace Morro.ECS
         int Priority { get; set; }
 
         void Draw(Camera camera);
-        void DrawEntity(int entity, Camera camera);
     }
 }

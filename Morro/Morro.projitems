@@ -28,7 +28,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ResourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Debug\IDebugable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystemHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\EventManager.cs" />

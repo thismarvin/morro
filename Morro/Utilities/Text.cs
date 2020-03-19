@@ -25,7 +25,7 @@ namespace Morro.Utilities
         Sparge,        
     }
 
-    class Text : MorroObject, IDisposable, IDebugable
+    class Text : MorroObject, IDisposable
     {
         public string Content { get; private set; }
         public Vector2 Scale { get; private set; }
@@ -254,7 +254,7 @@ namespace Morro.Utilities
             }
         }
 
-        public void Debug(SpriteBatch spriteBatch, Camera camera)
+        public void DebugBounds(Camera camera)
         {
             exactBounds.Draw(camera);
             broadBounds.Draw(camera);

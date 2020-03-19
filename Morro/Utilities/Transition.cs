@@ -77,7 +77,7 @@ namespace Morro.Utilities
 
         protected abstract void UpdateLogic();
 
-        protected abstract void DrawTransition(SpriteBatch spriteBatch);
+        protected abstract void DrawTransition();
 
         public void Update()
         {
@@ -96,7 +96,7 @@ namespace Morro.Utilities
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw()
         {
             if (Done)
                 return;
@@ -108,7 +108,7 @@ namespace Morro.Utilities
                 setup = true;
             }
 
-            DrawTransition(spriteBatch);
+            DrawTransition();
 
             if (lastDraw)
                 Done = true;

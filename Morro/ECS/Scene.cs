@@ -151,6 +151,6 @@ namespace Morro.ECS
 
         public abstract void Update();
 
-        public abstract void Draw(SpriteBatch spriteBatch);
+        public abstract void Draw();
     }
 }

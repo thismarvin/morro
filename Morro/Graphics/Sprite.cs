@@ -30,6 +30,13 @@ namespace Morro.Graphics
         private int frameX;
         private int frameY;
 
+        private static readonly SpriteBatch spriteBatch;
+
+        static Sprite()
+        {
+            spriteBatch = GraphicsManager.SpriteBatch;
+        }
+
         public Sprite(float x, float y, int frame, int columns, string sprite) : this(x, y, sprite)
         {
             SetFrame(frame, columns);
@@ -108,15 +115,15 @@ namespace Morro.Graphics
 
         internal virtual void ManagedDraw()
         {
-            SpriteManager.SpriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
+           spriteBatch.Draw(SpriteSheet, Position, sourceRectangle, Tint, Rotation, RotationOffset, Scale, SpriteEffect, 0);
         }
 
-        public void Draw(SpriteBatch spriteBatch, CameraType cameraType)
+        public void Draw(CameraType cameraType)
         {
-            Draw(spriteBatch, CameraManager.GetCamera(cameraType));
+            Draw(CameraManager.GetCamera(cameraType));
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, Camera camera)
+        public virtual void Draw(Camera camera)
         {
             if (!Visible)
                 return;

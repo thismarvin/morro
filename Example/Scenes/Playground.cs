@@ -77,16 +77,16 @@ namespace Example.Scenes
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
-            Sketch.CreateBackgroundLayer(spriteBatch, Color.CornflowerBlue);
+            Sketch.CreateBackgroundLayer(Color.CornflowerBlue);
 
             Sketch.AttachEffect(new ChromaticAberration(Engine.RenderTarget, 2));
-            Sketch.Begin(spriteBatch);
+            Sketch.Begin();
             {
                 DrawECS();
             }
-            Sketch.End(spriteBatch);
+            Sketch.End();
         }
     }
 }

@@ -79,9 +79,9 @@ namespace Morro.Utilities
             fade.Color = fadeColor;
         }
 
-        protected override void DrawTransition(SpriteBatch spriteBatch)
+        protected override void DrawTransition()
         {
-            fade.Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
+            fade.Draw(CameraManager.GetCamera(CameraType.Static));
         }
     }
 }

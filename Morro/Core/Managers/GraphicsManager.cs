@@ -14,6 +14,7 @@ namespace Morro.Core
         public static RasterizerState DefaultRasterizerState { get; private set; }
         public static RasterizerState ScissorRasterizerState { get; private set; }
         public static RasterizerState DebugRasterizerState { get; private set; }
+        public static SpriteBatch SpriteBatch { get; private set; }
         public static Texture2D SimpleTexture { get; private set; }
         public static BasicEffect BasicEffect { get; private set; }
 
@@ -28,6 +29,8 @@ namespace Morro.Core
                 FillMode = FillMode.WireFrame,
                 CullMode = CullMode.None
             };
+
+            SpriteBatch = new SpriteBatch(Engine.Graphics.GraphicsDevice);
 
             SimpleTexture = new Texture2D(Engine.Graphics.GraphicsDevice, 1, 1);
             SimpleTexture.SetData(new[] { Color.White });

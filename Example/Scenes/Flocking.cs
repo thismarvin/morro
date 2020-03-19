@@ -51,16 +51,16 @@ namespace Example.Scenes
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
-            Sketch.CreateBackgroundLayer(spriteBatch, PICO8.SkyBlue);
+            Sketch.CreateBackgroundLayer(PICO8.SkyBlue);
 
             Sketch.AttachEffect(new DropShadow(Engine.RenderTarget));
-            Sketch.Begin(spriteBatch);
+            Sketch.Begin();
             {
                 DrawECS();
             }
-            Sketch.End(spriteBatch);
+            Sketch.End();
         }
 
         private void CreateBoids()

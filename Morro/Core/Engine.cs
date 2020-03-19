@@ -14,8 +14,6 @@ namespace Morro.Core
         public static float DeltaTime { get; private set; }
         public static TimeSpan TotalGameTime { get; private set; }
 
-        private SpriteBatch spriteBatch;
-
         public Engine()
         {
             Graphics = new GraphicsDeviceManager(this);
@@ -37,7 +35,6 @@ namespace Morro.Core
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
             AssetManager.LoadContent();
         }
 
@@ -45,7 +42,7 @@ namespace Morro.Core
         {
             base.UnloadContent();
 
-            spriteBatch.Dispose();
+            //spriteBatch.Dispose();
 
             AssetManager.UnloadContent();
             GeometryManager.UnloadContent();
@@ -69,8 +66,8 @@ namespace Morro.Core
 
         protected override void Draw(GameTime gameTime)
         {
-            SceneManager.Draw(spriteBatch);
-            SketchManager.Draw(spriteBatch);
+            SceneManager.Draw();
+            SketchManager.Draw();
             DebugManager.Draw();
             WindowManager.Draw();
 

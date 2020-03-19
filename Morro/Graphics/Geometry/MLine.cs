@@ -311,9 +311,9 @@ namespace Morro.Graphics
             line.SetBounds(x, y, width, height);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
+        public void Draw(Camera camera)
         {
-            line.Draw(spriteBatch, camera);
+            line.Draw(camera);
         }
     }
 }

@@ -13,10 +13,11 @@ namespace Morro.Graphics
         private readonly SamplerState sharedSamplerState;
         private readonly Effect sharedEffect;
 
-        static readonly SpriteBatch spriteBatch;
+        private static readonly SpriteBatch spriteBatch;
+
         static SpriteGroup()
         {
-            spriteBatch = SpriteManager.SpriteBatch;
+            spriteBatch = GraphicsManager.SpriteBatch;
         }
 
         public SpriteGroup(BlendState sharedBlendState, SamplerState sharedSamplerState, Effect sharedEffect, int capacity) : base(capacity)

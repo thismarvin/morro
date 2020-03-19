@@ -146,6 +146,13 @@ namespace Morro.Graphics
         protected VertexBufferBinding[] vertexBufferBindings;
         protected int techniqueIndex;
 
+        private static readonly SpriteBatch spriteBatch;
+
+        static MPolygon()
+        {
+            spriteBatch = GraphicsManager.SpriteBatch;
+        }
+
         public MPolygon(float x, float y, float width, float height, string shape)
         {
             this.x = x;
@@ -259,7 +266,7 @@ namespace Morro.Graphics
             };
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, Camera camera)
+        public virtual void Draw(Camera camera)
         {
             if (dataChanged)
             {

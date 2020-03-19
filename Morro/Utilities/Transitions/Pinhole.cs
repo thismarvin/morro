@@ -71,9 +71,9 @@ namespace Morro.Utilities
             pinhole.LineWidth = lineWidth;
         }
 
-        protected override void DrawTransition(SpriteBatch spriteBatch)
+        protected override void DrawTransition()
         {
-            pinhole.Draw(spriteBatch, CameraManager.GetCamera(CameraType.Static));
+            pinhole.Draw(CameraManager.GetCamera(CameraType.Static));
         }
     }
 }

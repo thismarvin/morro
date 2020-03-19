@@ -158,23 +158,23 @@ namespace Morro.Core
             CurrentScene?.Update();
         }
 
-        private static void DrawTransitions(SpriteBatch spriteBatch)
+        private static void DrawTransitions()
         {
             if (!transitionInProgress)
                 return;
 
-            Sketch.Begin(spriteBatch);
+            Sketch.Begin();
             {
                 if (!exitCompleted)
                 {
-                    exitTransition?.Draw(spriteBatch);
+                    exitTransition?.Draw();
                 }
                 else
                 {
-                    enterTransition?.Draw(spriteBatch);
+                    enterTransition?.Draw();
                 }
             }
-            Sketch.End(spriteBatch);
+            Sketch.End();
         }
 
         internal static void Update()
@@ -188,10 +188,10 @@ namespace Morro.Core
             }
         }
 
-        internal static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw()
         {
-            CurrentScene?.Draw(spriteBatch);
-            DrawTransitions(spriteBatch);
+            CurrentScene?.Draw();
+            DrawTransitions();
         }
     }
 }

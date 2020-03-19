@@ -17,12 +17,14 @@ namespace Morro.Core
 
     static class SketchManager
     {
+        private static readonly SpriteBatch spriteBatch;
         private static readonly List<RenderTarget2D> renderTargets;
         private static readonly List<StageType> completedStages;
         private static Effect postProcessing;
 
         static SketchManager()
         {
+            spriteBatch = GraphicsManager.SpriteBatch;
             renderTargets = new List<RenderTarget2D>();
             completedStages = new List<StageType>();
         }
@@ -71,7 +73,7 @@ namespace Morro.Core
             completedStages.Clear();
         }
 
-        internal static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw()
         {
             if (postProcessing != null)
             {

@@ -18,7 +18,7 @@ namespace Morro.ECS
 
         static SSprite()
         {
-            spriteBatch = SpriteManager.SpriteBatch;
+            spriteBatch = GraphicsManager.SpriteBatch;
         }
 
         public SSprite(Scene scene) : base(scene)

@@ -256,9 +256,9 @@ namespace Morro.Utilities
 
         public void Debug(SpriteBatch spriteBatch, Camera camera)
         {
-            exactBounds.Draw(spriteBatch, camera);
-            broadBounds.Draw(spriteBatch, camera);
-            literalBounds.Draw(spriteBatch, camera);
+            exactBounds.Draw(camera);
+            broadBounds.Draw(camera);
+            literalBounds.Draw(camera);
         }
 
         public void Draw(Camera camera)

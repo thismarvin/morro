@@ -71,7 +71,7 @@ namespace Morro.Core
         {
             SceneManager.Draw(spriteBatch);
             SketchManager.Draw(spriteBatch);
-            DebugManager.Draw(spriteBatch);
+            DebugManager.Draw();
             WindowManager.Draw();
 
             base.Draw(gameTime);

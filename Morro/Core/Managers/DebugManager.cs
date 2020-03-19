@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Morro.Debug;
-using Morro.ECS;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,21 +9,33 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Responsible for maintaining and displaying <see cref="DebugEntry"/>'s.
+    /// (On PC, in-game debugging can be toggled by pressing F3).
+    /// </summary>
     static class DebugManager
     {
-        public static bool Debugging { get; private set; }
-        public static bool ShowWireFrame { get; private set; }
-        public static bool ShowDebugLayer { get; private set; }
+        public static bool Debugging { get; set; }
+        public static bool ShowWireFrame { get; set; }
 
         private static readonly ResourceHandler<DebugEntry> debugEntries;
+
+        private static readonly DebugEntry fps;
+        private static readonly DebugEntry scene;
+        private static readonly DebugEntry entity;
 
         static DebugManager()
         {
             debugEntries = new ResourceHandler<DebugEntry>();
 
-            RegisterDebugEntry(new DebugEntry("FPS", "{0} FPS"));
-            RegisterDebugEntry(new DebugEntry("Scene", "SCENE: {0}"));
-            RegisterDebugEntry(new DebugEntry("Entities", "E: {0}"));
+            fps = new DebugEntry("Morro_FPS", "{0} FPS");
+            RegisterDebugEntry(fps);
+
+            scene = new DebugEntry("Morro_Scene", "SCENE: {0}");
+            RegisterDebugEntry(scene);
+
+            entity = new DebugEntry("Morro_Entities", "E: {0}");
+            RegisterDebugEntry(entity);
         }
 
         #region Handle DebugEntries
@@ -58,6 +68,7 @@ namespace Morro.Core
         }
         #endregion
 
+        // TODO: This is soooo janky!
         internal static Vector2 NextDebugEntryPosition()
         {
             int padding = 4;
@@ -81,34 +92,14 @@ namespace Morro.Core
             {
                 ShowWireFrame = !ShowWireFrame;
             }
-
-            if (Input.Keyboard.Pressing(Keys.LeftShift) && Input.Keyboard.Pressed(Keys.D2))
-            {
-                ShowDebugLayer = !ShowDebugLayer;
-            }
         }
 
         private static void UpdateInfo()
         {
-            GetDebugEntry("FPS").SetInformation(Math.Round(WindowManager.FPS));
-            GetDebugEntry("Scene").SetInformation(SceneManager.CurrentScene.Name);
-            GetDebugEntry("Entities").SetInformation(SceneManager.CurrentScene.EntityCount);
+            fps.SetInformation(Math.Round(WindowManager.FPS));
+            scene.SetInformation(SceneManager.CurrentScene.Name);
+            entity.SetInformation(SceneManager.CurrentScene.EntityCount);
         }
-
-        //private static void DrawDebugLayer(SpriteBatch spriteBatch)
-        //{
-        //    if (!ShowDebugLayer)
-        //        return;
-
-        //    //List<Entity> queryResult = SceneManager.CurrentScene.Query(SceneManager.CurrentScene.Camera.Bounds);
-        //    //for (int i = 0; i < queryResult.Count; i++)
-        //    //{
-        //    //    if (queryResult[i] is IDebugable)
-        //    //    {
-        //    //        ((IDebugable)queryResult[i]).Debug(spriteBatch, SceneManager.CurrentScene.Camera);
-        //    //    }
-        //    //}
-        //}
 
         private static void DrawDebugEntries()
         {
@@ -127,9 +118,8 @@ namespace Morro.Core
             UpdateInfo();
         }
 
-        internal static void Draw(SpriteBatch spriteBatch)
+        internal static void Draw()
         {
-            //DrawDebugLayer(spriteBatch);
             DrawDebugEntries();
         }
     }

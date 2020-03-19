@@ -9,12 +9,18 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// The current orientation of the window.
+    /// </summary>
     public enum OrientationType
     {
         Landscape,
         Portrait
     }
 
+    /// <summary>
+    /// Maintains anything and everything related to the <see cref="GameWindow"/>, and provides functionality to safely manipulate the window.
+    /// </summary>
     static class WindowManager
     {
         public static int PixelWidth { get; private set; }
@@ -42,13 +48,10 @@ namespace Morro.Core
         public static float LetterBox { get; private set; }
         public static float PillarBox { get; private set; }
 
-        private static int defaultPixelWidth;
-        private static int defaultPixelHeight;
-
         private static MAABB[] boxing;
         private static readonly PolygonCollection polygonCollection;
 
-        private static bool togglingFullscreen;
+        private static bool manipulatingScreen;
 
         public static EventHandler<EventArgs> WindowChanged { get; set; }
         private static void RaiseWindowChangedEvent()
@@ -71,78 +74,95 @@ namespace Morro.Core
             Engine.Instance.Window.Position = Engine.Instance.Window.Position;
         }
 
+        /// <summary>
+        /// Sets the pixel dimensions of the game.
+        /// The game will be scaled to maximize the bounds of the given pixel dimension while also maintaining its aspect ratio.
+        /// This means that regardless of the screen resolution, the game will always be displayed on the screen as optimally as possible.
+        /// </summary>
+        /// <param name="pixelWidth">The width of the resolution of your game in pixels.</param>
+        /// <param name="pixelHeight">The height of the resolution of your game in pixels.</param>
         public static void SetPixelDimensions(int pixelWidth, int pixelHeight)
         {
-            defaultPixelWidth = pixelWidth;
-            defaultPixelHeight = pixelHeight;
-            PixelWidth = defaultPixelWidth;
-            PixelHeight = defaultPixelHeight;
+            PixelWidth = pixelWidth;
+            PixelHeight = pixelHeight;
 
             SetupOrientation();
             SetupBoxing();
-            ResetScale();
+
+            Engine.Graphics.ApplyChanges();
+
+            HandleResolutionChange();
         }
 
-        public static void SetWindowDimensions(int defaultWindowWidth, int defaultWindowHeight)
+        /// <summary>
+        /// Sets the resolution of the window.
+        /// </summary>
+        /// <param name="windowWidth">The desired width of the window.</param>
+        /// <param name="windowHeight">The desired height of the window.</param>
+        public static void SetWindowDimensions(int windowWidth, int windowHeight)
         {
-            DefaultWindowWidth = defaultWindowWidth;
-            DefaultWindowHeight = defaultWindowHeight;
-            DisplayWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            DisplayHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+#if __IOS__ || __ANDROID__
+            return;
+#else
+            DefaultWindowWidth = windowWidth;
+            DefaultWindowHeight = windowHeight;
 
             // Set Screen Dimensions.
-#if __IOS__ || __ANDROID__
-            Engine.Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            Engine.Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-#else
             Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
             Engine.Graphics.PreferredBackBufferHeight = DefaultWindowHeight;
 #endif           
             Engine.Graphics.ApplyChanges();
 
-            ResetScale();
+            HandleResolutionChange();
         }
 
+        /// <summary>
+        /// Set the title of the window.
+        /// </summary>
+        /// <param name="title">The title of the window.</param>
         public static void SetTitle(string title)
         {
             Title = title;
             Engine.Instance.Window.Title = Title;
         }
 
+        /// <summary>
+        /// Sets whether or not VSync is enabled.
+        /// </summary>
+        /// <param name="enabled">Whether or not VSync should be enabled.</param>
         public static void EnableVSync(bool enabled)
         {
-            Engine.Instance.IsFixedTimeStep = false;
-
-            if (enabled)
-                Engine.Graphics.SynchronizeWithVerticalRetrace = true;
-            else
-                Engine.Graphics.SynchronizeWithVerticalRetrace = false;
-
+            Engine.Graphics.SynchronizeWithVerticalRetrace = enabled;
             Engine.Graphics.ApplyChanges();
         }
 
+        /// <summary>
+        /// Sets whether or not fullscreen is enabled.
+        /// </summary>
+        /// <param name="enabled">Whether or not fullscreen should be enabled.</param>
         public static void EnableFullscreen(bool enabled)
         {
-            if (enabled)
-            {
-                ToggleFullScreen();
-            }
+            if (Fullscreen == enabled)
+                return;
+
+            Fullscreen = enabled;
+
+            HandleFullscreenChange();
         }
 
+        /// <summary>
+        /// Sets whether or not wide screen support is enabled.
+        /// </summary>
+        /// <param name="enabled">Whether or not wide screen support is enabled.</param>
         public static void EnableWideScreenSupport(bool enabled)
         {
             WideScreenSupported = enabled;
-            IsWideScreen = GraphicsAdapter.DefaultAdapter.IsWideScreen;
-
-            Engine.Graphics.ApplyChanges();
         }
 
         private static void InitializeWindow()
         {
-            defaultPixelWidth = 320;
-            defaultPixelHeight = 180;
-            PixelWidth = defaultPixelWidth;
-            PixelHeight = defaultPixelHeight;
+            PixelWidth = 320;
+            PixelHeight = 180;
 
             DefaultWindowWidth = PixelWidth * 2;
             DefaultWindowHeight = PixelHeight * 2;
@@ -151,6 +171,10 @@ namespace Morro.Core
 
             Orientation = OrientationType.Landscape;
             Engine.Graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+
+            IsWideScreen = GraphicsAdapter.DefaultAdapter.IsWideScreen;
+            SetupOrientation();
+            SetupBoxing();
 
             // Set Screen Dimensions.
 #if __IOS__ || __ANDROID__
@@ -165,8 +189,7 @@ namespace Morro.Core
 
             Engine.Graphics.ApplyChanges();
 
-            SetupBoxing();
-            ResetScale();
+            HandleResolutionChange();
         }
 
         private static void SetupOrientation()
@@ -183,8 +206,6 @@ namespace Morro.Core
                     Engine.Graphics.SupportedOrientations = DisplayOrientation.Portrait;
                     break;
             }
-
-            Engine.Graphics.ApplyChanges();
         }
 
         private static void SetupBoxing()
@@ -193,10 +214,10 @@ namespace Morro.Core
 
             boxing = new MAABB[]
             {
-                new MAABB(-buffer, -buffer, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
-                new MAABB(-buffer, defaultPixelHeight, defaultPixelWidth + buffer * 2, buffer) { Color = Color.Black },
-                new MAABB(-buffer, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black },
-                new MAABB(defaultPixelWidth, -buffer, buffer, defaultPixelHeight + buffer * 2) { Color = Color.Black }
+                new MAABB(-buffer, -buffer, PixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, PixelHeight,PixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new MAABB(-buffer, -buffer, buffer, PixelHeight + buffer * 2) { Color = Color.Black },
+                new MAABB(PixelWidth, -buffer, buffer, PixelHeight + buffer * 2) { Color = Color.Black }
             };
 
             polygonCollection.SetCollection(boxing);
@@ -204,63 +225,56 @@ namespace Morro.Core
 
         private static void CalculateScale()
         {
-            Scale = CalculateZoom(WindowWidth, WindowHeight);
-        }
-
-        private static float CalculateZoom(int windowWidth, int windowHeight)
-        {
-            float zoom = 0;
-
-            PixelWidth = defaultPixelWidth;
-            PixelHeight = defaultPixelHeight;
+            Scale = 0;
 
             switch (Orientation)
             {
                 case OrientationType.Landscape:
-                    zoom = (float)windowHeight / PixelHeight;
+                    Scale = (float)WindowHeight / PixelHeight;
+
                     // Check if letterboxing is required.
-                    if (PixelWidth * zoom > windowWidth)
+                    if (PixelWidth * Scale > WindowWidth)
                     {
-                        zoom = (float)windowWidth / PixelWidth;
+                        Scale = (float)WindowWidth / PixelWidth;
                     }
-                    Bounds = new Rectangle(0, 0, PixelWidth, PixelHeight);
                     break;
 
                 case OrientationType.Portrait:
-                    zoom = (float)windowWidth / PixelWidth;
-                    // Check if letterboxing is required. ??? Im not sure if i really need this.
-                    if (PixelHeight * zoom > windowHeight)
+                    Scale = (float)WindowWidth / PixelWidth;
+
+                    // Check if letterboxing is required.
+                    if (PixelHeight * Scale > WindowHeight)
                     {
-                        zoom = (float)windowHeight / PixelHeight;
+                        Scale = (float)WindowHeight / PixelHeight;
                     }
-                    Bounds = new Rectangle(0, 0, PixelWidth, PixelHeight);
                     break;
             }
-            return zoom;
+
+            Bounds = new Rectangle(0, 0, PixelWidth, PixelHeight);
         }
 
         private static void CalculateBoxing()
         {
-            LetterBox = (WindowHeight / Scale - defaultPixelHeight) / 2;
-            PillarBox = (WindowWidth / Scale - defaultPixelWidth) / 2;
+            LetterBox = (WindowHeight / Scale - PixelHeight) / 2;
+            PillarBox = (WindowWidth / Scale - PixelWidth) / 2;
         }
 
-        private static void UpdateRenderTarget()
+        private static void CalculateRenderTarget()
         {
             RenderTarget?.Dispose();
             RenderTarget = new RenderTarget2D(Engine.Graphics.GraphicsDevice, WindowWidth, WindowHeight);
         }
 
-        private static void ResetScale()
+        private static void HandleResolutionChange()
         {
             CalculateScale();
             CalculateBoxing();
-            UpdateRenderTarget();
+            CalculateRenderTarget();
 
             RaiseWindowChangedEvent();
         }
 
-        private static void ActivateFullScreenMode()
+        private static void ActivateFullScreen()
         {
             Engine.Graphics.PreferredBackBufferHeight = DisplayHeight;
             Engine.Graphics.PreferredBackBufferWidth = DisplayWidth;
@@ -272,38 +286,46 @@ namespace Morro.Core
             Engine.Graphics.PreferredBackBufferWidth = DefaultWindowWidth;
         }
 
-        private static void HandleWindowResize(object sender, EventArgs e)
-        {
-            if (togglingFullscreen)
-                return;
-
-            Engine.Graphics.PreferredBackBufferWidth = Math.Max(defaultPixelWidth, Engine.Instance.Window.ClientBounds.Width);
-            Engine.Graphics.PreferredBackBufferHeight = Math.Max(defaultPixelHeight, Engine.Instance.Window.ClientBounds.Height);
-            Engine.Graphics.ApplyChanges();
-
-            ResetScale();
-        }
-
         private static void ToggleFullScreen()
         {
-            togglingFullscreen = true;
+            Fullscreen = !Fullscreen;
 
+            HandleFullscreenChange();
+        }
+
+        private static void HandleFullscreenChange()
+        {
             if (Fullscreen)
             {
-                DeactivateFullScreen();
+                ActivateFullScreen();
             }
             else
             {
-                ActivateFullScreenMode();
+                DeactivateFullScreen();
             }
 
             Engine.Graphics.ToggleFullScreen();
             Engine.Graphics.ApplyChanges();
 
-            Fullscreen = !Fullscreen;
-            togglingFullscreen = false;
+            HandleResolutionChange();
+        }
 
-            ResetScale();
+        private static void HandleWindowResize(object sender, EventArgs e)
+        {
+            /// It seems that, in a MonoGame DesktopGL project, changing the back buffer's dimensions raises a GameWindow.ClientSizeChanged event.
+            /// This bool flag is needed in order to prevent an infinite loop of the two events raising each other.
+            if (manipulatingScreen)
+                return;
+
+            manipulatingScreen = true;
+
+            Engine.Graphics.PreferredBackBufferWidth = Math.Max(PixelWidth, Engine.Instance.Window.ClientBounds.Width);
+            Engine.Graphics.PreferredBackBufferHeight = Math.Max(PixelHeight, Engine.Instance.Window.ClientBounds.Height);
+            Engine.Graphics.ApplyChanges();
+
+            HandleResolutionChange();
+
+            manipulatingScreen = false;
         }
 
         private static void CalculateFPS()

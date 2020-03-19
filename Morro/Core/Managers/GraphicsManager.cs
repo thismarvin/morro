@@ -43,11 +43,12 @@ namespace Morro.Core
 
         internal static void UnloadContent()
         {
-            SimpleTexture.Dispose();
-            BasicEffect.Dispose();
             DefaultRasterizerState.Dispose();
             ScissorRasterizerState.Dispose();
             DebugRasterizerState.Dispose();
+            SpriteBatch.Dispose();
+            SimpleTexture.Dispose();
+            BasicEffect.Dispose();
         }
     }
 }

@@ -75,14 +75,17 @@ namespace Morro.Core
         }
 
         /// <summary>
-        /// Sets the pixel dimensions of the game.
-        /// The game will be scaled to maximize the bounds of the given pixel dimension while also maintaining its aspect ratio.
+        /// Sets the resolution of the game.
+        /// The game will be scaled to maximize the area of the given pixel dimensions while also maintaining its aspect ratio.
         /// This means that regardless of the screen resolution, the game will always be displayed on the screen as optimally as possible.
         /// </summary>
         /// <param name="pixelWidth">The width of the resolution of your game in pixels.</param>
         /// <param name="pixelHeight">The height of the resolution of your game in pixels.</param>
-        public static void SetPixelDimensions(int pixelWidth, int pixelHeight)
+        public static void SetGameResolution(int pixelWidth, int pixelHeight)
         {
+            if (PixelWidth == pixelWidth && PixelHeight == pixelHeight)
+                return;
+
             PixelWidth = pixelWidth;
             PixelHeight = pixelHeight;
 
@@ -95,12 +98,15 @@ namespace Morro.Core
         }
 
         /// <summary>
-        /// Sets the resolution of the window.
+        /// Sets the default resolution of the window.
         /// </summary>
         /// <param name="windowWidth">The desired width of the window.</param>
         /// <param name="windowHeight">The desired height of the window.</param>
-        public static void SetWindowDimensions(int windowWidth, int windowHeight)
+        public static void SetDefaultWindowResolution(int windowWidth, int windowHeight)
         {
+            if (DefaultWindowWidth == windowWidth && DefaultWindowHeight == windowHeight)
+                return;
+
 #if __IOS__ || __ANDROID__
             return;
 #else

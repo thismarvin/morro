@@ -19,12 +19,21 @@ namespace Morro.Core
     {
         private static readonly List<RenderTarget2D> renderTargets;
         private static readonly List<StageType> completedStages;
-        private static FX postProcessing;
+        private static Effect postProcessing;
 
         static SketchManager()
         {
             renderTargets = new List<RenderTarget2D>();
             completedStages = new List<StageType>();
+        }
+
+        /// <summary>
+        /// Attches an <see cref="Effect"/> that is applied after every <see cref="Sketch"/> layer is drawn.
+        /// </summary>
+        /// <param name="postProcessing"></param>
+        public static void AttachPostProcessingEffect(Effect postProcessing)
+        {
+            SketchManager.postProcessing = postProcessing;
         }
 
         internal static void RegisterStage(StageType stage)
@@ -33,7 +42,7 @@ namespace Morro.Core
                 completedStages.Add(stage);
         }
 
-        public static bool VerifyQueue(params StageType[] expectedOrder)
+        internal static bool VerifyQueue(params StageType[] expectedOrder)
         {
             if (expectedOrder.Length != completedStages.Count)
                 return false;
@@ -49,25 +58,17 @@ namespace Morro.Core
             return true;
         }
 
-        /// <summary>
-        /// Reset the stage queue, but leave the life cycle of the layer up to the user.
-        /// </summary>
-        public static void GiveUpControl()
+        internal static void GiveUpControl()
         {
             completedStages.Clear();
         }
 
-        public static void AddSketch(RenderTarget2D renderTarget)
+        internal static void AddSketch(RenderTarget2D renderTarget)
         {
             renderTargets.Add(renderTarget);
 
             // A Sketch has been completed successfully; reset the stage queue.
             completedStages.Clear();
-        }
-
-        public static void AttachEffect(FX postProcessing)
-        {
-            SketchManager.postProcessing = postProcessing;
         }
 
         internal static void Draw(SpriteBatch spriteBatch)
@@ -96,19 +97,14 @@ namespace Morro.Core
                 spriteBatch.GraphicsDevice.Clear(Color.Transparent);
 
                 // Apply the shader.
-                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, postProcessing.Effect, null);
+                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, postProcessing, null);
                 {
                     spriteBatch.Draw(accumulation, Vector2.Zero, Color.White);
                 }
                 spriteBatch.End();
 
-                // Dispose of all RenderTargets.
+                // Dispose of the accumulation RenderTarget.
                 accumulation.Dispose();
-                for (int i = 0; i < renderTargets.Count; i++)
-                {
-                    renderTargets[i].Dispose();
-                }
-                renderTargets.Clear();
 
                 // Dispose of shader.
                 postProcessing.Dispose();
@@ -122,17 +118,6 @@ namespace Morro.Core
                     for (int i = 0; i < renderTargets.Count; i++)
                     {
                         spriteBatch.Draw(renderTargets[i], Vector2.Zero, Color.White);
-                        //spriteBatch.Draw(
-                        //    renderTargets[i],
-                        //    new Vector2(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2),
-                        //    new Microsoft.Xna.Framework.Rectangle(0, 0, WindowManager.WindowWidth, WindowManager.WindowHeight),
-                        //    Color.White,
-                        //    0,
-                        //    new Vector2(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2),
-                        //    1,
-                        //    SpriteEffects.None,
-                        //    0
-                        //    );
                     }
                 }
                 spriteBatch.End();

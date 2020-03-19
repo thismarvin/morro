@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Handles the entire life cycle of any registered <see cref="SpriteData"/>.
+    /// </summary>
     static class SpriteManager
     {
         public static SpriteBatch SpriteBatch { get; private set; }

@@ -48,6 +48,7 @@ namespace Morro.Core
             spriteBatch.Dispose();
 
             AssetManager.UnloadContent();
+            GeometryManager.UnloadContent();
             GraphicsManager.UnloadContent();
         }
 

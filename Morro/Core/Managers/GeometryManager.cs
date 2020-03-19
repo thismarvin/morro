@@ -9,6 +9,9 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Basic shape types that have been created and registered by default.
+    /// </summary>
     public enum ShapeType
     {
         Triangle,
@@ -18,6 +21,10 @@ namespace Morro.Core
         Circle
     }
 
+    /// <summary>
+    /// Handles the entire life cycle of any registered <see cref="ShapeData"/>, and provides functionality to create
+    /// additional basic shape data.
+    /// </summary>
     static class GeometryManager
     {
         public static Effect PolygonShader { get; private set; }
@@ -86,6 +93,11 @@ namespace Morro.Core
             PolygonShader.Parameters["WorldViewProjection"].SetValue(camera.WorldViewProjection);
         }
 
+        /// <summary>
+        /// Creates a filled regular polygon given a specific amount of vertices.
+        /// </summary>
+        /// <param name="totalVertices">The total amount of vertices the regular polygon will have.</param>
+        /// <returns>Generated shape data of your regular polygon.</returns>
         public static ShapeData CreateRegularPolygon(int totalVertices)
         {
             if (totalVertices <= 2)
@@ -117,39 +129,14 @@ namespace Morro.Core
             return new ShapeData(vertices.ToArray(), indices.ToArray());
         }
 
-        public static ShapeData CreateHollowSquare(float width, float height, float lineWidth)
-        {
-            int initialTotalVertices = 4;
-            int totalVertices = initialTotalVertices * 2;
-            int totalTriangles = initialTotalVertices * 2;
-            int totalIndices = totalTriangles * 3;
-
-            float scaledLineWidthX = lineWidth / width;
-            float scaledLineWidthY = lineWidth / height;
-
-            Vector3[] vertices = new Vector3[]
-            {
-                new Vector3(scaledLineWidthX, scaledLineWidthY, 0),
-                new Vector3(scaledLineWidthX, 1 - scaledLineWidthY, 0),
-                new Vector3(1 - scaledLineWidthX, 1 - scaledLineWidthY, 0),
-                new Vector3(1 - scaledLineWidthX, scaledLineWidthY, 0),
-
-                new Vector3(0, 0, 0),
-                new Vector3(0, 1, 0),
-                new Vector3(1, 1, 0),
-                new Vector3(1, 0, 0),
-            };
-
-            short[] indices = CreateHollowIndices(totalVertices, totalIndices);
-
-            return new ShapeData(vertices, indices);
-        }
-
-        public static ShapeData CreateHollowCircle(float radius, float lineWidth)
-        {
-            return CreateHollowRegularPolygon(90, radius * 2, radius * 2, lineWidth);
-        }
-
+        /// <summary>
+        /// Creates a hollow regular polygon given a specific amount of vertices, width, height, and line width.
+        /// </summary>
+        /// <param name="totalVertices">The total amount of vertices the regular polygon will have.</param>
+        /// <param name="width">The desired width of the polygon. (In order for the line width to be accurate, it must be scaled by the desired width).</param>
+        /// <param name="height">The desired height of the polygon. (In order for the line width to be accurate, it must be scaled by the desired height).</param>
+        /// <param name="lineWidth">The desired line width of the polygon.</param>
+        /// <returns>Generated shape data of your hollow regular polygon.</returns>
         public static ShapeData CreateHollowRegularPolygon(int totalVertices, float width, float height, float lineWidth)
         {
             if (totalVertices <= 2)
@@ -199,6 +186,60 @@ namespace Morro.Core
             short[] indices = CreateHollowIndices(_totalVertices, totalIndices);
 
             return new ShapeData(vertices, indices);
+        }
+
+        /// <summary>
+        /// Creates a hollow square given a specific width, height, and line width.
+        /// </summary>
+        /// <param name="width">The desired width of the polygon. (In order for the line width to be accurate, it must be scaled by the desired width).</param>
+        /// <param name="height">The desired height of the polygon. (In order for the line width to be accurate, it must be scaled by the desired height).</param>
+        /// <param name="lineWidth">The desired line width of the polygon.</param>
+        /// <returns>Generated shape data of your hollow square.</returns>
+        public static ShapeData CreateHollowSquare(float width, float height, float lineWidth)
+        {
+            int initialTotalVertices = 4;
+            int totalVertices = initialTotalVertices * 2;
+            int totalTriangles = initialTotalVertices * 2;
+            int totalIndices = totalTriangles * 3;
+
+            float scaledLineWidthX = lineWidth / width;
+            float scaledLineWidthY = lineWidth / height;
+
+            Vector3[] vertices = new Vector3[]
+            {
+                new Vector3(scaledLineWidthX, scaledLineWidthY, 0),
+                new Vector3(scaledLineWidthX, 1 - scaledLineWidthY, 0),
+                new Vector3(1 - scaledLineWidthX, 1 - scaledLineWidthY, 0),
+                new Vector3(1 - scaledLineWidthX, scaledLineWidthY, 0),
+
+                new Vector3(0, 0, 0),
+                new Vector3(0, 1, 0),
+                new Vector3(1, 1, 0),
+                new Vector3(1, 0, 0),
+            };
+
+            short[] indices = CreateHollowIndices(totalVertices, totalIndices);
+
+            return new ShapeData(vertices, indices);
+        }
+
+        /// <summary>
+        /// Creates a hollow circle given a specific radius and line width.
+        /// </summary>
+        /// <param name="radius">The desired radius of the circle. (In order for the line width to be accurate, it must be scaled by the desired radius).</param>
+        /// <param name="lineWidth">The desired line width of the circle.</param>
+        /// <returns>Generated shape data of your hollow circle.</returns>
+        public static ShapeData CreateHollowCircle(float radius, float lineWidth)
+        {
+            return CreateHollowRegularPolygon(90, radius * 2, radius * 2, lineWidth);
+        }
+
+        internal static void UnloadContent()
+        {
+            foreach (ShapeData shapeData in shapes)
+            {
+                shapeData.Dispose();
+            }
         }
 
         private static short[] CreateHollowIndices(int totalVertices, int totalIndices)

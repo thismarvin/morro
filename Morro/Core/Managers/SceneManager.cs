@@ -10,6 +10,9 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Handles the entire life cycle of any registered <see cref="Scene"/>'s.
+    /// </summary>
     static class SceneManager
     {
         public static Scene CurrentScene { get; private set; }

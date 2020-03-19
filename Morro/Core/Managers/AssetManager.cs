@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Handles the entire life cycle of all of the following registered assets: <see cref="Texture2D"/>, <see cref="Effect"/>, <see cref="SoundEffect"/>, and <see cref="BMFont"/>.
+    /// </summary>
     static class AssetManager
     {
         private static readonly ResourceHandler<Texture2D> textures;

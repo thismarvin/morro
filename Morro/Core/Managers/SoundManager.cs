@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Provides functionality to play registered <see cref="SoundEffect"/>'s, and handles any additional logic necessary to achieve said functionality.
+    /// </summary>
     static class SoundManager
     {
         public static float MasterVolume

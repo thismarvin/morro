@@ -8,12 +8,18 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// The current method of input.
+    /// </summary>
     public enum InputMode
     {
         Keyboard,
         Controller
     }
 
+    /// <summary>
+    /// Maintains important input related logic, and provides functionality to accumulate a list of <see cref="InputProfile"/>'s
+    /// </summary>
     static class InputManager
     {
         public static InputMode InputMode { get; set; }

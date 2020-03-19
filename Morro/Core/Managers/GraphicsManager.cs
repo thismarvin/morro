@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Morro.Core
 {
+    /// <summary>
+    /// Handles the entire life cycle of a set of various graphics realted objects.
+    /// </summary>
     static class GraphicsManager
     {
         public static RasterizerState DefaultRasterizerState { get; private set; }
@@ -35,7 +38,7 @@ namespace Morro.Core
             };
         }
 
-        public static void UnloadContent()
+        internal static void UnloadContent()
         {
             SimpleTexture.Dispose();
             BasicEffect.Dispose();

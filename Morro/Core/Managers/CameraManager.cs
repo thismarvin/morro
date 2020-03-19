@@ -25,6 +25,9 @@ namespace Morro.Core
         TopRightAlign,
     }
 
+    /// <summary>
+    /// Upholds the accuracy of a <see cref="Camera"/>, and maintains a list of basic cameras.
+    /// </summary>
     static class CameraManager
     {
         private static readonly ResourceHandler<Camera> cameras;

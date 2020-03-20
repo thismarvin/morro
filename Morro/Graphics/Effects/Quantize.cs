@@ -1,9 +1,8 @@
-﻿using Morro.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Graphics
+namespace Morro.Graphics.Effects
 {
     class Quantize : FX
     {

@@ -7,12 +7,12 @@ using System.Text;
 
 namespace Morro.Input
 {
-    static class Mouse
+    static class MMouse
     {
         public static Vector2 SceneLocation { get => sceneLocation; }
         public static Vector2 WindowLocation { get => windowLocation; }
-        public static Core.Rectangle DynamicBounds { get; private set; }
-        public static Core.Rectangle StaticBounds { get; private set; }
+        public static RectangleF DynamicBounds { get; private set; }
+        public static RectangleF StaticBounds { get; private set; }
 
         private static MouseState previousMouseState;
         private static MouseState currentMouseState;
@@ -32,7 +32,7 @@ namespace Morro.Input
         {
             isBeingUpdated = true;
             previousMouseState = currentMouseState;
-            currentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            currentMouseState = Mouse.GetState();
 
             if (SceneManager.CurrentScene != null)
             {
@@ -43,8 +43,8 @@ namespace Morro.Input
             windowLocation.X = currentMouseState.X / CameraManager.GetCamera(CameraType.Static).Zoom - WindowManager.PillarBox;
             windowLocation.Y = currentMouseState.Y / CameraManager.GetCamera(CameraType.Static).Zoom - WindowManager.LetterBox;
 
-            DynamicBounds = new Core.Rectangle(sceneLocation.X, sceneLocation.Y, 1, 1);
-            StaticBounds = new Core.Rectangle(windowLocation.X, windowLocation.Y, 1, 1);
+            DynamicBounds = new RectangleF(sceneLocation.X, sceneLocation.Y, 1, 1);
+            StaticBounds = new RectangleF(windowLocation.X, windowLocation.Y, 1, 1);
         }
 
         public static bool PressedLeftClick()

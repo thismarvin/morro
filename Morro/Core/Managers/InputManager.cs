@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Input;
 using Morro.Input;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 namespace Morro.Core
@@ -108,8 +107,8 @@ namespace Morro.Core
 
         internal static void Update()
         {
-            Input.Keyboard.Update();
-            Input.Mouse.Update();
+            Input.MKeyboard.Update();
+            Input.MMouse.Update();
 
             BasicInputHandler.Update();
         }

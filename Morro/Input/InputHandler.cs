@@ -13,13 +13,13 @@ namespace Morro.Input
         public string Profile { get; private set; }        
 
         private InputProfile inputProfile;
-        private readonly GamePad gamePad;
+        private readonly MGamePad gamePad;
 
         public InputHandler(PlayerIndex playerIndex)
         {
             PlayerIndex = playerIndex;
             inputProfile = InputManager.GetProfile("Basic");
-            gamePad = new GamePad(PlayerIndex);
+            gamePad = new MGamePad(PlayerIndex);
         }
 
         public void LoadProfile(string profile)
@@ -39,7 +39,7 @@ namespace Morro.Input
             {
                 for (int i = 0; i < inputMapping.Keys.Length; i++)
                 {
-                    if (Keyboard.Pressing(inputMapping.Keys[i]))
+                    if (MKeyboard.Pressing(inputMapping.Keys[i]))
                     {
                         return true;
                     }
@@ -68,7 +68,7 @@ namespace Morro.Input
             {
                 for (int i = 0; i < inputMapping.Keys.Length; i++)
                 {
-                    if (Keyboard.Pressed(inputMapping.Keys[i]))
+                    if (MKeyboard.Pressed(inputMapping.Keys[i]))
                     {
                         return true;
                     }

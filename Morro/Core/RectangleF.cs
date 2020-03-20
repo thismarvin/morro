@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 namespace Morro.Core
 {
-    struct Rectangle
+    struct RectangleF
     {
         public float X { get; private set; }
         public float Y { get; private set; }
@@ -17,7 +16,7 @@ namespace Morro.Core
         public float Left { get => X; }
         public float Right { get => X + Width; }
 
-        public Rectangle(float x, float y, float width, float height)
+        public RectangleF(float x, float y, float width, float height)
         {
             X = x;
             Y = y;
@@ -25,12 +24,12 @@ namespace Morro.Core
             Height = height;
         }
 
-        public bool Intersects(Rectangle rectangle)
+        public bool Intersects(RectangleF rectangle)
         {
             return (Left < rectangle.Right && Right > rectangle.Left && Top < rectangle.Bottom && Bottom > rectangle.Top);
         }
 
-        public bool EntirelyWithin(Rectangle rectangle)
+        public bool EntirelyWithin(RectangleF rectangle)
         {
             return (Left >= rectangle.Left && Right <= rectangle.Right && Top > rectangle.Top && Bottom <= rectangle.Bottom);
         }

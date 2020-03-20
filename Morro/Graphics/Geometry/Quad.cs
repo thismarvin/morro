@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class MQuad : MPolygon
+    class Quad : Polygon
     {
         public float LineWidth
         {
@@ -19,7 +19,7 @@ namespace Morro.Graphics
 
         private float lineWidth;
 
-        public MQuad(float x, float y, float width, float height) : base(x, y, width, height, ShapeType.Square)
+        public Quad(float x, float y, float width, float height) : base(x, y, width, height, ShapeType.Square)
         {
 
         }

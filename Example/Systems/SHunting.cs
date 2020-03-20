@@ -32,7 +32,7 @@ namespace Example.Systems
             if (!predator.Seeking)
             {
                 predator.Seeking = true;
-                predator.Target = new Vector2(Morro.Maths.Random.Range(0, (int)scene.SceneBounds.Width), Morro.Maths.Random.Range(0, (int)scene.SceneBounds.Height));
+                predator.Target = new Vector2(Morro.Maths.MoreRandom.Range(0, (int)scene.SceneBounds.Width), Morro.Maths.MoreRandom.Range(0, (int)scene.SceneBounds.Height));
             }
             else
             {

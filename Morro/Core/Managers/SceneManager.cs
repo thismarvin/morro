@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using Morro.ECS;
 using Morro.Graphics;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -182,7 +179,7 @@ namespace Morro.Core
             UpdateTransitions();
             UpdateCurrentScene();
 
-            if (DebugManager.Debugging && Input.Keyboard.Pressed(Keys.R))
+            if (DebugManager.Debugging && Input.MKeyboard.Pressed(Keys.R))
             {
                 CurrentScene?.LoadScene();
             }

@@ -1,5 +1,4 @@
 ﻿using Morro.Core;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +13,7 @@ namespace Morro.ECS
 
     abstract class Partitioner<T> where T : IPartitionable
     {
-        public Rectangle Boundary
+        public RectangleF Boundary
         {
             get => boundary;
             set
@@ -25,16 +24,16 @@ namespace Morro.ECS
             }
         }
 
-        private Rectangle boundary;
+        private RectangleF boundary;
 
-        internal Partitioner(Rectangle boundary)
+        internal Partitioner(RectangleF boundary)
         {
             this.boundary = boundary;
         }
 
         protected abstract void Initialize();
 
-        public abstract List<int> Query(Rectangle bounds);
+        public abstract List<int> Query(RectangleF bounds);
 
         public abstract bool Insert(T entry);
 

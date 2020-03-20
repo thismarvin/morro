@@ -1,19 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
-using Morro.Graphics;
-using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Utilities
+namespace Morro.Graphics.Transitions
 {
     class Pinhole : Transition
     {
         const int PADDING = 64;
 
-        private readonly MCircle pinhole;
+        private readonly Circle pinhole;
         private int radius;
 
         private float lineWidth;
@@ -25,7 +22,7 @@ namespace Morro.Utilities
 
         public Pinhole(TransitionType type, float speed, float acceleration) : base(type, speed, acceleration)
         {
-            pinhole = new MCircle(0, 0, 1) { Color = Color.Black };
+            pinhole = new Circle(0, 0, 1) { Color = Color.Black };
         }
 
         protected override void SetupTransition()

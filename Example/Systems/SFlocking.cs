@@ -60,7 +60,7 @@ namespace Example.Systems
             Vector2 force;
             Vector2 theirCenter;
 
-            List<int> queryResult = binPartitioner.Query(new Morro.Core.Rectangle(position.X - boid.ViewRadius, position.Y - boid.ViewRadius, dimension.Width + boid.ViewRadius * 2, dimension.Height + boid.ViewRadius * 2));
+            List<int> queryResult = binPartitioner.Query(new Morro.Core.RectangleF(position.X - boid.ViewRadius, position.Y - boid.ViewRadius, dimension.Width + boid.ViewRadius * 2, dimension.Height + boid.ViewRadius * 2));
 
             for (int i = 0; i < queryResult.Count; i++)
             {
@@ -104,11 +104,11 @@ namespace Example.Systems
                 }
             }
 
-            distance = Vector2.Distance(Morro.Input.Mouse.SceneLocation, myCenter);
+            distance = Vector2.Distance(Morro.Input.MMouse.SceneLocation, myCenter);
 
             if (distance > 0 && distance < 32)
             {
-                force = myCenter - Morro.Input.Mouse.SceneLocation;
+                force = myCenter - Morro.Input.MMouse.SceneLocation;
                 force /= distance * distance;
                 cumulativeSeperation += force;
                 totalSeperation++;

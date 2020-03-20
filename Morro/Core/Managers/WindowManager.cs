@@ -26,7 +26,7 @@ namespace Morro.Core
         public static int PixelWidth { get; private set; }
         public static int PixelHeight { get; private set; }
         public static float Scale { get; private set; }
-        public static Rectangle Bounds { get; private set; }
+        public static RectangleF Bounds { get; private set; }
 
         public static int DisplayWidth { get; private set; }
         public static int DisplayHeight { get; private set; }
@@ -48,7 +48,7 @@ namespace Morro.Core
         public static float LetterBox { get; private set; }
         public static float PillarBox { get; private set; }
 
-        private static MAABB[] boxing;
+        private static AABB[] boxing;
         private static readonly PolygonCollection polygonCollection;
 
         private static bool manipulatingScreen;
@@ -218,12 +218,12 @@ namespace Morro.Core
         {
             int buffer = 1000;
 
-            boxing = new MAABB[]
+            boxing = new AABB[]
             {
-                new MAABB(-buffer, -buffer, PixelWidth + buffer * 2, buffer) { Color = Color.Black },
-                new MAABB(-buffer, PixelHeight,PixelWidth + buffer * 2, buffer) { Color = Color.Black },
-                new MAABB(-buffer, -buffer, buffer, PixelHeight + buffer * 2) { Color = Color.Black },
-                new MAABB(PixelWidth, -buffer, buffer, PixelHeight + buffer * 2) { Color = Color.Black }
+                new AABB(-buffer, -buffer, PixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new AABB(-buffer, PixelHeight,PixelWidth + buffer * 2, buffer) { Color = Color.Black },
+                new AABB(-buffer, -buffer, buffer, PixelHeight + buffer * 2) { Color = Color.Black },
+                new AABB(PixelWidth, -buffer, buffer, PixelHeight + buffer * 2) { Color = Color.Black }
             };
 
             polygonCollection.SetCollection(boxing);
@@ -256,7 +256,7 @@ namespace Morro.Core
                     break;
             }
 
-            Bounds = new Rectangle(0, 0, PixelWidth, PixelHeight);
+            Bounds = new RectangleF(0, 0, PixelWidth, PixelHeight);
         }
 
         private static void CalculateBoxing()
@@ -350,13 +350,13 @@ namespace Morro.Core
 
         private static void UpdateInput()
         {
-            if (Input.Keyboard.Pressed(Keys.F11))
+            if (Input.MKeyboard.Pressed(Keys.F11))
             {
                 ToggleFullScreen();
             }
 
 #if !__IOS__ && !__TVOS__
-            if (Input.Keyboard.Pressed(Keys.Escape))
+            if (Input.MKeyboard.Pressed(Keys.Escape))
             {
                 Engine.Instance.Exit();
             }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class MCircle : MPolygon
+    class Circle : Polygon
     {
         public float Radius
         {
@@ -31,7 +31,7 @@ namespace Morro.Graphics
         private float radius;
         private float lineWidth;
 
-        public MCircle(float x, float y, float radius) : base(x, y, radius * 2, radius * 2, ShapeType.Circle)
+        public Circle(float x, float y, float radius) : base(x, y, radius * 2, radius * 2, ShapeType.Circle)
         {
             this.radius = radius;
         }

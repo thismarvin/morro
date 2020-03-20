@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.Maths;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +8,7 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class MLine
+    class Line
     {
         public float LineWidth
         {
@@ -39,14 +37,14 @@ namespace Morro.Graphics
 
         private Vector2[] points;
         private Vector2[] remappedPoints;
-        private readonly MPolygon line;
+        private readonly Polygon line;
 
         private int TotalPoints { get => points.Length; }
         private int TotalVertices { get => TotalPoints * 2; }
         private int TotalTriangles { get => TotalVertices - 2; }
         private int TotalIndices { get => TotalTriangles * 3; }
 
-        public MLine(float x1, float y1, float x2, float y2)
+        public Line(float x1, float y1, float x2, float y2)
         {
             points = new Vector2[]
             {
@@ -58,16 +56,16 @@ namespace Morro.Graphics
 
             ProcessPoints();
 
-            line = new MPolygon(x, y, width, height, "Morro_None")
+            line = new Polygon(x, y, width, height, "Morro_None")
             {
                 ShapeData = CreateShapeData()
             };
         }
 
-        public MLine(Vector2[] points)
+        public Line(Vector2[] points)
         {
             lineWidth = 1;
-            line = new MPolygon(x, y, width, height, "Morro_None");
+            line = new Polygon(x, y, width, height, "Morro_None");
 
             SetPoints(points);
         }

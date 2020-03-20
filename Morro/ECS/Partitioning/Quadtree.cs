@@ -1,5 +1,4 @@
 ﻿using Morro.Core;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,7 +16,7 @@ namespace Morro.ECS
         private Quadtree<T> bottomRight;
         private Quadtree<T> bottomLeft;
 
-        public Quadtree(Rectangle boundary, int capacity) : base(boundary)
+        public Quadtree(RectangleF boundary, int capacity) : base(boundary)
         {
             this.capacity = capacity;
 
@@ -29,7 +28,7 @@ namespace Morro.ECS
             objects = new T[capacity];
         }
 
-        public override List<int> Query(Rectangle bounds)
+        public override List<int> Query(RectangleF bounds)
         {
             List<int> result = new List<int>();
 
@@ -116,10 +115,10 @@ namespace Morro.ECS
 
         private void Subdivide()
         {
-            topLeft = new Quadtree<T>(new Rectangle(Boundary.X, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
-            topRight = new Quadtree<T>(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
-            bottomRight = new Quadtree<T>(new Rectangle(Boundary.X + Boundary.Width / 2, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
-            bottomLeft = new Quadtree<T>(new Rectangle(Boundary.X, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            topLeft = new Quadtree<T>(new RectangleF(Boundary.X, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            topRight = new Quadtree<T>(new RectangleF(Boundary.X + Boundary.Width / 2, Boundary.Y, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            bottomRight = new Quadtree<T>(new RectangleF(Boundary.X + Boundary.Width / 2, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
+            bottomLeft = new Quadtree<T>(new RectangleF(Boundary.X, Boundary.Y + Boundary.Height / 2, Boundary.Width / 2, Boundary.Height / 2), capacity);
             divided = true;
         }
     }

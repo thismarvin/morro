@@ -14,12 +14,13 @@
     <Folder Include="$(MSBuildThisFileDirectory)ECS\Partitioning\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Geometry\" />
     <Folder Include="$(MSBuildThisFileDirectory)Graphics\Palettes\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Utilities\Transitions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Graphics\Transitions\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodExpectedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MethodOrderException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\AssetManager.cs" />
@@ -52,7 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\SystemManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\SSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\PartitioningSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBinPartitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SimpleShapeSystem.cs" />
@@ -62,12 +63,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Effects\BMFontShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\GeometryManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\MCircle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\MLine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygon.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\MAABB.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\MPolygonHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\MQuad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\Circle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\Line.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Polygon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\AABB.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry\Quad.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonGroup.cs" />
@@ -80,7 +81,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputProfile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\CollisionInformation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Maths\Matrix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Maths\DynamicMatrix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\CameraManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\CollisionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\DebugManager.cs" />
@@ -91,8 +92,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\MorroObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreMath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MTV.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Maths\Random.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Rectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreRandom.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RectangleF.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SceneManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SketchManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\SoundManager.cs" />
@@ -118,18 +119,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SketchHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Sprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteGroup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\GamePad.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Mouse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MGamePad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MKeyboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MMouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFontCharacter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Readers\BMFontReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SparseSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Text.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transitions\Fade.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transitions\Pinhole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Text.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Transitions\Fade.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Transitions\Pinhole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Timer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Transition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Transition.cs" />
   </ItemGroup>
 </Project>

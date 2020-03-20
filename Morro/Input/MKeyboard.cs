@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using Morro.Core;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Text;
 
 namespace Morro.Input
 {
-    static class Keyboard
+    static class MKeyboard
     {        
         private static KeyboardState previousKeyState;
         private static KeyboardState currentKeyState;
@@ -51,7 +50,7 @@ namespace Morro.Input
         {
             isBeingUpdated = true;
             previousKeyState = currentKeyState;
-            currentKeyState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+            currentKeyState = Keyboard.GetState();
         }
     }
 }

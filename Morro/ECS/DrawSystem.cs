@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Morro.Utilities;
+using Morro.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -15,7 +15,7 @@ namespace Example.Entities
             CDimension dimension = new CDimension(size, size);
             CTransform transform = new CTransform()
             {
-                Rotation = (float)Random.Range(0, System.Math.PI * 2),
+                Rotation = (float)MoreRandom.Range(0, System.Math.PI * 2),
                 RotationOffset = new Vector2(size / 2, size / 2),
             };
 
@@ -24,9 +24,9 @@ namespace Example.Entities
                 position,
                 dimension,
                 transform,
-                new CColor(palette[Random.Range(0, palette.Length - 1)]),
+                new CColor(palette[MoreRandom.Range(0, palette.Length - 1)]),
                 new CQuad(),
-                new CPhysicsBody(Random.RandomVector2(Random.Range(0, 300)), new Vector2(0, 75)),
+                new CPhysicsBody(MoreRandom.RandomVector2(MoreRandom.Range(0, 300)), new Vector2(0, 75)),
                 new CPartitionable()
             };
         }

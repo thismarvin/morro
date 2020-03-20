@@ -15,7 +15,7 @@ namespace Example.Systems
         private IComponent[] positions;
         private IComponent[] dimensions;
         private IComponent[] transforms;
-        private IComponent[] physicsBodies;
+        private IComponent[] kinetics;
 
         private readonly float seperationIntensity;
         private readonly float alignmentIntensity;
@@ -25,7 +25,7 @@ namespace Example.Systems
 
         public SFlocking(Scene scene) : base(scene, 4, 60)
         {
-            Require(typeof(CBoid), typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CPhysicsBody));
+            Require(typeof(CBoid), typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CKinetic));
             Avoid(typeof(CPredator));
             Depend(typeof(SBinPartitioner));
 
@@ -40,7 +40,7 @@ namespace Example.Systems
             CPosition position = (CPosition)positions[entity];
             CDimension dimension = (CDimension)dimensions[entity];
             CTransform transform = (CTransform)transforms[entity];
-            CPhysicsBody physicsBody = (CPhysicsBody)physicsBodies[entity];
+            CKinetic kinetic = (CKinetic)kinetics[entity];
 
             Vector2 myCenter = new Vector2(position.X + dimension.Width / 2, position.Y + dimension.Height / 2);
 
@@ -56,7 +56,7 @@ namespace Example.Systems
             float distance;
             CPosition theirPosition;
             CDimension theirDimension;
-            CPhysicsBody theirPhysicsBody;
+            CKinetic theirPhysicsBody;
             Vector2 force;
             Vector2 theirCenter;
 
@@ -69,7 +69,7 @@ namespace Example.Systems
 
                 theirPosition = (CPosition)positions[queryResult[i]];
                 theirDimension = (CDimension)dimensions[queryResult[i]];
-                theirPhysicsBody = (CPhysicsBody)physicsBodies[queryResult[i]];
+                theirPhysicsBody = (CKinetic)kinetics[queryResult[i]];
 
                 theirCenter = new Vector2(theirPosition.X + theirDimension.Width / 2, theirPosition.Y + theirDimension.Height / 2);
 
@@ -120,8 +120,8 @@ namespace Example.Systems
 
             Vector2 totalForce = seperation + alignment + cohesion;
 
-            physicsBody.Velocity += totalForce;
-            transform.Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X);
+            kinetic.Velocity += totalForce;
+            transform.Rotation = -(float)Math.Atan2(kinetic.Velocity.Y, kinetic.Velocity.X);
 
             Vector2 CalculateSeperation()
             {
@@ -130,7 +130,7 @@ namespace Example.Systems
 
                 cumulativeSeperation /= totalSeperation;
                 cumulativeSeperation.SetMagnitude(boid.MoveSpeed);
-                Vector2 result = cumulativeSeperation - physicsBody.Velocity;
+                Vector2 result = cumulativeSeperation - kinetic.Velocity;
                 result.Limit(boid.MaxForce);
 
                 return result * seperationIntensity;
@@ -143,7 +143,7 @@ namespace Example.Systems
 
                 cumulativeAlignment /= totalAlignment;
                 cumulativeAlignment.SetMagnitude(boid.MoveSpeed);
-                Vector2 result = cumulativeAlignment - physicsBody.Velocity;
+                Vector2 result = cumulativeAlignment - kinetic.Velocity;
                 result.Limit(boid.MaxForce);
 
                 return result * alignmentIntensity;
@@ -157,7 +157,7 @@ namespace Example.Systems
                 cumulativeCohesion /= totalCohesion;
                 cumulativeCohesion -= myCenter;
                 cumulativeCohesion.SetMagnitude(boid.MoveSpeed);
-                Vector2 result = cumulativeCohesion - physicsBody.Velocity;
+                Vector2 result = cumulativeCohesion - kinetic.Velocity;
                 result.Limit(boid.MaxForce);
 
                 return result * cohesionIntensity;
@@ -170,7 +170,7 @@ namespace Example.Systems
             positions = scene.GetData<CPosition>();
             dimensions = scene.GetData<CDimension>();
             transforms = scene.GetData<CTransform>();
-            physicsBodies = scene.GetData<CPhysicsBody>();
+            kinetics = scene.GetData<CKinetic>();
 
             if (binPartitioner == null)
             {

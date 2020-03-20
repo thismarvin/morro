@@ -12,20 +12,20 @@ namespace Example.Systems
     {
         private IComponent[] positions;
         private IComponent[] predators;
-        private IComponent[] physicsBodies;
+        private IComponent[] kinetics;
         private IComponent[] transforms;
         private IComponent[] boids;
 
         public SHunting(Scene scene) : base(scene, 4, 60)
         {
-            Require(typeof(CPosition), typeof(CPredator), typeof(CPhysicsBody), typeof(CTransform), typeof(CBoid));
+            Require(typeof(CPosition), typeof(CPredator), typeof(CKinetic), typeof(CTransform), typeof(CBoid));
         }
 
         public override void UpdateEntity(int entity)
         {
             CPosition position = (CPosition)positions[entity];
             CPredator predator = (CPredator)predators[entity];
-            CPhysicsBody physicsBody = (CPhysicsBody)physicsBodies[entity];
+            CKinetic kinetic = (CKinetic)kinetics[entity];
             CTransform transform = (CTransform)transforms[entity];
             CBoid boid = (CBoid)boids[entity];
 
@@ -46,11 +46,11 @@ namespace Example.Systems
 
                 Vector2 desired = predator.Target - positionVector;
                 desired.SetMagnitude(boid.MoveSpeed);
-                Vector2 seek = desired - physicsBody.Velocity;
+                Vector2 seek = desired - kinetic.Velocity;
                 seek.Limit(boid.MaxForce);
-                physicsBody.Velocity += seek;
+                kinetic.Velocity += seek;
 
-                transform.Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X);
+                transform.Rotation = -(float)Math.Atan2(kinetic.Velocity.Y, kinetic.Velocity.X);
             }
         }
 
@@ -58,7 +58,7 @@ namespace Example.Systems
         {
             positions = scene.GetData<CPosition>();
             predators = scene.GetData<CPredator>();
-            physicsBodies = scene.GetData<CPhysicsBody>();
+            kinetics = scene.GetData<CKinetic>();
             transforms = scene.GetData<CTransform>();
             boids = scene.GetData<CBoid>();
 

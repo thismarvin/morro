@@ -12,7 +12,7 @@ namespace Example.Systems
     {
         public STriangle(Scene scene) : base(scene, GeometryManager.GetShapeData(ShapeType.Triangle), typeof(CTriangle), 4)
         {
-            Depend(typeof(SPhysics));
+            Depend(typeof(SBoidPhysics));
         }
     }
 }

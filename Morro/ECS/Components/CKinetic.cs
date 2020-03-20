@@ -1,20 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Morro.Core;
-using Morro.ECS;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Example.Components
+namespace Morro.ECS
 {
-    class CPhysicsBody : IComponent
+    class CKinetic : IComponent
     {
         public Vector2 Velocity { get; set; }
-        public Vector2 Acceleration { get; set; }
-        public float Accumulator { get; set; }
+        public Vector2 Acceleration { get; set; }        
         public TimeSpan LastUpdate { get; set; }
+        public float Accumulator { get; set; }
 
-        public CPhysicsBody()
+        public CKinetic()
         {
             Velocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
@@ -22,7 +21,7 @@ namespace Example.Components
             LastUpdate = new TimeSpan(Engine.TotalGameTime.Ticks);
         }
 
-        public CPhysicsBody(Vector2 initialVelocity, Vector2 initialAcceleration)
+        public CKinetic(Vector2 initialVelocity, Vector2 initialAcceleration)
         {
             Velocity = initialVelocity;
             Acceleration = initialAcceleration;

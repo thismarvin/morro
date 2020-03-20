@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ResourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CKinetic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystemHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\EventManager.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\SystemManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SPhysics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\PartitioningSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBinPartitioner.cs" />

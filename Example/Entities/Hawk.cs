@@ -1,7 +1,9 @@
 ﻿using Example.Components;
+using Microsoft.Xna.Framework;
 using Morro.ECS;
 using Morro.Graphics;
 using Morro.Graphics.Palettes;
+using Morro.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,17 +17,17 @@ namespace Example.Entities
             CBoid boid = new CBoid()
             {
                 ViewRadius = 16,
-                MoveSpeed = Morro.Maths.MoreRandom.Range(60, 80),
+                MoveSpeed = MoreRandom.Range(60, 80),
                 MaxForce = 0.4f
             };
-            CPhysicsBody physicsBody = new CPhysicsBody(Morro.Maths.MoreRandom.RandomVector2(boid.MoveSpeed), Microsoft.Xna.Framework.Vector2.Zero);
+            CKinetic physicsBody = new CKinetic(MoreRandom.RandomVector2(boid.MoveSpeed), Vector2.Zero);
             CPosition position = new CPosition(x, y);
             CDimension dimension = new CDimension(4, 4);
             CTransform transform = new CTransform()
             {
-                Scale = new Microsoft.Xna.Framework.Vector3(3, 1, 1),
+                Scale = new Vector3(3, 1, 1),
                 Rotation = -(float)Math.Atan2(physicsBody.Velocity.Y, physicsBody.Velocity.X),
-                RotationOffset = new Microsoft.Xna.Framework.Vector2(dimension.Width / 2, dimension.Height / 2)
+                RotationOffset = new Vector2(dimension.Width / 2, dimension.Height / 2)
             };
             CColor color = new CColor(PICO8.MidnightBlack);
 

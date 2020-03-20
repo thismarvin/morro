@@ -5,7 +5,7 @@ using Morro.Maths;
 
 namespace Example.Entities
 {
-    static class Yoman
+    static class Particle
     {
         private static readonly Color[] palette = { Color.White, Color.Red, Color.Orange, Color.Blue };
 
@@ -26,7 +26,7 @@ namespace Example.Entities
                 transform,
                 new CColor(palette[MoreRandom.Range(0, palette.Length - 1)]),
                 new CQuad(),
-                new CPhysicsBody(MoreRandom.RandomVector2(MoreRandom.Range(0, 300)), new Vector2(0, 75)),
+                new CKinetic(MoreRandom.RandomVector2(MoreRandom.Range(0, 300)), new Vector2(0, 75)),
                 new CPartitionable()
             };
         }

@@ -1,13 +1,10 @@
-﻿using Example.Components;
-using Example.Entities;
+﻿using Example.Entities;
 using Example.Systems;
-using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.ECS;
 using Morro.Graphics;
 using Morro.Graphics.Effects;
 using Morro.Graphics.Palettes;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +13,7 @@ namespace Example.Scenes
 {
     class Flocking : Scene
     {
-        public Flocking() : base("Flocking", 2000, 16, 16)
+        public Flocking() : base("Flocking", 2000, 16, 6)
         {
             RegisterSystem
             (
@@ -24,7 +21,7 @@ namespace Example.Scenes
                 new SHunting(this),
                 new SBinPartitioner(this, 64, 60),
                 new SFlocking(this),
-                new SPhysics(this),
+                new SBoidPhysics(this),
                 new STriangle(this)
             );
         }

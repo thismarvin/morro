@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Morro.Input
 {
-    class GamePad
+    class MGamePad
     {
         public PlayerIndex PlayerIndex { get; private set; } 
 
@@ -15,7 +15,7 @@ namespace Morro.Input
         private GamePadState currentGamePadState;
         private bool isBeingUpdated;
 
-        public GamePad(PlayerIndex playerIndex)
+        public MGamePad(PlayerIndex playerIndex)
         {
             PlayerIndex = playerIndex;
         }
@@ -29,9 +29,9 @@ namespace Morro.Input
         public void Vibrate(float leftMotor, float rightMotor)
         {
             if (InputManager.InputMode == InputMode.Controller)
-                Microsoft.Xna.Framework.Input.GamePad.SetVibration(PlayerIndex, leftMotor, rightMotor);
+                GamePad.SetVibration(PlayerIndex, leftMotor, rightMotor);
             else
-                Microsoft.Xna.Framework.Input.GamePad.SetVibration(PlayerIndex, 0, 0);
+                GamePad.SetVibration(PlayerIndex, 0, 0);
         }
 
         public bool Pressed(Buttons button)
@@ -70,7 +70,7 @@ namespace Morro.Input
         {
             isBeingUpdated = true;
             previousGamePadState = currentGamePadState;
-            currentGamePadState = Microsoft.Xna.Framework.Input.GamePad.GetState(PlayerIndex);
+            currentGamePadState = GamePad.GetState(PlayerIndex);
         }
     }
 }

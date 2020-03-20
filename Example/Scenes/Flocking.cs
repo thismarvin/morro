@@ -43,11 +43,11 @@ namespace Example.Scenes
         {
             UpdateECS();
 
-            if (Morro.Input.Mouse.PressedLeftClick())
+            if (Morro.Input.MMouse.PressedLeftClick())
             {
                 CreateBoids();
             }
-            if (Morro.Input.Mouse.PressedRightClick())
+            if (Morro.Input.MMouse.PressedRightClick())
             {
                 CreatePredators();
             }

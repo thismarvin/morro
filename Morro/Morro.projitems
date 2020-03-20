@@ -119,9 +119,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SketchHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Sprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteGroup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\GamePad.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Keyboard.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Mouse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MGamePad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MKeyboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MMouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFontCharacter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Readers\BMFontReader.cs" />

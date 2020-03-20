@@ -8,6 +8,7 @@ using Morro.Debug;
 using Morro.ECS;
 using Morro.Graphics;
 using Morro.Graphics.Effects;
+using Morro.Input;
 using Morro.Maths;
 using Morro.Utilities;
 using System;
@@ -44,35 +45,35 @@ namespace Example.Scenes
         {
             UpdateECS();
 
-            if (Morro.Input.Mouse.PressedLeftClick())
+            if (MMouse.PressedLeftClick())
             {
                 for (int i = 0; i < EntityCapacity * 0.25; i++)
                 {
-                    CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, Morro.Maths.MoreRandom.Range(1, 5)));
+                    CreateEntity(Yoman.Create(Morro.Input.MMouse.SceneLocation.X, Morro.Input.MMouse.SceneLocation.Y, Morro.Maths.MoreRandom.Range(1, 5)));
                 }
             }
 
-            if (Morro.Input.Keyboard.Pressed(Microsoft.Xna.Framework.Input.Keys.Space))
+            if (MKeyboard.Pressed(Microsoft.Xna.Framework.Input.Keys.Space))
             {
                 GetSystem<SPhysics>().Enabled = !GetSystem<SPhysics>().Enabled;
             }
 
-            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.D))
+            if (MKeyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.D))
             {
                 Camera.SmoothTrack(Camera.Center.X + 50, Camera.Center.Y);
             }
 
-            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.A))
+            if (MKeyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.A))
             {
                 Camera.SmoothTrack(Camera.Center.X - 50, Camera.Center.Y);
             }
 
-            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.W))
+            if (MKeyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.W))
             {
                 Camera.SmoothTrack(Camera.Center.X, Camera.Center.Y - 50);
             }
 
-            if (Morro.Input.Keyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.S))
+            if (MKeyboard.Pressing(Microsoft.Xna.Framework.Input.Keys.S))
             {
                 Camera.SmoothTrack(Camera.Center.X, Camera.Center.Y + 50);
             }

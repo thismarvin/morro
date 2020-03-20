@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Morro.Input
 {
-    static class Mouse
+    static class MMouse
     {
         public static Vector2 SceneLocation { get => sceneLocation; }
         public static Vector2 WindowLocation { get => windowLocation; }
@@ -32,7 +32,7 @@ namespace Morro.Input
         {
             isBeingUpdated = true;
             previousMouseState = currentMouseState;
-            currentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            currentMouseState = Mouse.GetState();
 
             if (SceneManager.CurrentScene != null)
             {

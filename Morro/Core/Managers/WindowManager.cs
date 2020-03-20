@@ -350,13 +350,13 @@ namespace Morro.Core
 
         private static void UpdateInput()
         {
-            if (Input.Keyboard.Pressed(Keys.F11))
+            if (Input.MKeyboard.Pressed(Keys.F11))
             {
                 ToggleFullScreen();
             }
 
 #if !__IOS__ && !__TVOS__
-            if (Input.Keyboard.Pressed(Keys.Escape))
+            if (Input.MKeyboard.Pressed(Keys.Escape))
             {
                 Engine.Instance.Exit();
             }

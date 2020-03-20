@@ -107,8 +107,8 @@ namespace Morro.Core
 
         internal static void Update()
         {
-            Input.Keyboard.Update();
-            Input.Mouse.Update();
+            Input.MKeyboard.Update();
+            Input.MMouse.Update();
 
             BasicInputHandler.Update();
         }

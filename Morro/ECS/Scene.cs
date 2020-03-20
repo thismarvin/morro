@@ -24,7 +24,7 @@ namespace Morro.ECS
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
         public string Name { get; private set; }
-        public Core.RectangleF SceneBounds { get; private set; }
+        public RectangleF SceneBounds { get; private set; }
 
         public int SystemCapacity { get => systemManager.Capacity; }
         public int ComponentCapacity { get => componentManager.Capacity; }

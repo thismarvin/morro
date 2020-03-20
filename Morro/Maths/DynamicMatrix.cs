@@ -6,21 +6,21 @@ using System.Text;
 
 namespace Morro.Maths
 {
-    class Matrix<T>
+    class DynamicMatrix<T>
     {
         public int Rows { get; private set; }
         public int Columns { get; private set; }
 
         private T[] data;
 
-        public Matrix(int rows, int columns)
+        public DynamicMatrix(int rows, int columns)
         {
             Rows = rows;
             Columns = columns;
             data = new T[rows * columns];
         }
 
-        public Matrix(int rows, int columns, T[] data)
+        public DynamicMatrix(int rows, int columns, T[] data)
         {
             Rows = rows;
             Columns = columns;
@@ -28,7 +28,7 @@ namespace Morro.Maths
             SetData(data);
         }
 
-        public static Matrix<float> ConvertMonogameMatrix(Matrix matrix)
+        public static DynamicMatrix<float> ConvertMonogameMatrix(Matrix matrix)
         {
             float[] data = new float[]
             {
@@ -37,20 +37,20 @@ namespace Morro.Maths
                 matrix.M31, matrix.M32, matrix.M33, matrix.M34,
                 matrix.M41, matrix.M42, matrix.M43, matrix.M44,
             };
-            return new Matrix<float>(4, 4, data);
+            return new DynamicMatrix<float>(4, 4, data);
         }
 
         public static Vector2 ApplyTransformation(float x, float y, Matrix matrix)
         {
-            Matrix<float> transform = ConvertMonogameMatrix(matrix);
-            Matrix<float> position = new Matrix<float>(1, 4, new float[] { x, y, 0, 1 });
-            Matrix<float> result = position * transform;
+            DynamicMatrix<float> transform = ConvertMonogameMatrix(matrix);
+            DynamicMatrix<float> position = new DynamicMatrix<float>(1, 4, new float[] { x, y, 0, 1 });
+            DynamicMatrix<float> result = position * transform;
             return new Vector2(result.Get(0, 0), result.Get(1, 0));
         }
 
-        public Matrix<T> Clone()
+        public DynamicMatrix<T> Clone()
         {
-            return new Matrix<T>(Rows, Columns, data);
+            return new DynamicMatrix<T>(Rows, Columns, data);
         }
 
         public T Get(int x, int y)
@@ -94,9 +94,9 @@ namespace Morro.Maths
             Columns = newColumns;
         }
 
-        public static Matrix<T> operator +(Matrix<T> a, T b)
+        public static DynamicMatrix<T> operator +(DynamicMatrix<T> a, T b)
         {
-            Matrix<T> result = new Matrix<T>(a.Rows, a.Columns);
+            DynamicMatrix<T> result = new DynamicMatrix<T>(a.Rows, a.Columns);
             for (int y = 0; y < a.Rows; y++)
             {
                 for (int x = 0; x < a.Columns; x++)
@@ -107,9 +107,9 @@ namespace Morro.Maths
             return result;
         }
 
-        public static Matrix<T> operator *(Matrix<T> a, T b)
+        public static DynamicMatrix<T> operator *(DynamicMatrix<T> a, T b)
         {
-            Matrix<T> result = new Matrix<T>(a.Rows, a.Columns);
+            DynamicMatrix<T> result = new DynamicMatrix<T>(a.Rows, a.Columns);
             for (int y = 0; y < a.Rows; y++)
             {
                 for (int x = 0; x < a.Columns; x++)
@@ -120,14 +120,14 @@ namespace Morro.Maths
             return result;
         }
 
-        public static Matrix<T> operator +(Matrix<T> a, Matrix<T> b)
+        public static DynamicMatrix<T> operator +(DynamicMatrix<T> a, DynamicMatrix<T> b)
         {
             if (a.Rows != b.Rows && a.Columns != b.Columns)
             {
                 throw new ArgumentException("Both matricies must be the same size in order to add them.");
             }
 
-            Matrix<T> result = new Matrix<T>(a.Rows, a.Columns);
+            DynamicMatrix<T> result = new DynamicMatrix<T>(a.Rows, a.Columns);
             for (int y = 0; y < a.Rows; y++)
             {
                 for (int x = 0; x < a.Columns; x++)
@@ -138,14 +138,14 @@ namespace Morro.Maths
             return result;
         }
 
-        public static Matrix<T> operator *(Matrix<T> a, Matrix<T> b)
+        public static DynamicMatrix<T> operator *(DynamicMatrix<T> a, DynamicMatrix<T> b)
         {
             if (a.Columns != b.Rows)
             {
                 throw new ArgumentException("Cannot multiply these matricies.");
             }
 
-            Matrix<T> result = new Matrix<T>(a.Rows, b.Columns);
+            DynamicMatrix<T> result = new DynamicMatrix<T>(a.Rows, b.Columns);
             for (int aY = 0; aY < a.Rows; aY++)
             {
                 for (int aX = 0; aX < a.Columns; aX++)

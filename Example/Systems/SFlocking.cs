@@ -60,7 +60,7 @@ namespace Example.Systems
             Vector2 force;
             Vector2 theirCenter;
 
-            List<int> queryResult = binPartitioner.Query(new Morro.Core.Rectangle(position.X - boid.ViewRadius, position.Y - boid.ViewRadius, dimension.Width + boid.ViewRadius * 2, dimension.Height + boid.ViewRadius * 2));
+            List<int> queryResult = binPartitioner.Query(new Morro.Core.RectangleF(position.X - boid.ViewRadius, position.Y - boid.ViewRadius, dimension.Width + boid.ViewRadius * 2, dimension.Height + boid.ViewRadius * 2));
 
             for (int i = 0; i < queryResult.Count; i++)
             {

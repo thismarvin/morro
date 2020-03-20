@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.ECS;
 using Morro.Graphics;
+using Morro.Graphics.Effects;
+using Morro.Graphics.Palettes;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
@@ -69,7 +71,7 @@ namespace Example.Scenes
 
             for (int i = 0; i < EntityCapacity * 0.1; i++)
             {
-                CreateEntity(Boid.Create(Morro.Maths.Random.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)SceneBounds.Height - buffer)));
+                CreateEntity(Boid.Create(Morro.Maths.MoreRandom.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.MoreRandom.Range(buffer, (int)SceneBounds.Height - buffer)));
             }
         }
 
@@ -77,7 +79,7 @@ namespace Example.Scenes
         {
             int buffer = 32;
 
-            CreateEntity(Hawk.Create(Morro.Maths.Random.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.Random.Range(buffer, (int)SceneBounds.Height - buffer)));
+            CreateEntity(Hawk.Create(Morro.Maths.MoreRandom.Range(buffer, (int)SceneBounds.Width - buffer), Morro.Maths.MoreRandom.Range(buffer, (int)SceneBounds.Height - buffer)));
         }
     }
 }

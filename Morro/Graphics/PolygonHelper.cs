@@ -6,10 +6,10 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    static class MPolygonHelper
+    static class PolygonHelper
     {
         #region Collision Handling
-        public static CollisionInformation GetCollisionInformation(this MPolygon polygon)
+        public static CollisionInformation GetCollisionInformation(this Polygon polygon)
         {
             Vector2[] transformedVertices = CalculateTransformedVertices(polygon);
             LineSegment[] transformedLineSegments = CalculateTransformedLineSegments(polygon, transformedVertices);
@@ -17,7 +17,7 @@ namespace Morro.Graphics
             return new CollisionInformation(transformedVertices, transformedLineSegments);
         }
 
-        private static Vector2[] CalculateTransformedVertices(MPolygon polygon)
+        private static Vector2[] CalculateTransformedVertices(Polygon polygon)
         {
             Vector2[] result = new Vector2[polygon.ShapeData.TotalVertices];
 
@@ -29,7 +29,7 @@ namespace Morro.Graphics
             return result;
         }
 
-        private static LineSegment[] CalculateTransformedLineSegments(MPolygon polygon, Vector2[] transformedVertices)
+        private static LineSegment[] CalculateTransformedLineSegments(Polygon polygon, Vector2[] transformedVertices)
         {
             int totalVertices = polygon.ShapeData.TotalVertices;
             LineSegment[] result = new LineSegment[totalVertices];

@@ -1,13 +1,12 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Morro.Graphics
 {
-    class PolygonGroup : DrawGroup<MPolygon>, IDisposable
+    class PolygonGroup : DrawGroup<Polygon>, IDisposable
     {
         private readonly ShapeData sharedShapeData;
         private readonly VertexTransformColor[] transforms;
@@ -23,12 +22,12 @@ namespace Morro.Graphics
             group = null;
         }
 
-        protected override bool ConditionToAdd(MPolygon polygon)
+        protected override bool ConditionToAdd(Polygon polygon)
         {
             return polygon.ShapeData == sharedShapeData;
         }
 
-        public override bool Add(MPolygon polygon)
+        public override bool Add(Polygon polygon)
         {
             if (groupIndex >= capacity)
                 return false;

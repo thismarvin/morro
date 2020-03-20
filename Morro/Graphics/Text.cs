@@ -1,14 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
-using Morro.Debug;
-using Morro.Graphics;
+using Morro.Graphics.Effects;
+using Morro.Graphics.Palettes;
 using Morro.Maths;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Utilities
+namespace Morro.Graphics
 {
     /// <summary>
     /// A handful of default <see cref="BMFont"/>'s included with Morro.
@@ -37,9 +37,9 @@ namespace Morro.Utilities
         private int spriteIndex;
         private Matrix transform;
 
-        private readonly MAABB literalBounds;
-        private readonly MQuad exactBounds;
-        private readonly MAABB broadBounds;
+        private readonly AABB literalBounds;
+        private readonly Quad exactBounds;
+        private readonly AABB broadBounds;
 
         private readonly SpriteCollection spriteCollection;
 
@@ -52,9 +52,9 @@ namespace Morro.Utilities
 
             shader = new BMFontShader(Color.White, Color.Black, Color.Transparent);
 
-            literalBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.GrassGreen };
-            exactBounds = new MQuad(X, Y, Width, Height) { Color = PICO8.BloodRed };
-            broadBounds = new MAABB(X, Y, Width, Height) { Color = PICO8.FleshPink };
+            literalBounds = new AABB(X, Y, Width, Height) { Color = PICO8.GrassGreen };
+            exactBounds = new Quad(X, Y, Width, Height) { Color = PICO8.BloodRed };
+            broadBounds = new AABB(X, Y, Width, Height) { Color = PICO8.FleshPink };
 
             spriteCollection = new SpriteCollection();
 

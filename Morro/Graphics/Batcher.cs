@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Morro.Core;
-using Morro.Utilities;
+﻿using Morro.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,7 +25,7 @@ namespace Morro.Graphics
         /// </summary>
         /// <param name="polygons">The array of polygons that will be batched and drawn together.</param>
         /// <param name="camera">The camera used to draw the sprites.</param>
-        public static void DrawPolygons(MPolygon[] polygons, Camera camera)
+        public static void DrawPolygons(Polygon[] polygons, Camera camera)
         {
             using (PolygonCollection polygonCollection = new PolygonCollection())
             {

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Input;
 using Morro.Input;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 namespace Morro.Core

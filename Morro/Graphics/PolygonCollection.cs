@@ -4,13 +4,13 @@ using System.Text;
 
 namespace Morro.Graphics
 {
-    class PolygonCollection : DrawCollection<MPolygon>, IDisposable
+    class PolygonCollection : DrawCollection<Polygon>, IDisposable
     {
         public PolygonCollection() : base(100000)
         {
         }
 
-        protected override DrawGroup<MPolygon> CreateDrawGroup(MPolygon currentEntry, int capacity)
+        protected override DrawGroup<Polygon> CreateDrawGroup(Polygon currentEntry, int capacity)
         {
             return new PolygonGroup(currentEntry.ShapeData, capacity);
         }

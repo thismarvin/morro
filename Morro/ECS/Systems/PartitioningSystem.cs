@@ -1,5 +1,4 @@
 ﻿using Morro.Core;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +17,7 @@ namespace Morro.ECS
             Require(typeof(CPosition), typeof(CDimension), typeof(CPartitionable));
         }
 
-        public List<int> Query(Rectangle bounds)
+        public List<int> Query(RectangleF bounds)
         {
             return partitioner.Query(bounds);
         }
@@ -44,12 +43,12 @@ namespace Morro.ECS
         protected struct PartitionerEntry : IPartitionable
         {
             public int Identifier { get; set; }
-            public Rectangle Bounds { get; set; }
+            public RectangleF Bounds { get; set; }
 
             public PartitionerEntry(int entity, CPosition position, CDimension dimension)
             {
                 Identifier = entity;
-                Bounds = new Rectangle(position.X, position.Y, dimension.Width, dimension.Height);
+                Bounds = new RectangleF(position.X, position.Y, dimension.Width, dimension.Height);
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
-using Morro.Utilities;
+using Morro.Graphics.Effects;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Morro.Core;
-using Morro.Maths;
+using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Utilities
+namespace Morro.Core
 {
     class Camera
     {
@@ -16,7 +15,7 @@ namespace Morro.Utilities
         public Matrix Projection { get; private set; }
         public Matrix WorldViewProjection { get; private set; }
         public Vector3 TopLeft { get; private set; }
-        public Core.Rectangle Bounds { get; private set; }
+        public RectangleF Bounds { get; private set; }
         public Vector2 Center { get => new Vector2(Bounds.X + Bounds.Width * 0.5f, Bounds.Y + Bounds.Height * 0.5f); }
         public float SmoothTrackingSpeed { get; set; }
         public float Zoom { get; private set; }
@@ -171,7 +170,7 @@ namespace Morro.Utilities
 
             if (WindowManager.WideScreenSupported)
             {
-                Bounds = new Core.Rectangle
+                Bounds = new RectangleF
                 (
                     (int)TopLeft.X - WindowManager.PillarBox,
                     (int)TopLeft.Y - WindowManager.LetterBox,
@@ -182,7 +181,7 @@ namespace Morro.Utilities
             }
             else
             {
-                Bounds = new Core.Rectangle
+                Bounds = new RectangleF
                 (
                     (int)TopLeft.X,
                     (int)TopLeft.Y,
@@ -401,8 +400,8 @@ namespace Morro.Utilities
                 {
                     //float xOffset = (float)RandomHelper.Range(-shakeDistance, shakeDistance);
                     //float yOffset = (float)RandomHelper.Range(-shakeDistance, shakeDistance);
-                    float xOffset = (float)Maths.Random.Gaussian(0, shakeDistance * 0.75);
-                    float yOffset = (float)Maths.Random.Gaussian(0, shakeDistance * 0.75);
+                    float xOffset = (float)Maths.MoreRandom.Gaussian(0, shakeDistance * 0.75);
+                    float yOffset = (float)Maths.MoreRandom.Gaussian(0, shakeDistance * 0.75);
                     shakePosition = TopLeft + new Vector3(xOffset, yOffset, 0);
                 }
 

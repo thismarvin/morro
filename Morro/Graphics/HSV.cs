@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 namespace Morro.Graphics
@@ -49,7 +48,7 @@ namespace Morro.Graphics
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, $"(H:{H}, S:{S}, V:{V})");
+            return $"(H:{H}, S:{S}, V:{V})";
         }
     }
 }

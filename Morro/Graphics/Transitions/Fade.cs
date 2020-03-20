@@ -1,12 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
-using Morro.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Utilities
+namespace Morro.Graphics.Transitions
 {
     class Fade : Transition
     {
@@ -15,7 +13,7 @@ namespace Morro.Utilities
         private float alpha;
         private Color defaultColor;
         private Color fadeColor;
-        private readonly MQuad fade;
+        private readonly Quad fade;
 
         public Fade(TransitionType type) : this(type, 0.01f, 0.01f, Color.Black)
         {
@@ -25,7 +23,7 @@ namespace Morro.Utilities
         public Fade(TransitionType type, float velocity, float acceleration, Color color) : base(type, velocity, acceleration)
         {
             defaultColor = color;
-            fade = new MQuad(-PADDING, -PADDING, 1, 1) { Color = Color.Black };
+            fade = new Quad(-PADDING, -PADDING, 1, 1) { Color = Color.Black };
         }
 
         protected override void AccommodateToCamera()

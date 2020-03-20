@@ -1,6 +1,7 @@
 ﻿using Example.Components;
 using Morro.ECS;
 using Morro.Graphics;
+using Morro.Graphics.Palettes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,10 +15,10 @@ namespace Example.Entities
             CBoid boid = new CBoid()
             {
                 ViewRadius = 16,
-                MoveSpeed = Morro.Maths.Random.Range(40, 50),
+                MoveSpeed = Morro.Maths.MoreRandom.Range(40, 50),
                 MaxForce = 0.5f
             };
-            CPhysicsBody physicsBody = new CPhysicsBody(Morro.Maths.Random.RandomVector2(boid.MoveSpeed), Microsoft.Xna.Framework.Vector2.Zero);
+            CPhysicsBody physicsBody = new CPhysicsBody(Morro.Maths.MoreRandom.RandomVector2(boid.MoveSpeed), Microsoft.Xna.Framework.Vector2.Zero);
             CPosition position = new CPosition(x, y);
             CDimension dimension = new CDimension(2, 2);
             CTransform transform = new CTransform()

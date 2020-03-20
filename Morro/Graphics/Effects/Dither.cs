@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Morro.Core;
 
-namespace Morro.Graphics
+namespace Morro.Graphics.Effects
 {
     class Dither : FX
     {
@@ -39,7 +38,7 @@ namespace Morro.Graphics
             {
                 colorsAsVectors[i] = Colors[i].ToVector3();
             }
-            
+
             Effect.Parameters["Palette"].SetValue(colorsAsVectors);
         }
     }

@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Morro.Maths
 {
-    static class Random
+    static class MoreRandom
     {
         private static readonly System.Random RNG;
 
-        static Random()
+        static MoreRandom()
         {
             RNG = new System.Random(DateTime.Now.Millisecond);
         }

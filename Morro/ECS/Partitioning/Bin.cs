@@ -1,5 +1,4 @@
 ﻿using Morro.Core;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,7 +12,7 @@ namespace Morro.ECS
         private int columns;
         private int rows;
 
-        public Bin(Rectangle boundary, int powerOfTwo) : base(boundary)
+        public Bin(RectangleF boundary, int powerOfTwo) : base(boundary)
         {
             this.powerOfTwo = powerOfTwo;
 
@@ -33,7 +32,7 @@ namespace Morro.ECS
             }
         }
 
-        public override List<int> Query(Rectangle bounds)
+        public override List<int> Query(RectangleF bounds)
         {
             HashSet<int> unique = new HashSet<int>();
             HashSet<int> ids = HashIDs(bounds);
@@ -81,9 +80,9 @@ namespace Morro.ECS
             }
         }
 
-        private HashSet<int> HashIDs(Rectangle bounds)
+        private HashSet<int> HashIDs(RectangleF bounds)
         {
-            Rectangle validatedBounds = ValidateBounds();
+            RectangleF validatedBounds = ValidateBounds();
             HashSet<int> result = new HashSet<int>();
             int x = -1;
             int y = -1;
@@ -137,7 +136,7 @@ namespace Morro.ECS
 
             return result;
 
-            Rectangle ValidateBounds()
+            RectangleF ValidateBounds()
             {
                 int _x = (int)bounds.X;
                 int _y = (int)bounds.Y;
@@ -153,7 +152,7 @@ namespace Morro.ECS
                 _width = Math.Min((int)Math.Ceiling(Boundary.Right) - _x, _width);
                 _height = Math.Min((int)Math.Ceiling(Boundary.Bottom) - _y, _height);
 
-                return new Rectangle(_x, _y, _width, _height);
+                return new RectangleF(_x, _y, _width, _height);
             }
         }
     }

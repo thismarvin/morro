@@ -16,7 +16,7 @@ namespace Morro.Core
 
         public Vector2 Position { get => new Vector2(X, Y); }
         public Vector2 Center { get => new Vector2(X + Width / 2, X + Height / 2); }
-        public Rectangle Bounds { get => new Rectangle(X, Y, Width, Height); }
+        public RectangleF Bounds { get => new RectangleF(X, Y, Width, Height); }
 
         public MorroObject(float x, float y, int width, int height)
         {

@@ -2,14 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using Morro.Core;
 using Morro.ECS;
-using Morro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Morro.Graphics
 {
-    class MPolygon
+    class Polygon
     {
         #region Properties
         public float X
@@ -127,7 +126,7 @@ namespace Morro.Graphics
 
         public Vector2 Position { get => new Vector2(X, Y); }
         public Vector2 Center { get => new Vector2(X + Width / 2, Y + Height / 2); }
-        public Core.Rectangle Bounds { get => new Core.Rectangle(X, Y, Width, Height); }
+        public RectangleF Bounds { get => new RectangleF(X, Y, Width, Height); }
 
         private float x;
         private float y;
@@ -148,12 +147,12 @@ namespace Morro.Graphics
 
         private static readonly SpriteBatch spriteBatch;
 
-        static MPolygon()
+        static Polygon()
         {
             spriteBatch = GraphicsManager.SpriteBatch;
         }
 
-        public MPolygon(float x, float y, float width, float height, string shape)
+        public Polygon(float x, float y, float width, float height, string shape)
         {
             this.x = x;
             this.y = y;
@@ -175,7 +174,7 @@ namespace Morro.Graphics
             }
         }
 
-        public MPolygon(float x, float y, float width, float height, ShapeType shape) : this(x, y, width, height, $"Morro_{shape.ToString()}")
+        public Polygon(float x, float y, float width, float height, ShapeType shape) : this(x, y, width, height, $"Morro_{shape.ToString()}")
         {
 
         }

@@ -7,6 +7,7 @@ using Morro.Core;
 using Morro.Debug;
 using Morro.ECS;
 using Morro.Graphics;
+using Morro.Graphics.Effects;
 using Morro.Maths;
 using Morro.Utilities;
 using System;
@@ -47,7 +48,7 @@ namespace Example.Scenes
             {
                 for (int i = 0; i < EntityCapacity * 0.25; i++)
                 {
-                    CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, Morro.Maths.Random.Range(1, 5)));
+                    CreateEntity(Yoman.Create(Morro.Input.Mouse.SceneLocation.X, Morro.Input.Mouse.SceneLocation.Y, Morro.Maths.MoreRandom.Range(1, 5)));
                 }
             }
 

@@ -1,12 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Morro.Core;
+﻿using Morro.Core;
+using Morro.Graphics;
+using Morro.Graphics.Transitions;
 using Morro.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Morro.ECS
 {
@@ -26,7 +24,7 @@ namespace Morro.ECS
         public Transition EnterTransition { get; set; }
         public Transition ExitTransition { get; set; }
         public string Name { get; private set; }
-        public Core.Rectangle SceneBounds { get; private set; }
+        public Core.RectangleF SceneBounds { get; private set; }
 
         public int SystemCapacity { get => systemManager.Capacity; }
         public int ComponentCapacity { get => componentManager.Capacity; }
@@ -43,7 +41,7 @@ namespace Morro.ECS
         public Scene(string name, int entityCapacity = 100, int componentCapacity = 64, int systemCapacity = 64)
         {
             Name = name;
-            SceneBounds = new Core.Rectangle(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
+            SceneBounds = new RectangleF(0, 0, WindowManager.PixelWidth, WindowManager.PixelHeight);
 
             Camera = new Camera(Name);
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
@@ -140,7 +138,7 @@ namespace Morro.ECS
             if (SceneBounds.Width == width && SceneBounds.Height == height)
                 return;
 
-            SceneBounds = new Core.Rectangle(0, 0, width, height);
+            SceneBounds = new RectangleF(0, 0, width, height);
 
             Camera.SetMovementRestriction(0, 0, SceneBounds.Width, SceneBounds.Height);
         }

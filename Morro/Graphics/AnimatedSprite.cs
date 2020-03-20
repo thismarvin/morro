@@ -15,7 +15,7 @@ namespace Morro.Graphics
     {
         public int Columns { get; private set; }
         public int TotalFrames { get; private set; }
-        public int CurrentFrame { get; private set; }       
+        public int CurrentFrame { get; private set; }
         public float FrameDuration { get; private set; }
         public bool Finished { get; private set; }
         public bool AnimationPlaying { get; private set; }
@@ -37,7 +37,12 @@ namespace Morro.Graphics
             FrameDuration = frameDuration;
             AnimationPlaying = start;
 
-            timer = new Timer(FrameDuration, AnimationPlaying);                     
+            timer = new Timer(FrameDuration);
+
+            if (AnimationPlaying)
+            {
+                timer.Start();
+            }
         }
 
         public AnimatedSprite(float x, float y, string[] sprites, float frameDuration) : base(x, y, sprites[0])
@@ -62,7 +67,7 @@ namespace Morro.Graphics
 
         public void ResetAnimation()
         {
-            timer.Reset();
+            timer.Restart();
             CurrentFrame = 0;
         }
 
@@ -77,15 +82,17 @@ namespace Morro.Graphics
                 return;
 
             CurrentFrame = frame;
-            timer.Reset();
+            timer.Restart();
         }
 
         public override void Update()
         {
             if (Finished)
-                return;           
+                return;
 
-            if (timer.Done())
+            timer.Update();
+
+            if (timer.Done)
             {
                 switch (AnimationType)
                 {
@@ -96,11 +103,11 @@ namespace Morro.Graphics
                         CurrentFrame = CurrentFrame >= TotalFrames - 1 ? TotalFrames : ++CurrentFrame;
                         break;
                 }
-                timer.Reset();
+                timer.Restart();
             }
 
             Finished = AnimationType == AnimationType.NoLoop && CurrentFrame == TotalFrames;
-            AnimationPlaying = !Finished && timer.Active;
+            AnimationPlaying = !Finished && timer.Enabled;
 
             if (Sprites == null)
                 SetFrame(CurrentFrame, Columns);

@@ -1,55 +1,62 @@
-﻿using Morro.Core;
+﻿using Microsoft.Xna.Framework;
+using Morro.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Morro.Utilities
 {
+    /// <summary>
+    /// Counts down from a given duration. (Elapsed time is calculated using <see cref="GameTime"/>).
+    /// </summary>
     class Timer
     {
-        public bool Active { get; private set; }        
+        public bool Enabled { get; private set; }
         public float Duration { get; set; }
+        public bool Done { get; private set; }
         public float ElapsedTime { get; private set; }
 
-        private bool done;
-
-        public Timer(float duration) : this(duration, true)
+        /// <summary>
+        /// Creates a timer of a given duration that is disabled by default.
+        /// </summary>
+        /// <param name="duration">The duration of the timer in milliseconds.</param>
+        public Timer(float duration)
         {
-
+            Duration = duration;
         }
 
-        public Timer(float duration, bool active)
-        {
-            Active = active;
-            Duration = duration;            
-        }
-
-
+        /// <summary>
+        /// Enable the timer.
+        /// </summary>
         public void Start()
         {
-            Active = true;
+            Enabled = true;
         }
 
+        /// <summary>
+        /// Disable the timer.
+        /// </summary>
         public void Stop()
         {
-            Active = false;
+            Enabled = false;
         }
 
-        public void Reset()
+        /// <summary>
+        /// Restarts the timer.
+        /// </summary>
+        public void Restart()
         {
             ElapsedTime = 0;
-            done = false;
+            Done = false;
         }
 
-        public bool Done()
+        public void Update()
         {
-            if (!Active)
-                return false;
+            if (Done)
+                return;
 
             ElapsedTime += Engine.DeltaTime * 1000;
-            done = ElapsedTime >= Duration;
-
-            return done;
+            Done = ElapsedTime >= Duration;
         }
     }
 }

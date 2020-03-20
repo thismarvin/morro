@@ -407,7 +407,9 @@ namespace Morro.Core
 
                 SetTopLeft(Vector3.Lerp(TopLeft, shakePosition, shakeRoughness * Engine.DeltaTime));
 
-                if (shakeTimer.Done())
+                shakeTimer.Update();
+
+                if (shakeTimer.Done)
                 {
                     finishingShake = true;
                 }

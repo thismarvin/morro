@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Example
 {
-    class Root : Engine
+    class Game : Engine
     {
         protected override void Initialize()
         {

@@ -16,7 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Boid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Hawk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Particle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Root.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Flocking.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Fireworks.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\SBoidPhysics.cs" />

@@ -14,7 +14,7 @@ namespace Morro.DesktopGL
         [STAThread]
         static void Main()
         {
-            using (var game = new Root())
+            using (var game = new Game())
                 game.Run();
         }
     }

@@ -5,6 +5,7 @@ using Morro.ECS;
 using Morro.Graphics;
 using Morro.Graphics.Effects;
 using Morro.Graphics.Palettes;
+using Morro.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,11 +41,11 @@ namespace Example.Scenes
         {
             UpdateECS();
 
-            if (Morro.Input.MMouse.PressedLeftClick())
+            if (MoreMouse.PressedLeftClick())
             {
                 CreateBoids();
             }
-            if (Morro.Input.MMouse.PressedRightClick())
+            if (MoreMouse.PressedRightClick())
             {
                 CreatePredators();
             }

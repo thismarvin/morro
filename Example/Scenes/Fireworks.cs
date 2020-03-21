@@ -39,11 +39,11 @@ namespace Example.Scenes
         {
             UpdateECS();
 
-            if (MMouse.PressedLeftClick())
+            if (MoreMouse.PressedLeftClick())
             {
                 for (int i = 0; i < EntityCapacity * 0.25; i++)
                 {
-                    CreateEntity(Particle.Create(MMouse.SceneLocation.X, MMouse.SceneLocation.Y, MoreRandom.Range(1, 5)));
+                    CreateEntity(Particle.Create(MoreMouse.SceneLocation.X, MoreMouse.SceneLocation.Y, MoreRandom.Range(1, 5)));
                 }
             }
         }

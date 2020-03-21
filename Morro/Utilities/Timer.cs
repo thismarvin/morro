@@ -42,9 +42,9 @@ namespace Morro.Utilities
         }
 
         /// <summary>
-        /// Restarts the timer.
+        /// Resets the timer.
         /// </summary>
-        public void Restart()
+        public void Reset()
         {
             ElapsedTime = 0;
             Done = false;

@@ -21,7 +21,7 @@ namespace Morro.Core
     /// </summary>
     static class InputManager
     {
-        public static InputMode InputMode { get; set; }
+        public static InputMode InputMode { get; internal set; }
         public static InputHandler BasicInputHandler { get; private set; }
 
         private static readonly ResourceHandler<InputProfile> profiles;
@@ -107,8 +107,8 @@ namespace Morro.Core
 
         internal static void Update()
         {
-            Input.MKeyboard.Update();
-            Input.MMouse.Update();
+            Input.MoreKeyboard.Update();
+            Input.MoreMouse.Update();
 
             BasicInputHandler.Update();
         }

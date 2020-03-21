@@ -6,16 +6,21 @@ using System.Text;
 
 namespace Morro.Input
 {
-    static class MKeyboard
-    {        
+    /// <summary>
+    /// An extension of the default <see cref="Keyboard"/> class that provides additional functionality to interface with your keyboard.
+    /// </summary>
+    static class MoreKeyboard
+    {
         private static KeyboardState previousKeyState;
         private static KeyboardState currentKeyState;
-        private static bool isBeingUpdated;
 
+        /// <summary>
+        /// Returns whether or not the given key was just pressed.
+        /// </summary>
+        /// <param name="key">The keyboard key that should be tested.</param>
+        /// <returns>Whether or not the given key was just pressed.</returns>
         public static bool Pressed(Keys key)
         {
-            VerifyUpdateIsCalled();
-            
             if (!previousKeyState.IsKeyDown(key) && currentKeyState.IsKeyDown(key))
             {
                 InputManager.InputMode = InputMode.Keyboard;
@@ -25,10 +30,13 @@ namespace Morro.Input
             return false;
         }
 
+        /// <summary>
+        /// Returns whether or not the given key is currently being held down.
+        /// </summary>
+        /// <param name="key">The keyboard key that should be tested.</param>
+        /// <returns>Whether or not the given key was just pressed.</returns>
         public static bool Pressing(Keys key)
-        {            
-            VerifyUpdateIsCalled();
-
+        {
             if (currentKeyState.IsKeyDown(key))
             {
                 InputManager.InputMode = InputMode.Keyboard;
@@ -38,17 +46,8 @@ namespace Morro.Input
             return false;
         }
 
-        private static void VerifyUpdateIsCalled()
-        {
-            if (!isBeingUpdated)
-            {
-                throw new MorroException("Make sure to call Input.Keyboard.Update() in Engine.cs before you use any of the built in methods.", new MethodExpectedException());
-            }
-        }
-
         internal static void Update()
         {
-            isBeingUpdated = true;
             previousKeyState = currentKeyState;
             currentKeyState = Keyboard.GetState();
         }

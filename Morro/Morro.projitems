@@ -92,7 +92,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Maths\IntersectionInformation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\LineSegment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\MorroObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreMath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreMathHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MTV.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreRandom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RectangleF.cs" />
@@ -121,9 +121,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SketchHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Sprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SpriteGroup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\MGamePad.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\MKeyboard.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\MMouse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MoreGamePad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MoreKeyboard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MoreMouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\BMFontCharacter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Readers\BMFontReader.cs" />

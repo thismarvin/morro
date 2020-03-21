@@ -67,7 +67,7 @@ namespace Morro.Graphics
 
         public void ResetAnimation()
         {
-            timer.Restart();
+            timer.Reset();
             CurrentFrame = 0;
         }
 
@@ -82,7 +82,7 @@ namespace Morro.Graphics
                 return;
 
             CurrentFrame = frame;
-            timer.Restart();
+            timer.Reset();
         }
 
         public override void Update()
@@ -103,7 +103,7 @@ namespace Morro.Graphics
                         CurrentFrame = CurrentFrame >= TotalFrames - 1 ? TotalFrames : ++CurrentFrame;
                         break;
                 }
-                timer.Restart();
+                timer.Reset();
             }
 
             Finished = AnimationType == AnimationType.NoLoop && CurrentFrame == TotalFrames;

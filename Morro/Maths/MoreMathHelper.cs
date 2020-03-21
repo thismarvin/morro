@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Morro.Maths
 {
-    static class MoreMath
+    static class MoreMathHelper
     {
         /// <summary>
         /// Given a number within a set range, remap said number to proportionally reflect a new range.

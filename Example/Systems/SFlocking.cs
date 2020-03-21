@@ -104,11 +104,11 @@ namespace Example.Systems
                 }
             }
 
-            distance = Vector2.Distance(Morro.Input.MMouse.SceneLocation, myCenter);
+            distance = Vector2.Distance(Morro.Input.MoreMouse.SceneLocation, myCenter);
 
             if (distance > 0 && distance < 32)
             {
-                force = myCenter - Morro.Input.MMouse.SceneLocation;
+                force = myCenter - Morro.Input.MoreMouse.SceneLocation;
                 force /= distance * distance;
                 cumulativeSeperation += force;
                 totalSeperation++;

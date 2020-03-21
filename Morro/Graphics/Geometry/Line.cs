@@ -119,8 +119,8 @@ namespace Morro.Graphics
             float yRemapped;
             for (int i = 0; i < TotalPoints; i++)
             {
-                xRemapped = (float)MoreMath.RemapRange(points[i].X, xMin, xMax, 0, 1);
-                yRemapped = (float)MoreMath.RemapRange(points[i].Y, yMin, yMax, 0, 1);
+                xRemapped = (float)MoreMathHelper.RemapRange(points[i].X, xMin, xMax, 0, 1);
+                yRemapped = (float)MoreMathHelper.RemapRange(points[i].Y, yMin, yMax, 0, 1);
 
                 remappedPoints[i] = new Vector2(xRemapped, yRemapped);
             }

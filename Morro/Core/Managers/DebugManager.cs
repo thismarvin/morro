@@ -78,7 +78,7 @@ namespace Morro.Core
 
         private static void UpdateInput()
         {
-            if (Input.MKeyboard.Pressed(Keys.F3))
+            if (Input.MoreKeyboard.Pressed(Keys.F3))
             {
                 Debugging = !Debugging;
             }
@@ -86,7 +86,7 @@ namespace Morro.Core
             if (!Debugging)
                 return;
 
-            if (Input.MKeyboard.Pressing(Keys.LeftShift) && Input.MKeyboard.Pressed(Keys.D1))
+            if (Input.MoreKeyboard.Pressing(Keys.LeftShift) && Input.MoreKeyboard.Pressed(Keys.D1))
             {
                 ShowWireFrame = !ShowWireFrame;
             }

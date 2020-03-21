@@ -1,18 +1,26 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
 namespace Morro.Maths
 {
-    class DynamicMatrix<T>
+    /// <summary>
+    /// Represents a mathmatical matrix of any given size.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    class DynamicMatrix<T> : ICloneable where T : struct, IConvertible
     {
         public int Rows { get; private set; }
         public int Columns { get; private set; }
 
         private T[] data;
 
+        /// <summary>
+        /// Creates an empty matrix of a given dimension.
+        /// </summary>
+        /// <param name="rows">The amount of rows the new matrix should have.</param>
+        /// <param name="columns">The amount of columns the new matrix should have.</param>
         public DynamicMatrix(int rows, int columns)
         {
             Rows = rows;
@@ -20,6 +28,12 @@ namespace Morro.Maths
             data = new T[rows * columns];
         }
 
+        /// <summary>
+        /// Creates a matrix from a given 2D array of data.
+        /// </summary>
+        /// <param name="rows">The amount of rows in your data.</param>
+        /// <param name="columns">The amount of columns in your data.</param>
+        /// <param name="data">The data that will be used to fill the new matrix.</param>
         public DynamicMatrix(int rows, int columns, T[] data)
         {
             Rows = rows;
@@ -28,53 +42,53 @@ namespace Morro.Maths
             SetData(data);
         }
 
-        public static DynamicMatrix<float> ConvertMonogameMatrix(Matrix matrix)
-        {
-            float[] data = new float[]
-            {
-                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
-                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
-                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
-                matrix.M41, matrix.M42, matrix.M43, matrix.M44,
-            };
-            return new DynamicMatrix<float>(4, 4, data);
-        }
-
-        public static Vector2 ApplyTransformation(float x, float y, Matrix matrix)
-        {
-            DynamicMatrix<float> transform = ConvertMonogameMatrix(matrix);
-            DynamicMatrix<float> position = new DynamicMatrix<float>(1, 4, new float[] { x, y, 0, 1 });
-            DynamicMatrix<float> result = position * transform;
-            return new Vector2(result.Get(0, 0), result.Get(1, 0));
-        }
-
-        public DynamicMatrix<T> Clone()
+        /// <summary>
+        /// Returns a deep copy of the current matrix.
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
         {
             return new DynamicMatrix<T>(Rows, Columns, data);
         }
 
+        /// <summary>
+        /// Returns the value at a given location of the matrix.
+        /// </summary>
+        /// <param name="x">The column of the matrix that the target value is within.</param>
+        /// <param name="y">The row of the matrix that the target value is within.</param>
+        /// <returns>The value at a given location of the matrix.</returns>
         public T Get(int x, int y)
         {
             return data[Columns * y + x];
         }
 
+        /// <summary>
+        /// Sets the value at a given location of the matrix.
+        /// </summary>
+        /// <param name="x">The column of the matrix that the target value is within.</param>
+        /// <param name="y">The row of the matrix that the target value is within.</param>
+        /// <param name="value">The new value to replace the existing value to.</param>
         public void Set(int x, int y, T value)
         {
             data[Columns * y + x] = value;
         }
 
+        /// <summary>
+        /// Replaces the current data of the matrix with the values of a given 2D array. (Note that the length of the 2D array must adhere to the current dimensions of the matrix).
+        /// </summary>
+        /// <param name="data"></param>
+        /// <exception cref="ArgumentException"></exception>
         public void SetData(T[] data)
         {
-            if (data.Length == Rows * Columns)
-            {
-                this.data = data;
-            }
-            else
-            {
-                throw new ArgumentException("The data does not match the dimensions of the Matrix.");
-            }
+            if (data.Length != Rows * Columns)
+                throw new ArgumentException("The data does not match the dimensions of the matrix.");
+
+            this.data = data;
         }
 
+        /// <summary>
+        /// Flips the current matrix over its diagonal.
+        /// </summary>
         public void Transpose()
         {
             T[] newData = new T[Rows * Columns];
@@ -173,26 +187,6 @@ namespace Morro.Maths
             return c * d;
         }
 
-        private string ExtraSpaces(int x, int y)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            int mostCharacters = Get(x, 0).ToString().Length;
-            int value;
-            for (int i = 0; i < Rows; i++)
-            {
-                value = Get(x, i).ToString().Length;
-                mostCharacters = value > mostCharacters ? value : mostCharacters;
-            }
-
-            int total = mostCharacters - Get(x, y).ToString().Length;
-            for (int i = 0; i < total; i++)
-            {
-                stringBuilder.Append(" ");
-            }
-            return stringBuilder.ToString();
-        }
-
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -215,6 +209,26 @@ namespace Morro.Maths
                 stringBuilder.Append(" |\n");
             }
             return stringBuilder.ToString();
+
+            string ExtraSpaces(int x, int y)
+            {
+                StringBuilder spaces = new StringBuilder();
+
+                int mostCharacters = Get(x, 0).ToString().Length;
+                int value;
+                for (int i = 0; i < Rows; i++)
+                {
+                    value = Get(x, i).ToString().Length;
+                    mostCharacters = value > mostCharacters ? value : mostCharacters;
+                }
+
+                int total = mostCharacters - Get(x, y).ToString().Length;
+                for (int i = 0; i < total; i++)
+                {
+                    spaces.Append(" ");
+                }
+                return spaces.ToString();
+            }
         }
     }
 }

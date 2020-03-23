@@ -34,6 +34,7 @@ namespace Morro.ECS
 
         public override List<int> Query(RectangleF bounds)
         {
+            List<int> result = new List<int>();
             HashSet<int> unique = new HashSet<int>();
             HashSet<int> ids = HashIDs(bounds);
 
@@ -41,14 +42,11 @@ namespace Morro.ECS
             {
                 foreach (T entry in buckets[id])
                 {
-                    unique.Add(entry.Identifier);
+                    if (unique.Add(entry.Identifier))
+                    {
+                        result.Add(entry.Identifier);
+                    }                    
                 }
-            }
-
-            List<int> result = new List<int>(unique.Count);
-            foreach (int i in unique)
-            {
-                result.Add(i);
             }
 
             return result;
@@ -91,9 +89,9 @@ namespace Morro.ECS
             if (validatedBounds.Width > cellSize || validatedBounds.Height > cellSize)
             {
                 // YIKES
-                for (int heightOffset = 0; heightOffset < validatedBounds.Height; heightOffset += cellSize)
+                for (int heightOffset = cellSize; heightOffset < validatedBounds.Height; heightOffset += cellSize)
                 {
-                    for (int widthOffset = 0; widthOffset < validatedBounds.Width; widthOffset += cellSize)
+                    for (int widthOffset = cellSize; widthOffset < validatedBounds.Width; widthOffset += cellSize)
                     {
                         x = (int)(validatedBounds.X + widthOffset) >> powerOfTwo;
                         y = (int)(validatedBounds.Y + heightOffset) >> powerOfTwo;

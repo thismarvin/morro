@@ -55,6 +55,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SPhysics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SQuadtreePartitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\PartitioningSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SBinPartitioner.cs" />

@@ -17,7 +17,7 @@ namespace Morro.ECS
     /// <summary>
     /// An abstraction of a class that implements spatial partitioning capabilities.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The element stored within the partitioner.</typeparam>
     abstract class Partitioner<T> where T : IPartitionable
     {
         public RectangleF Boundary

@@ -5,6 +5,10 @@ using System.Text;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// An implementation of a <see cref="Partitioner{T}"/> that uses a recursive tree structure to store and retrieve <see cref="IPartitionable"/> items.
+    /// </summary>
+    /// <typeparam name="T">The element stored within the partitioner.</typeparam>
     class Quadtree<T> : Partitioner<T> where T : IPartitionable
     {
         private readonly int capacity;
@@ -16,6 +20,11 @@ namespace Morro.ECS
         private Quadtree<T> bottomRight;
         private Quadtree<T> bottomLeft;
 
+        /// <summary>
+        /// Creates an implementation of a <see cref="Partitioner{T}"/> that uses a recursive tree structure to store and retrieve <see cref="IPartitionable"/> items.
+        /// </summary>
+        /// <param name="boundary">The area that the partitioner will cover.</param>
+        /// <param name="capacity">The total amount of entities that exist in a node before overflowing into a new tree.</param>
         public Quadtree(RectangleF boundary, int capacity) : base(boundary)
         {
             this.capacity = capacity;

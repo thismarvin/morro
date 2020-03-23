@@ -5,6 +5,10 @@ using System.Text;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// An implementation of a <see cref="Partitioner{T}"/> that uses a hashing algorithm to store and retrieve <see cref="IPartitionable"/> items.
+    /// </summary>
+    /// <typeparam name="T">The element stored within the partitioner.</typeparam>
     class Bin<T> : Partitioner<T> where T : IPartitionable
     {
         private HashSet<T>[] buckets;
@@ -12,9 +16,14 @@ namespace Morro.ECS
         private int columns;
         private int rows;
 
-        public Bin(RectangleF boundary, int powerOfTwo) : base(boundary)
+        /// <summary>
+        /// Creates an implementation of a <see cref="Partitioner{T}"/> that uses a hashing algorithm to store and retrieve <see cref="IPartitionable"/> items.
+        /// </summary>
+        /// <param name="boundary">The area that the partitioner will cover.</param>
+        /// <param name="maximumDimension">The maximum expected size of any entity inserted into the bin.</param>
+        public Bin(RectangleF boundary, int maximumDimension) : base(boundary)
         {
-            this.powerOfTwo = powerOfTwo;
+            powerOfTwo = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
 
             Initialize();
         }
@@ -45,7 +54,7 @@ namespace Morro.ECS
                     if (unique.Add(entry.Identifier))
                     {
                         result.Add(entry.Identifier);
-                    }                    
+                    }
                 }
             }
 

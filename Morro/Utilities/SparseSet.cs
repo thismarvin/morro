@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Morro.Utilities
 {
+    /// <summary>
+    /// A data structure that stores a set of <see cref="uint"/> that all fall within a given range.
+    /// </summary>
     class SparseSet : IEnumerable<uint>
     {
         public int Count { get => (int)n; }
@@ -21,7 +24,7 @@ namespace Morro.Utilities
         private uint n;
 
         /// <summary>
-        /// A data structure that stores a set of <see cref="uint"/> that all fall within a specific range. 
+        /// Create s data structure that stores a set of <see cref="uint"/> that all fall within a given range. 
         /// </summary>
         /// <param name="range">The maximum amount of elements allowed inside the sparse set, AND the upper bounds of the elements allowed inside the sparse set.</param>
         public SparseSet(int range)
@@ -31,19 +34,31 @@ namespace Morro.Utilities
             sparse = new uint[u];
         }
 
-        public void Add(uint k)
+        /// <summary>
+        /// Adds a given <see cref="uint"/> to a set.
+        /// </summary>
+        /// <param name="k">The element to add to the set.</param>
+        /// <returns>Whether or not the <see cref="uint"/> was successfully added to the set.</returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public bool Add(uint k)
         {
             if (!(0 <= k && k < u))
                 throw new IndexOutOfRangeException("Index was outside the bounds of the array. A SparseSet cannot contain a value less than 0 or greater than its range.");
 
             if (Contains(k))
-                return;
+                return false;
 
             dense[n] = k;
             sparse[k] = n;
             n++;
+
+            return true;
         }
 
+        /// <summary>
+        /// Adds the elements of a given collection to the set.
+        /// </summary>
+        /// <param name="collection">A collection of <see cref="uint"/> that will be added to the set.</param>
         public void AddRange(IEnumerable<uint> collection)
         {
             foreach (uint i in collection)
@@ -52,10 +67,14 @@ namespace Morro.Utilities
             }
         }
 
-        public void Remove(uint k)
+        /// <summary>
+        /// Removes a given <see cref="uint"/> from the set. 
+        /// </summary>
+        /// <param name="k">The element to remove from the set.</param>
+        public bool Remove(uint k)
         {
             if (!Contains(k))
-                return;
+                return false;
 
             n--;
 
@@ -64,13 +83,23 @@ namespace Morro.Utilities
                 dense[i] = dense[i + 1];
                 sparse[dense[i + 1]] = (uint)i;
             }
+
+            return true;
         }
 
+        /// <summary>
+        /// Returns whether or not a given <see cref="uint"/> is in the set.
+        /// </summary>
+        /// <param name="k">The element to find in the set.</param>
+        /// <returns>Whether or not a given <see cref="uint"/> is in the set.</returns>
         public bool Contains(uint k)
         {
             return k < u && sparse[k] < n && dense[sparse[k]] == k;
         }
 
+        /// <summary>
+        /// Removes all elements that are inside the set.
+        /// </summary>
         public void Clear()
         {
             n = 0;
@@ -79,7 +108,7 @@ namespace Morro.Utilities
         public uint this[uint i]
         {
             get => dense[i];
-            set 
+            set
             {
                 dense[i] = value;
                 sparse[value] = i;

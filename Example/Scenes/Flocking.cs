@@ -16,7 +16,7 @@ namespace Example.Scenes
     {
         public Flocking() : base("Flocking", 2000, 16, 6)
         {
-            RegisterSystem
+            RegisterSystems
             (
                 new SWrapAround(this),
                 new SHunting(this),
@@ -39,7 +39,7 @@ namespace Example.Scenes
 
         public override void Update()
         {
-            UpdateECS();
+            RunUpdateableSystems();
 
             if (MoreMouse.PressedLeftClick())
             {
@@ -58,7 +58,7 @@ namespace Example.Scenes
             Sketch.AttachEffect(new DropShadow(Engine.RenderTarget));
             Sketch.Begin();
             {
-                DrawECS();
+                RunDrawableSystems();
             }
             Sketch.End();
         }

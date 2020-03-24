@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// Handles all functionality related to creating and modifying entities.
+    /// </summary>
     class EntityManager
     {
         public int Capacity { get; private set; }
@@ -38,6 +41,10 @@ namespace Morro.ECS
             this.componentManager = componentManager;
         }
 
+        /// <summary>
+        /// Returns the next available entity.
+        /// </summary>
+        /// <returns>The next available entity.</returns>
         public int AllocateEntity()
         {
             int entity = nextEntity;
@@ -58,6 +65,10 @@ namespace Morro.ECS
             return entity;
         }
 
+        /// <summary>
+        /// Clears an entity of all attached components and systems.
+        /// </summary>
+        /// <param name="entity">The target entity to clear.</param>
         public void ClearEntity(int entity)
         {
             if (attachedComponents[entity].Count == 0 && attachedSystems[entity].Count == 0)
@@ -79,6 +90,11 @@ namespace Morro.ECS
             entityBuffer.Push(entity);
         }
 
+        /// <summary>
+        /// Adds a given collection of <see cref="IComponent"/> data to a given entity.
+        /// </summary>
+        /// <param name="entity">The entity that will be modified.</param>
+        /// <param name="components">The collection of <see cref="IComponent"/> data that will be added.</param>
         public void AddComponent(int entity, params IComponent[] components)
         {
             componentManager.RegisterComponent(components);
@@ -87,6 +103,11 @@ namespace Morro.ECS
             AssignSystems(entity);
         }
 
+        /// <summary>
+        /// Removes a given collection of <see cref="IComponent"/> types from a given entity.
+        /// </summary>
+        /// <param name="entity">The entity that will be modified.</param>
+        /// <param name="componentTypes">The collection of <see cref="IComponent"/> types that will be removed.</param>
         public void RemoveComponent(int entity, params Type[] componentTypes)
         {
             int componentID;
@@ -110,6 +131,12 @@ namespace Morro.ECS
             }
         }
 
+        /// <summary>
+        /// Returns whether or not a given entity contains a given collection of <see cref="IComponent"/> types.
+        /// </summary>
+        /// <param name="entity">The entity that will be checked.</param>
+        /// <param name="components">The set of <see cref="IComponent"/> types that will be checked for.</param>
+        /// <returns>Whether or not a given entity contains a given collection of <see cref="IComponent"/> types.</returns>
         public bool EntityContains(int entity, HashSet<Type> components)
         {
             if (components.Count == 0)
@@ -127,7 +154,13 @@ namespace Morro.ECS
             return true;
         }
 
-        public bool EntityContains(int entity, Type[] components)
+        /// <summary>
+        /// Returns whether or not a given entity contains a given collection of <see cref="IComponent"/> types.
+        /// </summary>
+        /// <param name="entity">The entity that will be checked.</param>
+        /// <param name="components">The collection of <see cref="IComponent"/> types that will be checked for.</param>
+        /// <returns>Whether or not a given entity contains a given collection of <see cref="IComponent"/> types.</returns>
+        public bool EntityContains(int entity, params Type[] components)
         {
             if (components.Length == 0)
                 return false;
@@ -144,7 +177,7 @@ namespace Morro.ECS
             return true;
         }
 
-        private void AssignComponents(int entity, IComponent[] components)
+        private void AssignComponents(int entity, params IComponent[] components)
         {
             int componentID;
             for (int i = 0; i < components.Length; i++)

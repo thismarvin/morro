@@ -32,7 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CKinetic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystemHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ECS\EventManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\EventManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\HybridSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IDrawableSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\IEventAnnouncer.cs" />

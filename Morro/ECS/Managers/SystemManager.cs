@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// Handles all functionality related to maintaining and managing <see cref="MorroSystem"/>'s.
+    /// </summary>
     class SystemManager
     {
         public int Capacity { get; private set; }
@@ -29,6 +32,10 @@ namespace Morro.ECS
             systemLookup = new Dictionary<Type, int>();
         }
 
+        /// <summary>
+        /// Registers a given collection of <see cref="MorroSystem"/>'s to be managed.
+        /// </summary>
+        /// <param name="morroSystem">A collection of <see cref="MorroSystem"/>'s to be registered and managed.</param>
         public void RegisterSystem(params MorroSystem[] system)
         {
             if (TotalSystemsRegistered > Capacity)
@@ -52,6 +59,11 @@ namespace Morro.ECS
             CreateDrawGroups();
         }
 
+        /// <summary>
+        /// Returns a <see cref="MorroSystem"/> of a given type.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="MorroSystem"/> to retrieve.</typeparam>
+        /// <returns>A <see cref="MorroSystem"/> of a given type.</returns>
         public T GetSystem<T>() where T : MorroSystem
         {
             Type systemType = typeof(T);

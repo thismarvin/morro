@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// Provides functionality to send an event.
+    /// </summary>
     interface IEventAnnouncer
     {
         EventHandler<EventArgs> Announcement { get; set; }

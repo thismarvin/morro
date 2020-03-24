@@ -5,7 +5,7 @@ using System.Text;
 namespace Morro.ECS
 {
     /// <summary>
-    /// Systems process a particular set of <see cref="IComponent"/> data, and perform specialized logic on said data.
+    /// Processes a particular set of <see cref="IComponent"/> data, and performs specialized logic on said data.
     /// </summary>
     abstract class MorroSystem : IMorroSystem
     {

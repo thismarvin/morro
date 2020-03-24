@@ -17,7 +17,7 @@ namespace Example.Scenes
     {
         public Fireworks() : base("Fireworks", 50000, 8, 3)
         {
-            RegisterSystem
+            RegisterSystems
             (
                 new SRemove(this),
                 new SPhysics(this, Integrator.SemiImplictEuler, 4, 120),
@@ -37,7 +37,7 @@ namespace Example.Scenes
 
         public override void Update()
         {
-            UpdateECS();
+            RunUpdateableSystems();
 
             if (MoreMouse.PressedLeftClick())
             {
@@ -55,7 +55,7 @@ namespace Example.Scenes
             Sketch.AttachEffect(new ChromaticAberration(Engine.RenderTarget, 2));
             Sketch.Begin();
             {
-                DrawECS();
+                RunDrawableSystems();
             }
             Sketch.End();
         }

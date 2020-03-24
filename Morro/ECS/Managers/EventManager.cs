@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Morro.ECS
 {
+    /// <summary>
+    /// Handles all functionality related to sending events between <see cref="IEventAnnouncer"/> and <see cref="IEventListener"/> capable <see cref="MorroSystem"/>'s.
+    /// </summary>
     class EventManager
     {
         private readonly SystemManager systemManager;
@@ -13,7 +16,11 @@ namespace Morro.ECS
             this.systemManager = systemManager;
         }
 
-        public void Crawl()
+        /// <summary>
+        /// Iterates through all registered <see cref="MorroSystem"/>'s and links each <see cref="IEventListener"/>
+        /// to their respective <see cref="IEventAnnouncer"/> subscriptions.
+        /// </summary>
+        public void LinkSystems()
         {
             Type systemType;
             for (int i = 0; i < systemManager.TotalSystemsRegistered; i++)

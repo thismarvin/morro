@@ -11,7 +11,7 @@ namespace Morro.ECS
 
         public CColor()
         {
-
+            Color = Color.White;
         }
 
         public CColor(Color color)

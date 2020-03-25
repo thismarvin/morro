@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Exceptions\MorroException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ResourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Debug\DebugEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CBoxCollider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CKinetic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Components\CSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\DrawSystemHandler.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Managers\SystemManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Partitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Partitioning\Quadtree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SCollision.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SPhysics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SQuadtreePartitioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ECS\Systems\SSprite.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Engine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Managers\GraphicsManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\IntersectionInformation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Maths\IShape.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\LineSegment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\MorroObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Maths\MoreMathHelper.cs" />

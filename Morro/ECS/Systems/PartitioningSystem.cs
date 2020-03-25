@@ -40,7 +40,7 @@ namespace Morro.ECS
             base.Update();
         }
 
-        protected struct PartitionerEntry : IPartitionable
+        protected class PartitionerEntry : IPartitionable
         {
             public int Identifier { get; set; }
             public RectangleF Bounds { get; set; }

@@ -9,12 +9,12 @@ namespace Morro.Graphics
     static class PolygonHelper
     {
         #region Collision Handling
-        public static CollisionInformation GetCollisionInformation(this Polygon polygon)
+        public static ShapeScheme GetCollisionInformation(this Polygon polygon)
         {
             Vector2[] transformedVertices = CalculateTransformedVertices(polygon);
             LineSegment[] transformedLineSegments = CalculateTransformedLineSegments(polygon, transformedVertices);
 
-            return new CollisionInformation(transformedVertices, transformedLineSegments);
+            return new ShapeScheme(transformedVertices, transformedLineSegments);
         }
 
         private static Vector2[] CalculateTransformedVertices(Polygon polygon)

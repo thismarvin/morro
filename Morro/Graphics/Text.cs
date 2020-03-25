@@ -198,7 +198,7 @@ namespace Morro.Graphics
             exactBounds.RotationOffset = new Vector2(Width / 2, Height / 2);
             exactBounds.Rotation = Rotation;
 
-            CollisionInformation collisionInformation = exactBounds.GetCollisionInformation();
+            ShapeScheme collisionInformation = exactBounds.GetCollisionInformation();
 
             float xMin = VertexFinder(collisionInformation.Vertices, "x", "minimum");
             float xMax = VertexFinder(collisionInformation.Vertices, "x", "maximum");

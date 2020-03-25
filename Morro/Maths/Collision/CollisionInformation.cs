@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Morro.Maths
+namespace Morro.Maths.Collision
 {
-    struct MTV
+    class CollisionInformation
     {
         public LineSegment Edge { get; private set; }
         public int EdgeIndex { get; private set; }
         public float Overlap { get; private set; }
-        
-        public MTV(LineSegment edge, float overlap, int edgeIndex)
+
+        public CollisionInformation(LineSegment edge, float overlap, int edgeIndex)
         {
             Edge = edge;
             Overlap = overlap;

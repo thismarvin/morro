@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Morro.Core;
 using Morro.Maths;
+using Morro.Maths.Collision;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,21 +13,17 @@ namespace Morro.ECS
         private IComponent[] positions;
         private IComponent[] dimensions;
         private IComponent[] transforms;
-        private IComponent[] kinetics;
-        private IComponent[] colliders;
 
         private SBinPartitioner binPartitioner;
 
         private readonly int queryBuffer;
-        private readonly float leeway;
 
         public SCollision(Scene scene, uint tasks, int targetFPS) : base(scene, tasks, targetFPS)
         {
-            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CKinetic), typeof(CBoxCollider));
+            Require(typeof(CPosition), typeof(CDimension), typeof(CTransform), typeof(CBoxCollider));
             Depend(typeof(SPhysics), typeof(SBinPartitioner));
 
             queryBuffer = 4;
-            leeway = 0.01f;
         }
 
         public override void UpdateEntity(int entity)
@@ -34,23 +31,20 @@ namespace Morro.ECS
             CPosition position = (CPosition)positions[entity];
             CDimension dimension = (CDimension)dimensions[entity];
             CTransform transform = (CTransform)transforms[entity];
-            CKinetic kinetic = (CKinetic)kinetics[entity];
-            CBoxCollider collider = (CBoxCollider)colliders[entity];
 
             List<int> queryResult = binPartitioner.Query(CreateQueryBounds());
 
             if (queryResult.Count == 0)
                 return;
 
-            CollisionInformation collisionInformation = collider.GetCollisionInformation(position, dimension, transform);
+            ShapeScheme collisionInformation = ShapeSchemeHelper.CreateShapeScheme(CBoxColliderHelper.ShapeData, position, dimension, transform);
             Shape shape = new Shape(collisionInformation);
 
-            CollisionInformation theirCollisionInformation;
+            ShapeScheme theirCollisionInformation;
             Shape theirShape;
             CPosition theirPosition;
             CDimension theirDimension;
             CTransform theirTransform;
-            CBoxCollider theirCollider;
 
             for (int i = 0; i < queryResult.Count; i++)
             {
@@ -63,12 +57,11 @@ namespace Morro.ECS
                 theirPosition = (CPosition)positions[queryResult[i]];
                 theirDimension = (CDimension)dimensions[queryResult[i]];
                 theirTransform = (CTransform)transforms[queryResult[i]];
-                theirCollider = (CBoxCollider)colliders[queryResult[i]];
 
-                theirCollisionInformation = theirCollider.GetCollisionInformation(theirPosition, theirDimension, theirTransform);
+                theirCollisionInformation = ShapeSchemeHelper.CreateShapeScheme(CBoxColliderHelper.ShapeData, theirPosition, theirDimension, theirTransform);
                 theirShape = new Shape(theirCollisionInformation);
 
-                ResolveCollisionTypes(CollisionHelper.GetCollisionTypesBetween(shape, theirShape, kinetic.Velocity));
+                ProcessResolution(CollisionHelper.GetResolution(shape, theirShape));
             }
 
             RectangleF CreateQueryBounds()
@@ -76,29 +69,10 @@ namespace Morro.ECS
                 return new RectangleF(position.X - queryBuffer, position.Y - queryBuffer, dimension.Width + queryBuffer * 2, dimension.Height + queryBuffer * 2);
             }
 
-            void ResolveCollisionTypes(List<CollisionType> collisionTypes)
+            void ProcessResolution(Vector2 resolution)
             {
-                for (int i = 0; i < collisionTypes.Count; i++)
-                {
-                    switch (collisionTypes[i])
-                    {
-                        case CollisionType.Left:
-                            position.X = theirShape.Bounds.Left - shape.Bounds.Width - leeway;
-                            break;
-
-                        case CollisionType.Right:
-                            position.X = theirShape.Bounds.Right + leeway;
-                            break;
-
-                        case CollisionType.Top:
-                            position.Y = theirShape.Bounds.Top - shape.Bounds.Height - leeway;
-                            break;
-
-                        case CollisionType.Bottom:
-                            position.Y = theirShape.Bounds.Bottom + leeway;
-                            break;
-                    }
-                }
+                position.X += resolution.X;
+                position.Y += resolution.Y;
             }
         }
 
@@ -112,8 +86,6 @@ namespace Morro.ECS
             positions = scene.GetData<CPosition>();
             dimensions = scene.GetData<CDimension>();
             transforms = scene.GetData<CTransform>();
-            kinetics = scene.GetData<CKinetic>();
-            colliders = scene.GetData<CBoxCollider>();
 
             base.Update();
         }
@@ -124,10 +96,10 @@ namespace Morro.ECS
             public Vector2[] Vertices { get; set; }
             public LineSegment[] LineSegments { get; set; }
 
-            public Shape(CollisionInformation collisionInformation)
+            public Shape(ShapeScheme shapeScheme)
             {                
-                Vertices = collisionInformation.Vertices;
-                LineSegments = collisionInformation.LineSegments;
+                Vertices = shapeScheme.Vertices;
+                LineSegments = shapeScheme.LineSegments;
 
                 CreateBounds();
             }

@@ -1,4 +1,5 @@
-﻿using Morro.Core;
+﻿using Microsoft.Xna.Framework;
+using Morro.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +14,7 @@ namespace Morro.ECS
     {
         private HashSet<T>[] buckets;
         private readonly int powerOfTwo;
+        private readonly int bucketSize;
         private int columns;
         private int rows;
 
@@ -24,6 +26,7 @@ namespace Morro.ECS
         public Bin(RectangleF boundary, int maximumDimension) : base(boundary)
         {
             powerOfTwo = (int)Math.Ceiling(Math.Log(maximumDimension, 2));
+            bucketSize = 1 << powerOfTwo;
 
             Initialize();
         }
@@ -45,7 +48,7 @@ namespace Morro.ECS
         {
             List<int> result = new List<int>();
             HashSet<int> unique = new HashSet<int>();
-            HashSet<int> ids = HashIDs(bounds);
+            HashSet<int> ids = GetHashIDs(bounds);
 
             foreach (int id in ids)
             {
@@ -66,7 +69,7 @@ namespace Morro.ECS
             if (!entry.Bounds.Intersects(Boundary))
                 return false;
 
-            HashSet<int> ids = HashIDs(entry.Bounds);
+            HashSet<int> ids = GetHashIDs(entry.Bounds);
 
             foreach (int i in ids)
             {
@@ -87,79 +90,82 @@ namespace Morro.ECS
             }
         }
 
-        private HashSet<int> HashIDs(RectangleF bounds)
+        private HashSet<int> GetHashIDs(RectangleF bounds)
         {
-            RectangleF validatedBounds = ValidateBounds();
             HashSet<int> result = new HashSet<int>();
-            int x = -1;
-            int y = -1;
-            int cellSize = 1 << powerOfTwo;
 
-            if (validatedBounds.Width > cellSize || validatedBounds.Height > cellSize)
+            // Make sure that the query's bounds are within the partitioner's bounds.
+            RectangleF validatedBounds = ValidateBounds(bounds);
+
+            // Hash all corners of the validated query's bounds.
+            HashPosition(validatedBounds.Left, validatedBounds.Top);
+            HashPosition(validatedBounds.Right, validatedBounds.Top);
+            HashPosition(validatedBounds.Right, validatedBounds.Bottom);
+            HashPosition(validatedBounds.Left, validatedBounds.Bottom);
+
+            /// Ideally the dimensions of the validated query's bounds will be less than the partitioner's bucket size.
+            /// However, this is not always the case. In order to handle all dimensions, we have to carefully divide the query bounds into smaller 
+            /// subsections. Each subsection needs to be the same size as the partitioner's bucket size for optimal guaranteed coverage.
+            if (validatedBounds.Width > bucketSize || validatedBounds.Height > bucketSize)
             {
-                // YIKES
-                for (int heightOffset = cellSize; heightOffset < validatedBounds.Height; heightOffset += cellSize)
+                int totalRows = (int)Math.Ceiling(validatedBounds.Height / bucketSize);
+                int totalColumns = (int)Math.Ceiling(validatedBounds.Width / bucketSize);
+
+                for (int y = 0; y <= totalRows; y++)
                 {
-                    for (int widthOffset = cellSize; widthOffset < validatedBounds.Width; widthOffset += cellSize)
+                    for (int x = 0; x <= totalColumns; x++)
                     {
-                        x = (int)(validatedBounds.X + widthOffset) >> powerOfTwo;
-                        y = (int)(validatedBounds.Y + heightOffset) >> powerOfTwo;
-
-                        if (x < 0 || x >= columns || y < 0 || y >= rows)
-                            continue;
-
-                        result.Add(columns * y + x);
+                        HashPosition(bounds.X + x * bucketSize, bounds.Y + y * bucketSize);
                     }
                 }
             }
 
-            for (int i = 0; i < 4; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        x = (int)validatedBounds.Left >> powerOfTwo;
-                        y = (int)validatedBounds.Top >> powerOfTwo;
-                        break;
-                    case 1:
-                        x = (int)validatedBounds.Right >> powerOfTwo;
-                        y = (int)validatedBounds.Top >> powerOfTwo;
-                        break;
-                    case 2:
-                        x = (int)validatedBounds.Right >> powerOfTwo;
-                        y = (int)validatedBounds.Bottom >> powerOfTwo;
-                        break;
-                    case 3:
-                        x = (int)validatedBounds.Left >> powerOfTwo;
-                        y = (int)validatedBounds.Bottom >> powerOfTwo;
-                        break;
-                }
-
-                if (x < 0 || x >= columns || y < 0 || y >= rows)
-                    continue;
-
-                result.Add(columns * y + x);
-            }
-
             return result;
 
-            RectangleF ValidateBounds()
+            Point ValidatePosition(float _x, float _y)
             {
-                int _x = (int)bounds.X;
-                int _y = (int)bounds.Y;
-                int _width = (int)Math.Ceiling(bounds.Width);
-                int _height = (int)Math.Ceiling(bounds.Height);
+                int xValidated = (int)_x;
+                int yValidated = (int)_y;
 
-                _x = Math.Max(0, _x);
-                _x = Math.Min((int)Boundary.Right, _x);
+                xValidated = Math.Max(0, xValidated);
+                xValidated = Math.Min((int)Boundary.Right, xValidated);
 
-                _y = Math.Max(0, _y);
-                _y = Math.Min((int)Boundary.Bottom, _y);
+                yValidated = Math.Max(0, yValidated);
+                yValidated = Math.Min((int)Boundary.Bottom, yValidated);
+                
+                return new Point(xValidated, yValidated);
+            }
 
-                _width = Math.Min((int)Math.Ceiling(Boundary.Right) - _x, _width);
-                _height = Math.Min((int)Math.Ceiling(Boundary.Bottom) - _y, _height);
+            RectangleF ValidateBounds(RectangleF _bounds)
+            {
+                Point validatedPosition = ValidatePosition((int)_bounds.X, (int)_bounds.Y);
 
-                return new RectangleF(_x, _y, _width, _height);
+                int xValidated = validatedPosition.X;
+                int yValidated = validatedPosition.Y;
+
+                int widthValidated = (int)Math.Ceiling(_bounds.Width);
+                int heightValidated = (int)Math.Ceiling(_bounds.Height);
+
+                widthValidated = Math.Min((int)Math.Ceiling(Boundary.Right) - xValidated, widthValidated);
+                heightValidated = Math.Min((int)Math.Ceiling(Boundary.Bottom) - yValidated, heightValidated);
+
+                return new RectangleF(xValidated, yValidated, widthValidated, heightValidated);
+            }
+
+            void HashPosition(float _x, float _y)
+            {
+                Point validatedPosition = ValidatePosition(_x, _y);
+
+                int xValidated = validatedPosition.X;
+                int yValidated = validatedPosition.Y;
+
+                int row = xValidated >> powerOfTwo;
+                int column = yValidated >> powerOfTwo;
+
+                if (column < 0 || column >= columns || row < 0 || row >= rows)
+                    return;
+
+                result.Add(columns * column + row);
             }
         }
     }

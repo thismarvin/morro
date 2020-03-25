@@ -141,8 +141,10 @@ namespace Morro.ECS
 
             void HandleDependencies()
             {
-                bool done = false;
                 CreateNewGroup();
+
+                bool done = false;
+                int registeredDependencies;
 
                 while (!done)
                 {
@@ -150,16 +152,23 @@ namespace Morro.ECS
 
                     foreach (MorroSystem system in canidates)
                     {
+                        registeredDependencies = 0;
+
                         foreach (Type dependency in system.Dependencies)
                         {
                             if (registered.Contains(dependency))
                             {
-                                ProcessSystem(system);
-                                done = false;
-                                break;
+                                registeredDependencies++;
                             }
                         }
+
+                        if (registeredDependencies == system.Dependencies.Count)
+                        {
+                            ProcessSystem(system);
+                            done = false;
+                        }
                     }
+
                     ClearBuffers();
 
                     if (!done && canidates.Count != 0)
